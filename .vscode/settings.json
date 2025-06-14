@@ -1,0 +1,20 @@
+{
+  "files.exclude": {
+    ".env": true,
+    "*/env.js": true,
+    ".gitignore": true,
+    "drizzle": true,
+    "README.md": true,
+    "next*": true,
+    "biome.*": true,
+    "node_modules": true,
+    "postcss.config.js": true,
+    "package*.json": true,
+    "pnpm-lock.yaml": true,
+    "tsconfig.*": true,
+    "components.json": true,
+    "drizzle.config.ts": true,
+    "public": true,
+    "build": true
+  }
+}
