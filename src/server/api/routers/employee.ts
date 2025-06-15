@@ -10,9 +10,9 @@ import {
   desc,
 } from "drizzle-orm";
 import { z } from "zod";
+import { zBaseQueryParams } from "~/shared/schemas/query-params";
 import { contractEmployees, employees } from "~/server/db/schemas";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { sortDirection, zBaseQueryParams } from "~/shared/schemas/query-params";
 
 export const queryOptions = {
   sortColumns: [
@@ -23,14 +23,12 @@ export const queryOptions = {
     "type",
     "contractCount",
   ] as const,
-  sortDirections: sortDirection,
   employeeRoles: ["user", "admin"] as const,
   employeeTypes: ["lawyer", "admin_assistant"] as const,
 };
 
 const zQueryAllParams = zBaseQueryParams.extend({
   column: z.enum(queryOptions.sortColumns),
-  direction: z.enum(queryOptions.sortDirections),
   type: z.enum(queryOptions.employeeTypes).array(),
   role: z.enum(queryOptions.employeeRoles).array(),
 });
