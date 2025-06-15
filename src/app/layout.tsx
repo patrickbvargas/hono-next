@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { TRPCProvider } from "~/trpc/client";
+import { ThemeProvider } from "~/providers/theme";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const metadata: Metadata = {
@@ -19,13 +20,20 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${geist.variable}`}>
+    <html lang="pt-BR" className={`${geist.variable}`} suppressHydrationWarning>
       <body>
         <NuqsAdapter>
           <TRPCProvider>
-            <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white space-y-4">
-              {children}
-            </main>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <main className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground space-y-4">
+                {children}
+              </main>
+            </ThemeProvider>
           </TRPCProvider>
         </NuqsAdapter>
       </body>
