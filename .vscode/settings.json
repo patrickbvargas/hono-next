@@ -2,8 +2,10 @@
   "files.exclude": {
     ".env": true,
     ".next": true,
+    "**/app/api": true,
     "**/styles": true,
     "**/env.js": true,
+    "**/trpc": true,
     ".gitignore": true,
     "drizzle": true,
     "README.md": true,

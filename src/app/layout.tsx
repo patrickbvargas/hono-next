@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { TRPCProvider } from "~/trpc/client";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const metadata: Metadata = {
   title: "Hono T3",
@@ -18,9 +19,15 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
+    <html lang="pt-BR" className={`${geist.variable}`}>
       <body>
-        <TRPCProvider>{children}</TRPCProvider>
+        <NuqsAdapter>
+          <TRPCProvider>
+            <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white space-y-4">
+              {children}
+            </main>
+          </TRPCProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );
