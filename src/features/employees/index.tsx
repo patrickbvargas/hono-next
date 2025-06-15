@@ -1,4 +1,10 @@
 import * as React from "react";
+import {
+  Wrapper,
+  WrapperContent,
+  WrapperFooter,
+  WrapperHeader,
+} from "~/shared/components/wrapper";
 import { api } from "~/trpc/server";
 import { type ParsedQueryParams } from "./utils/query-params";
 
@@ -10,12 +16,14 @@ export const Employees = async ({ queryParams }: Props) => {
   const { data, count } = await api.employees.getAll(queryParams);
 
   return (
-    <div className="space-y-4">
-      <p className="font-semibold">Count: {count}</p>
-      <pre className="p-2 border-1 border-white rounded-md w-80">
-        {JSON.stringify(queryParams, null, 2)}
-      </pre>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </div>
+    <Wrapper>
+      <WrapperHeader>
+        <pre>{JSON.stringify(queryParams)}</pre>
+      </WrapperHeader>
+      <WrapperContent>
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      </WrapperContent>
+      <WrapperFooter>Total itens: {count}</WrapperFooter>
+    </Wrapper>
   );
 };

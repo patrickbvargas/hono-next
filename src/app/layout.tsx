@@ -1,9 +1,8 @@
 import "~/styles/globals.css";
 import type { Metadata } from "next";
+import { Provider } from "./provider";
 import { Geist } from "next/font/google";
-import { TRPCProvider } from "~/trpc/client";
-import { ThemeProvider } from "~/providers/theme";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Container, Content, Header, Sidebar } from "~/layouts";
 
 export const metadata: Metadata = {
   title: "Hono T3",
@@ -21,21 +20,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR" className={`${geist.variable}`} suppressHydrationWarning>
-      <body>
-        <NuqsAdapter>
-          <TRPCProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="dark"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <main className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground space-y-4">
-                {children}
-              </main>
-            </ThemeProvider>
-          </TRPCProvider>
-        </NuqsAdapter>
+      <body className="antialiased dark:!bg-black">
+        <Provider>
+          <Container className="flex flex-col sm:grid sm:grid-cols-[auto_1fr] sm:grid-rows-[auto_1fr]">
+            <Header className="border-b" />
+            <Sidebar className="w-50 border-r row-start-1 row-end-3" />
+            <Content>{children}</Content>
+          </Container>
+        </Provider>
       </body>
     </html>
   );
