@@ -1,18 +1,9 @@
-import {
-  and,
-  eq,
-  sql,
-  inArray,
-  count,
-  SQL,
-  ilike,
-  or,
-  desc,
-} from "drizzle-orm";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { zBaseQueryParams } from "~/shared/schemas/query-params";
 import { contractEmployees, employees } from "~/server/db/schemas";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { and, eq, sql, inArray, count, ilike, or, desc } from "drizzle-orm";
 
 export const queryOptions = {
   sortColumns: [
@@ -27,17 +18,17 @@ export const queryOptions = {
   employeeTypes: ["lawyer", "admin_assistant"] as const,
 };
 
-const zQueryAllParams = zBaseQueryParams.extend({
+const zQueryOneParams = z.object({
+  id: z.string(),
+});
+
+const zQueryManyParams = zBaseQueryParams.extend({
   column: z.enum(queryOptions.sortColumns),
   type: z.enum(queryOptions.employeeTypes).array(),
   role: z.enum(queryOptions.employeeRoles).array(),
 });
 
-const zQueryOneParams = z.object({
-  id: z.string(),
-});
-
-export type QueryAllParams = z.infer<typeof zQueryAllParams>;
+export type QueryManyParams = z.infer<typeof zQueryManyParams>;
 export type QueryOneParams = z.infer<typeof zQueryOneParams>;
 
 const employeeFields = {
@@ -58,17 +49,43 @@ const contractAssignmentFilter = inArray(contractEmployees.assignment, [
 ]);
 
 export const employeeRouter = createTRPCRouter({
-  getAll: publicProcedure
-    .input(zQueryAllParams)
+  getOne: publicProcedure
+    .input(zQueryOneParams)
+    .query(async ({ ctx: { db }, input: { id } }) => {
+      const data = await db
+        .select(employeeFields)
+        .from(employees)
+        .leftJoin(
+          contractEmployees,
+          and(
+            eq(contractEmployees.employeeId, employees.id),
+            contractAssignmentFilter,
+          ),
+        )
+        .where(eq(employees.id, id))
+        .groupBy(employees.id);
+
+      if (!data[0]) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Employee not found",
+        });
+      }
+
+      return data[0];
+    }),
+
+  getMany: publicProcedure
+    .input(zQueryManyParams)
     .query(
       async ({
         ctx: { db },
         input: { query, page, limit, column, direction, type, role },
       }) => {
-        const sortColumn: SQL =
-          column === "contractCount"
-            ? sql`count(${contractEmployees.id})`
-            : sql`${employees[column]}`;
+        const sort =
+          direction === "desc"
+            ? desc(employeeFields[column])
+            : employeeFields[column];
 
         const offset = (page - 1) * limit;
 
@@ -80,8 +97,6 @@ export const employeeRouter = createTRPCRouter({
           type.length > 0 ? inArray(employees.type, type) : undefined,
           role.length > 0 ? inArray(employees.role, role) : undefined,
         );
-
-        const sort = direction === "desc" ? desc(sortColumn) : sortColumn;
 
         const [rawCount, rawData] = await Promise.all([
           db.select({ count: count() }).from(employees).where(filters),
@@ -108,21 +123,4 @@ export const employeeRouter = createTRPCRouter({
         };
       },
     ),
-
-  getOne: publicProcedure
-    .input(zQueryOneParams)
-    .query(async ({ ctx: { db }, input: { id } }) => {
-      return await db
-        .select(employeeFields)
-        .from(employees)
-        .leftJoin(
-          contractEmployees,
-          and(
-            eq(contractEmployees.employeeId, employees.id),
-            contractAssignmentFilter,
-          ),
-        )
-        .where(eq(employees.id, id))
-        .groupBy(employees.id);
-    }),
 });

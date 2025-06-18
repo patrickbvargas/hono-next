@@ -4,13 +4,13 @@ import {
   parseAsStringLiteral,
 } from "nuqs/server";
 import {
-  type QueryAllParams,
+  type QueryManyParams,
   queryOptions as opt,
 } from "~/server/api/routers/employee";
 import { baseQueryParser } from "~/shared/lib/nuqs";
 import type { SearchParamsParser } from "~/shared/types/nuqs";
 
-const queryParamsParser: SearchParamsParser<QueryAllParams> = {
+const queryParamsParser: SearchParamsParser<QueryManyParams> = {
   ...baseQueryParser,
   column: parseAsStringLiteral(opt.sortColumns).withDefault(opt.sortColumns[0]),
   type: parseAsArrayOf(parseAsStringLiteral(opt.employeeTypes)).withDefault([]),
@@ -19,4 +19,4 @@ const queryParamsParser: SearchParamsParser<QueryAllParams> = {
 
 export const loadQueryParams = createLoader(queryParamsParser);
 
-export type ParsedQueryParams = Awaited<ReturnType<typeof loadQueryParams>>;
+export type QueryParams = Awaited<ReturnType<typeof loadQueryParams>>;

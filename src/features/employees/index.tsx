@@ -4,26 +4,32 @@ import {
   WrapperContent,
   WrapperFooter,
   WrapperHeader,
-} from "~/shared/components/wrapper";
+  Search,
+  Pagination,
+} from "~/shared/components";
 import { api } from "~/trpc/server";
-import { type ParsedQueryParams } from "./utils/query-params";
+import { EmployeeTable } from "./components/table";
+import type { QueryParams } from "./utils/query-params";
 
 interface Props {
-  queryParams: ParsedQueryParams;
+  queryParams: QueryParams;
 }
 
 export const Employees = async ({ queryParams }: Props) => {
-  const { data, count } = await api.employees.getAll(queryParams);
+  const { data, count } = await api.employees.getMany(queryParams);
 
   return (
     <Wrapper>
-      <WrapperHeader>
+      <WrapperHeader className="flex-col items-start">
+        <Search />
         <pre>{JSON.stringify(queryParams)}</pre>
       </WrapperHeader>
       <WrapperContent>
-        <pre>{JSON.stringify(data, null, 2)}</pre>
+        <EmployeeTable data={data} />
       </WrapperContent>
-      <WrapperFooter>Total itens: {count}</WrapperFooter>
+      <WrapperFooter>
+        <Pagination totalRecords={count} />
+      </WrapperFooter>
     </Wrapper>
   );
 };

@@ -1,6 +1,6 @@
 import { useQueryStates } from "nuqs";
 import { paginationParser } from "~/shared/lib/nuqs";
-import { zPaginationParams } from "../schemas/query-params";
+import { zPaginationParams } from "~/shared/schemas/query-params";
 
 export function usePagination() {
   const [pagination, setPagination] = useQueryStates(paginationParser, {

@@ -1,7 +1,7 @@
 import { useQueryStates } from "nuqs";
 import { useDebouncedCallback } from "./use-debounce";
-import { zSearchParams } from "../schemas/query-params";
-import { paginationParser, searchParser } from "../lib/nuqs";
+import { zSearchParams } from "~/shared/schemas/query-params";
+import { paginationParser, searchParser } from "~/shared/lib/nuqs";
 
 export function useSearch() {
   const [search, setSearch] = useQueryStates(

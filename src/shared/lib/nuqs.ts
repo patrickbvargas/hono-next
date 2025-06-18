@@ -10,7 +10,7 @@ import {
   DEFAULT_PAGE,
   DEFAULT_QUERY,
 } from "~/shared/constants/query-defaults";
-import { sortDirection } from "../schemas/query-params";
+import { sortDirection } from "~/shared/schemas/query-params";
 
 export const paginationParser = {
   page: parseAsInteger.withDefault(DEFAULT_PAGE),
