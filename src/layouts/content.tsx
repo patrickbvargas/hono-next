@@ -4,10 +4,11 @@ import { cn } from "~/shared/lib/utils";
 export const Content = ({
   className,
   ...props
-}: React.ComponentProps<"main">) => {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <main
-      className={cn("size-full overflow-hidden pt-2 pb-6 px-6", className)}
+    <div
+      data-slot="content"
+      className={cn("size-full overflow-auto p-4", className)}
       {...props}
     />
   );

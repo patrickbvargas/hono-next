@@ -2,7 +2,8 @@ import "~/styles/globals.css";
 import type { Metadata } from "next";
 import { Provider } from "./provider";
 import { Geist } from "next/font/google";
-import { Container, Content, Header, Sidebar } from "~/layouts";
+import { Content, Header, Sidebar } from "~/layouts";
+import { SidebarInset, SidebarProvider } from "~/shared/components";
 
 export const metadata: Metadata = {
   title: "Hono T3",
@@ -22,11 +23,13 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${geist.variable}`} suppressHydrationWarning>
       <body className="antialiased dark:!bg-black">
         <Provider>
-          <Container className="flex flex-col sm:grid sm:grid-cols-[auto_1fr] sm:grid-rows-[auto_1fr]">
-            <Header className="border-b" />
-            <Sidebar className="w-50 border-r row-start-1 row-end-3" />
-            <Content>{children}</Content>
-          </Container>
+          <SidebarProvider>
+            <Sidebar />
+            <SidebarInset>
+              <Header />
+              <Content>{children}</Content>
+            </SidebarInset>
+          </SidebarProvider>
         </Provider>
       </body>
     </html>

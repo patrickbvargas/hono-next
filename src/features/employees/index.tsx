@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
   Wrapper,
-  WrapperContent,
+  WrapperBody,
   WrapperFooter,
   WrapperHeader,
   Search,
@@ -20,13 +20,13 @@ export const Employees = async ({ queryParams }: Props) => {
 
   return (
     <Wrapper>
-      <WrapperHeader className="flex-col items-start">
+      <WrapperHeader>
         <Search />
         <pre>{JSON.stringify(queryParams)}</pre>
       </WrapperHeader>
-      <WrapperContent>
-        <EmployeeTable data={data} />
-      </WrapperContent>
+      <WrapperBody>
+        <EmployeeTable data={[...data, ...data, ...data, ...data]} />
+      </WrapperBody>
       <WrapperFooter>
         <Pagination totalRecords={count} />
       </WrapperFooter>

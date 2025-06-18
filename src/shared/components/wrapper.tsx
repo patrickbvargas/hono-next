@@ -7,10 +7,8 @@ function Wrapper({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn(
-        "size-full flex flex-col gap-3 p-1 overflow-hidden",
-        className,
-      )}
+      data-slot="wrapper"
+      className={cn("flex flex-col gap-3", className)}
       {...props}
     />
   );
@@ -21,17 +19,22 @@ function WrapperHeader({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("flex items-center gap-3", className)} {...props} />
+    <div
+      data-slot="wrapper-header"
+      className={cn("flex items-center gap-3", className)}
+      {...props}
+    />
   );
 }
 
-function WrapperContent({
+function WrapperBody({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex-1 flex flex-col gap-3 overflow-auto", className)}
+      data-slot="wrapper-content"
+      className={cn("flex flex-col gap-3", className)}
       {...props}
     />
   );
@@ -43,10 +46,11 @@ function WrapperFooter({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
+      data-slot="wrapper-footer"
       className={cn("flex justify-end items-center gap-3", className)}
       {...props}
     />
   );
 }
 
-export { Wrapper, WrapperHeader, WrapperContent, WrapperFooter };
+export { Wrapper, WrapperHeader, WrapperBody, WrapperFooter };

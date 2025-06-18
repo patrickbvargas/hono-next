@@ -1,5 +1,6 @@
 import * as React from "react";
+import { AppSidebar } from "~/features/app-sidebar";
 
-export const Sidebar = ({ ...props }: React.ComponentProps<"aside">) => {
-  return <aside {...props} />;
+export const Sidebar = () => {
+  return <AppSidebar variant="inset" />;
 };
