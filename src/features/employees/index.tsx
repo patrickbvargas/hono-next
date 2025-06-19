@@ -25,7 +25,7 @@ export const Employees = async ({ queryParams }: Props) => {
         <pre>{JSON.stringify(queryParams)}</pre>
       </WrapperHeader>
       <WrapperBody>
-        <EmployeeTable data={[...data, ...data, ...data, ...data]} />
+        <EmployeeTable data={data} />
       </WrapperBody>
       <WrapperFooter>
         <Pagination totalRecords={count} />

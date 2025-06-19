@@ -28,8 +28,8 @@ export function NavUser() {
   const { isMobile } = useSidebar();
 
   const user = {
-    avatar: "https://github.com/shadcn.png",
-    name: "Shadcn",
+    avatar: "https://github.com/patrickbvargas.png",
+    name: "Patrick Vargas",
     email: "fj8oT@example.com",
   };
 

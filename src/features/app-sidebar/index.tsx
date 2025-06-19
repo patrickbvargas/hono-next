@@ -4,12 +4,12 @@ import * as React from "react";
 import {
   ArrowUpCircleIcon,
   BriefcaseIcon,
+  DollarSignIcon,
   LayoutDashboardIcon,
-  ReceiptIcon,
-  ScaleIcon,
+  LifeBuoyIcon,
   Settings2Icon,
   UserIcon,
-  WalletMinimalIcon,
+  UsersIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -21,47 +21,63 @@ import {
   SidebarMenuItem,
 } from "~/shared/components/ui/sidebar";
 import Link from "next/link";
-import type { Route } from "./types/route";
-import { NavMain } from "./components/nav-main";
+import type { RouteItem } from "./types/route";
 import { NavUser } from "./components/nav-user";
+import { NavGroup } from "./components/nav-group";
 
-const routes: Route[] = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    Icon: LayoutDashboardIcon,
-  },
-  {
-    title: "Funcionários",
-    url: "/funcionarios",
-    Icon: ScaleIcon,
-  },
-  {
-    title: "Clientes",
-    url: "/clientes",
-    Icon: UserIcon,
-  },
-  {
-    title: "Contratos",
-    url: "/contratos",
-    Icon: BriefcaseIcon,
-  },
-  {
-    title: "Honorários",
-    url: "/honorarios",
-    Icon: ReceiptIcon,
-  },
-  {
-    title: "Remunerações",
-    url: "/remuneracoes",
-    Icon: WalletMinimalIcon,
-  },
-  {
-    title: "Configurações",
-    url: "/configuracoes",
-    Icon: Settings2Icon,
-  },
-] as const;
+type RouteSection = "main" | "secondary";
+
+const routes: Record<RouteSection, RouteItem[]> = {
+  main: [
+    {
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: LayoutDashboardIcon,
+    },
+    {
+      title: "Clientes",
+      url: "/clientes",
+      icon: UserIcon,
+    },
+    {
+      title: "Contratos",
+      url: "/contratos",
+      icon: BriefcaseIcon,
+    },
+    {
+      title: "Funcionários",
+      url: "/funcionarios",
+      icon: UsersIcon,
+    },
+    {
+      title: "Financeiro",
+      url: "#",
+      icon: DollarSignIcon,
+      items: [
+        {
+          title: "Honorários",
+          url: "/honorarios",
+        },
+        {
+          title: "Remunerações",
+          url: "/remuneracoes",
+        },
+      ],
+    },
+  ],
+  secondary: [
+    {
+      title: "Configurações",
+      url: "/configuracoes",
+      icon: Settings2Icon,
+    },
+    {
+      title: "Suporte",
+      url: "/suporte",
+      icon: LifeBuoyIcon,
+    },
+  ],
+} as const;
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -73,8 +89,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <Link href="#">
-                <ArrowUpCircleIcon className="h-5 w-5" />
+              <Link href="/">
+                <ArrowUpCircleIcon className="size-5" />
                 <span className="text-base font-semibold">Hono</span>
               </Link>
             </SidebarMenuButton>
@@ -82,7 +98,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain routes={routes} />
+        <NavGroup routes={routes.main} />
+        <NavGroup routes={routes.secondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
