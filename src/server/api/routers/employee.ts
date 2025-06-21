@@ -7,7 +7,7 @@ import {
   zPaginationParser,
   zSearchParser,
 } from "~/shared/schemas/query-parser";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { TRPCError } from "@trpc/server";
 import type { Employee } from "~/shared/types/employee";
 import { SORT_DIRECTIONS } from "~/shared/constants/sort";

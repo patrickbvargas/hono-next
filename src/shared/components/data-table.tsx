@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import {
   Table,
   TableHeader,
@@ -45,22 +46,26 @@ export const DataTable = <TData, TValue>({
 
   const pages = Math.ceil(totalCount / pagination.limit);
 
+  const bottomContent = React.useMemo(() => {
+    return (
+      <Pagination
+        total={pages}
+        page={pagination.page}
+        onChange={handlePagination}
+        loop
+        size="sm"
+        showControls
+        className="place-self-center"
+      />
+    );
+  }, []);
+
   return (
     <Table
       isHeaderSticky
       sortDescriptor={sort}
       onSortChange={handleSort}
-      bottomContent={
-        <Pagination
-          total={pages}
-          page={pagination.page}
-          onChange={handlePagination}
-          loop
-          size="sm"
-          showControls
-          className="place-self-center"
-        />
-      }
+      bottomContent={bottomContent}
       {...props}
     >
       <TableHeader>

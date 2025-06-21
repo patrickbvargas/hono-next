@@ -16,8 +16,9 @@ export function Providers({
     <NuqsAdapter>
       <TRPCProvider>
         <HeroUIProvider
-          navigate={router.push}
           locale="pt-BR"
+          navigate={router.push}
+          labelPlacement="outside"
           validationBehavior="aria"
         >
           <ThemeProvider attribute="class" defaultTheme="dark">

@@ -7,17 +7,16 @@ import type { Employee } from "~/shared/types/employee";
 import { createColumnHelper } from "@tanstack/react-table";
 import { EMPLOYEE_SORT_COLUMNS } from "~/shared/constants/employee";
 
-const isSortable = (column: string) =>
-  EMPLOYEE_SORT_COLUMNS.includes(column as any);
+const isSortable = (column: keyof Employee) =>
+  EMPLOYEE_SORT_COLUMNS.includes(
+    column as (typeof EMPLOYEE_SORT_COLUMNS)[number],
+  );
 
 const columnHelper = createColumnHelper<Employee>();
 export const columns = [
   columnHelper.accessor("fullName", {
     header: "Nome",
     enableSorting: isSortable("fullName"),
-    meta: {
-      headerClassName: "md:min-w-[260px]",
-    },
   }),
   columnHelper.accessor("oabNumber", {
     header: "OAB",

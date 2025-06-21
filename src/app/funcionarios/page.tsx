@@ -1,6 +1,6 @@
 import type { SearchParams } from "nuqs/server";
-import { Employees } from "~/features/employees";
-import { loadQueryParams } from "~/features/employees/utils/query-params";
+import { EmployeeList } from "~/features/employee-list";
+import { loadQueryParams } from "~/features/employee-list/utils/query";
 
 interface Props {
   searchParams: Promise<SearchParams>;
@@ -9,5 +9,5 @@ interface Props {
 export default async function PageEmployees({ searchParams }: Props) {
   const queryParams = await loadQueryParams(searchParams);
 
-  return <Employees queryParams={queryParams} />;
+  return <EmployeeList queryParams={queryParams} />;
 }

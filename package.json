@@ -19,6 +19,7 @@
 	},
 	"dependencies": {
 		"@heroui/react": "2.8.0-beta.10",
+		"@hookform/resolvers": "^5.1.1",
 		"@radix-ui/react-avatar": "^1.1.10",
 		"@radix-ui/react-collapsible": "^1.1.11",
 		"@radix-ui/react-dialog": "^1.1.14",
@@ -43,6 +44,7 @@
 		"postgres": "^3.4.4",
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
+		"react-hook-form": "^7.58.1",
 		"server-only": "^0.0.1",
 		"superjson": "^2.2.1",
 		"tailwind-merge": "^3.3.1",
