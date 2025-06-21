@@ -1,6 +1,7 @@
 import { useQueryStates } from "nuqs";
+import type { SortDescriptor } from "@heroui/table";
+import { zSortParser } from "~/shared/schemas/query-parser";
 import { paginationParser, sortParser } from "~/shared/lib/nuqs";
-import { zSortParams, type SortDirection } from "~/shared/schemas/query-params";
 
 export function useSort() {
   const [sort, setSort] = useQueryStates(
@@ -8,17 +9,13 @@ export function useSort() {
     { shallow: false },
   );
 
-  const toggleDirection = (column: string): SortDirection => {
-    return column === sort.column && sort.direction === "asc" ? "desc" : "asc";
-  };
-
-  const handleSort = (column: string) => {
+  const handleSort = (sort: SortDescriptor) => {
     setSort({
-      column,
-      direction: toggleDirection(column),
+      column: String(sort.column),
+      direction: sort.direction,
       page: 1,
     });
   };
 
-  return { sort: zSortParams.parse(sort), handleSort };
+  return { sort: zSortParser.parse(sort), handleSort };
 }

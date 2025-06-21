@@ -1,124 +1,98 @@
 "use client";
 
 import {
-  type ColumnDef,
+  Table,
+  TableHeader,
+  TableBody,
+  TableColumn,
+  TableRow,
+  TableCell,
+  type TableProps,
+} from "@heroui/table";
+import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  type ColumnDef,
+  type TableOptions,
 } from "@tanstack/react-table";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "~/shared/components/ui/table";
-import { cn } from "~/shared/lib/utils";
-import { useSort } from "~/shared/hooks";
-import { ChevronDownIcon } from "lucide-react";
+import { cn } from "@heroui/react";
+import { Spinner } from "@heroui/spinner";
+import { Pagination } from "@heroui/pagination";
+import { usePagination, useSort } from "~/shared/hooks";
 
-interface Props<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+interface DataTableProps<TData, TValue> extends TableProps {
+  columns: ColumnDef<TData, TValue>[] | TableOptions<TData>["columns"];
   data: TData[];
+  totalCount: number;
+  isLoading?: boolean;
 }
 
 export const DataTable = <TData, TValue>({
   columns,
   data,
-}: Props<TData, TValue>) => {
+  totalCount,
+  isLoading,
+  ...props
+}: DataTableProps<TData, TValue>) => {
   const { sort, handleSort } = useSort();
+  const { pagination, handlePagination } = usePagination();
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const pages = Math.ceil(totalCount / pagination.limit);
+
   return (
-    <div className="overflow-hidden rounded-lg border">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead
-                  key={header.id}
-                  colSpan={header.colSpan}
-                  className={header.column.columnDef.meta?.headerClassName}
-                  data-sortable={header.column.getCanSort()}
-                  data-groupable={header.column.getCanGroup()}
-                >
-                  <div
-                    onClick={() => {
-                      if (!header.column.getCanSort()) return;
-                      handleSort(header.column.id);
-                    }}
-                    className={cn(
-                      "h-full px-2.5 flex items-center gap-2",
-                      header.column.getCanSort() && "cursor-pointer",
-                    )}
-                  >
-                    <span className="truncate">
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                    </span>
-                    {header.column.getCanSort() &&
-                      sort.column === header.id && (
-                        <ChevronDownIcon
-                          size={16}
-                          aria-hidden="true"
-                          className={cn(
-                            "shrink-0 opacity-60 transition duration-300",
-                            sort.direction === "asc" && "rotate-180",
-                          )}
-                          data-direction={sort.direction}
-                          data-visible={header.column.getIsSorted()}
-                        />
-                      )}
-                  </div>
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    className={cell.column.columnDef.meta?.cellClassName}
-                    data-selected={row.getIsSelected()}
-                  >
-                    {cell.getIsAggregated()
-                      ? flexRender(
-                          cell.column.columnDef.aggregatedCell ??
-                            cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )
-                      : flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                Nenhum registro encontrado.
+    <Table
+      isHeaderSticky
+      sortDescriptor={sort}
+      onSortChange={handleSort}
+      bottomContent={
+        <Pagination
+          total={pages}
+          page={pagination.page}
+          onChange={handlePagination}
+          loop
+          size="sm"
+          showControls
+          className="place-self-center"
+        />
+      }
+      {...props}
+    >
+      <TableHeader>
+        {table.getFlatHeaders().map((header) => (
+          <TableColumn
+            key={header.id}
+            colSpan={header.colSpan}
+            allowsSorting={header.column.getCanSort()}
+            className={cn(
+              "uppercase",
+              header.column.columnDef.meta?.headerClassName,
+            )}
+          >
+            {flexRender(header.column.columnDef.header, header.getContext())}
+          </TableColumn>
+        ))}
+      </TableHeader>
+      <TableBody
+        isLoading={isLoading}
+        loadingContent={<Spinner />}
+        emptyContent={"Nenhum registro encontrado."}
+      >
+        {table.getRowModel().rows.map((row) => (
+          <TableRow key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <TableCell key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 };

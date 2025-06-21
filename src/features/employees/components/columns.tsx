@@ -1,59 +1,52 @@
 "use client";
 
-import { Badge } from "~/shared/components";
+import { Chip } from "@heroui/chip";
 import { EllipsisIcon } from "lucide-react";
 import { formatter } from "~/shared/lib/formatter";
-import type { Employee } from "~/shared/types/domain";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { Employee } from "~/shared/types/employee";
+import { createColumnHelper } from "@tanstack/react-table";
+import { EMPLOYEE_SORT_COLUMNS } from "~/shared/constants/employee";
 
-export const columns: ColumnDef<Employee>[] = [
-  {
-    accessorKey: "fullName",
+const isSortable = (column: string) =>
+  EMPLOYEE_SORT_COLUMNS.includes(column as any);
+
+const columnHelper = createColumnHelper<Employee>();
+export const columns = [
+  columnHelper.accessor("fullName", {
     header: "Nome",
-    enableSorting: true,
+    enableSorting: isSortable("fullName"),
     meta: {
       headerClassName: "md:min-w-[260px]",
     },
-  },
-  {
-    accessorKey: "oabNumber",
+  }),
+  columnHelper.accessor("oabNumber", {
     header: "OAB",
     cell: ({ row }) => formatter.oab(row.original.oabNumber ?? ""),
-    enableSorting: true,
-  },
-  {
-    accessorKey: "type",
+    enableSorting: isSortable("oabNumber"),
+  }),
+  columnHelper.accessor("type", {
     header: "Cargo",
     cell: ({ row }) => formatter.employeeType(row.original.type),
-    enableSorting: true,
-  },
-  {
-    accessorKey: "remunerationPercent",
+    enableSorting: isSortable("type"),
+  }),
+  columnHelper.accessor("remunerationPercent", {
     header: "Remuneração",
     cell: ({ row }) => formatter.percent(row.original.remunerationPercent),
-    enableSorting: true,
-  },
-  {
-    accessorKey: "contractCount",
+    enableSorting: isSortable("remunerationPercent"),
+  }),
+  columnHelper.accessor("contractCount", {
     header: "Contratos",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "role",
+    enableSorting: isSortable("contractCount"),
+  }),
+  columnHelper.accessor("role", {
     header: "Perfil",
     cell: ({ row }) => (
-      <Badge
-        variant="outline"
-        className="flex gap-1 px-1.5 text-muted-foreground"
-      >
-        {formatter.employeeRole(row.original.role)}
-      </Badge>
+      <Chip size="sm">{formatter.employeeRole(row.original.role)}</Chip>
     ),
-    enableSorting: true,
-  },
-  {
+    enableSorting: isSortable("role"),
+  }),
+  columnHelper.display({
     id: "actions",
-    cell: () => <EllipsisIcon className="size-4" />,
-    enableSorting: false,
-  },
+    cell: () => <EllipsisIcon size={16} className="opacity-60" />,
+  }),
 ];

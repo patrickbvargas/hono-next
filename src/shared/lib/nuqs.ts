@@ -10,7 +10,7 @@ import {
   DEFAULT_PAGE,
   DEFAULT_QUERY,
 } from "~/shared/constants/query-defaults";
-import { sortDirection } from "~/shared/schemas/query-params";
+import { SORT_DIRECTIONS } from "../constants/sort";
 
 export const paginationParser = {
   page: parseAsInteger.withDefault(DEFAULT_PAGE),
@@ -23,11 +23,6 @@ export const searchParser = {
 
 export const sortParser = {
   column: parseAsString.withDefault(DEFAULT_COLUMN),
-  direction: parseAsStringLiteral(sortDirection).withDefault(DEFAULT_DIRECTION),
-};
-
-export const baseQueryParser = {
-  ...searchParser,
-  ...paginationParser,
-  ...sortParser,
+  direction:
+    parseAsStringLiteral(SORT_DIRECTIONS).withDefault(DEFAULT_DIRECTION),
 };

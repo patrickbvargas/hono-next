@@ -1,4 +1,4 @@
-import type { EmployeeRole, EmployeeType } from "~/shared/types/domain";
+import type { EmployeeRole, EmployeeType } from "~/shared/types/employee";
 
 const EmployeeRoleAlias = {
   user: "Usuário",

@@ -1,37 +1,37 @@
+import {
+  EMPLOYEE_ROLES,
+  EMPLOYEE_SORT_COLUMNS,
+  EMPLOYEE_TYPES,
+} from "~/shared/constants/employee";
+import {
+  zPaginationParser,
+  zSearchParser,
+} from "~/shared/schemas/query-parser";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { zBaseQueryParams } from "~/shared/schemas/query-params";
+import type { Employee } from "~/shared/types/employee";
+import { SORT_DIRECTIONS } from "~/shared/constants/sort";
 import { contractEmployees, employees } from "~/server/db/schemas";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { and, eq, sql, inArray, count, ilike, or, desc } from "drizzle-orm";
 
-export const queryOptions = {
-  sortColumns: [
-    "fullName",
-    "oabNumber",
-    "remunerationPercent",
-    "role",
-    "type",
-    "contractCount",
-  ] as const,
-  employeeRoles: ["user", "admin"] as const,
-  employeeTypes: ["lawyer", "admin_assistant"] as const,
-};
-
 const zQueryOneParams = z.object({
-  id: z.string(),
+  slug: z.string(),
 });
 
-const zQueryManyParams = zBaseQueryParams.extend({
-  column: z.enum(queryOptions.sortColumns),
-  type: z.enum(queryOptions.employeeTypes).array(),
-  role: z.enum(queryOptions.employeeRoles).array(),
-});
+const zQueryManyParams = zSearchParser.merge(zPaginationParser).merge(
+  z.object({
+    column: z.enum(EMPLOYEE_SORT_COLUMNS),
+    direction: z.enum(SORT_DIRECTIONS),
+    type: z.enum(EMPLOYEE_TYPES).array(),
+    role: z.enum(EMPLOYEE_ROLES).array(),
+  }),
+);
 
 export type QueryManyParams = z.infer<typeof zQueryManyParams>;
 export type QueryOneParams = z.infer<typeof zQueryOneParams>;
 
-const employeeFields = {
+const employeeFields: Record<keyof Employee, any> = {
   id: employees.id,
   fullName: employees.fullName,
   oabNumber: employees.oabNumber,
@@ -39,6 +39,7 @@ const employeeFields = {
   type: employees.type,
   role: employees.role,
   slug: employees.slug,
+  status: employees.status,
   contractCount: sql<number>`count(${contractEmployees.id})`,
 };
 
@@ -51,7 +52,7 @@ const contractAssignmentFilter = inArray(contractEmployees.assignment, [
 export const employeeRouter = createTRPCRouter({
   getOne: publicProcedure
     .input(zQueryOneParams)
-    .query(async ({ ctx: { db }, input: { id } }) => {
+    .query(async ({ ctx: { db }, input: { slug } }): Promise<Employee> => {
       const data = await db
         .select(employeeFields)
         .from(employees)
@@ -62,7 +63,7 @@ export const employeeRouter = createTRPCRouter({
             contractAssignmentFilter,
           ),
         )
-        .where(eq(employees.id, id))
+        .where(eq(employees.slug, slug))
         .groupBy(employees.id);
 
       if (!data[0]) {
@@ -81,9 +82,9 @@ export const employeeRouter = createTRPCRouter({
       async ({
         ctx: { db },
         input: { query, page, limit, column, direction, type, role },
-      }) => {
+      }): Promise<{ count: number; data: Employee[] }> => {
         const sort =
-          direction === "desc"
+          direction === "descending"
             ? desc(employeeFields[column])
             : employeeFields[column];
 

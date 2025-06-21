@@ -1,6 +1,6 @@
 import { useQueryStates } from "nuqs";
 import { useDebouncedCallback } from "./use-debounce";
-import { zSearchParams } from "~/shared/schemas/query-params";
+import { zSearchParser } from "~/shared/schemas/query-parser";
 import { paginationParser, searchParser } from "~/shared/lib/nuqs";
 
 export function useSearch() {
@@ -16,5 +16,5 @@ export function useSearch() {
     });
   }, 300);
 
-  return { search: zSearchParams.parse(search), handleSearch };
+  return { search: zSearchParser.parse(search), handleSearch };
 }

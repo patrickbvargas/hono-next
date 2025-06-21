@@ -2,17 +2,15 @@ import * as React from "react";
 import {
   Wrapper,
   WrapperBody,
-  WrapperFooter,
   WrapperHeader,
   Search,
-  Pagination,
 } from "~/shared/components";
 import { api } from "~/trpc/server";
 import { EmployeeTable } from "./components/table";
-import type { QueryParams } from "./utils/query-params";
+import type { QueryManyParams } from "./utils/query-params";
 
 interface Props {
-  queryParams: QueryParams;
+  queryParams: QueryManyParams;
 }
 
 export const Employees = async ({ queryParams }: Props) => {
@@ -20,16 +18,13 @@ export const Employees = async ({ queryParams }: Props) => {
 
   return (
     <Wrapper>
-      <WrapperHeader>
+      <WrapperHeader className="grid grid-cols-2 gap-2 justify-start">
         <Search />
-        <pre>{JSON.stringify(queryParams)}</pre>
+        <pre className="col-span-full">{JSON.stringify(queryParams)}</pre>
       </WrapperHeader>
       <WrapperBody>
-        <EmployeeTable data={data} />
+        <EmployeeTable data={data} totalCount={count} />
       </WrapperBody>
-      <WrapperFooter>
-        <Pagination totalRecords={count} />
-      </WrapperFooter>
     </Wrapper>
   );
 };

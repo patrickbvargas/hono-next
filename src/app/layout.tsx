@@ -1,6 +1,6 @@
 import "~/styles/globals.css";
 import type { Metadata } from "next";
-import { Provider } from "./provider";
+import { Providers } from "./providers";
 import { Geist } from "next/font/google";
 import { Content, Header, Sidebar } from "~/layouts";
 import { SidebarInset, SidebarProvider } from "~/shared/components";
@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${geist.variable}`} suppressHydrationWarning>
       <body className="antialiased dark:!bg-black">
-        <Provider>
+        <Providers>
           <SidebarProvider>
             <Sidebar />
             <SidebarInset>
@@ -30,7 +30,7 @@ export default function RootLayout({
               <Content>{children}</Content>
             </SidebarInset>
           </SidebarProvider>
-        </Provider>
+        </Providers>
       </body>
     </html>
   );
