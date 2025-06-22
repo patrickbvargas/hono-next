@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import {
-  ArrowUpCircleIcon,
+  BoxIcon,
   BriefcaseIcon,
   DollarSignIcon,
   LayoutDashboardIcon,
@@ -15,15 +15,13 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "~/shared/components/ui/sidebar";
-import Link from "next/link";
+} from "~/shared/components";
 import type { RouteItem } from "./types/route";
 import { NavUser } from "./components/nav-user";
 import { NavGroup } from "./components/nav-group";
+import Link from "next/link";
 
 type RouteSection = "main" | "secondary";
 
@@ -53,16 +51,16 @@ const routes: Record<RouteSection, RouteItem[]> = {
       title: "Financeiro",
       url: "#",
       icon: DollarSignIcon,
-      items: [
-        {
-          title: "Honorários",
-          url: "/honorarios",
-        },
-        {
-          title: "Remunerações",
-          url: "/remuneracoes",
-        },
-      ],
+    },
+    {
+      title: "Honorários",
+      url: "/honorarios",
+      icon: DollarSignIcon,
+    },
+    {
+      title: "Remunerações",
+      url: "/remuneracoes",
+      icon: DollarSignIcon,
     },
   ],
   secondary: [
@@ -81,21 +79,15 @@ const routes: Record<RouteSection, RouteItem[]> = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
-            >
-              <Link href="/">
-                <ArrowUpCircleIcon className="size-5" />
-                <span className="text-base font-semibold">Hono</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <Link
+          href="/"
+          className="flex items-center gap-2 p-2 pl-4 hover:text-primary transition-colors duration-200 ease-in-out"
+        >
+          <BoxIcon size={24} />
+          <span className="font-semibold tracking-wider">Hono</span>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <NavGroup routes={routes.main} />
