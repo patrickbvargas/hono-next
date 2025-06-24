@@ -5,3 +5,8 @@ export interface RouteItem {
   url: `/${string}` | "#";
   icon: LucideIcon;
 }
+
+export interface RouteSection {
+  name: string;
+  routes: RouteItem[];
+}

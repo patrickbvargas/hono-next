@@ -15,67 +15,75 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
   SidebarHeader,
 } from "~/shared/components";
-import type { RouteItem } from "./types/route";
-import { NavUser } from "./components/nav-user";
-import { NavGroup } from "./components/nav-group";
 import Link from "next/link";
+import { NavUser } from "./components/nav-user";
+import type { RouteSection } from "./types/route";
+import { NavSection } from "./components/nav-section";
 
-type RouteSection = "main" | "secondary";
-
-const routes: Record<RouteSection, RouteItem[]> = {
-  main: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboardIcon,
-    },
-    {
-      title: "Clientes",
-      url: "/clientes",
-      icon: UserIcon,
-    },
-    {
-      title: "Contratos",
-      url: "/contratos",
-      icon: BriefcaseIcon,
-    },
-    {
-      title: "Funcionários",
-      url: "/funcionarios",
-      icon: UsersIcon,
-    },
-    {
-      title: "Financeiro",
-      url: "#",
-      icon: DollarSignIcon,
-    },
-    {
-      title: "Honorários",
-      url: "/honorarios",
-      icon: DollarSignIcon,
-    },
-    {
-      title: "Remunerações",
-      url: "/remuneracoes",
-      icon: DollarSignIcon,
-    },
-  ],
-  secondary: [
-    {
-      title: "Configurações",
-      url: "/configuracoes",
-      icon: Settings2Icon,
-    },
-    {
-      title: "Suporte",
-      url: "/suporte",
-      icon: LifeBuoyIcon,
-    },
-  ],
-} as const;
+const sections: RouteSection[] = [
+  {
+    name: "Geral",
+    routes: [
+      {
+        title: "Dashboard",
+        url: "/dashboard",
+        icon: LayoutDashboardIcon,
+      },
+      {
+        title: "Clientes",
+        url: "/clientes",
+        icon: UserIcon,
+      },
+      {
+        title: "Contratos",
+        url: "/contratos",
+        icon: BriefcaseIcon,
+      },
+    ],
+  },
+  {
+    name: "Financeiro",
+    routes: [
+      {
+        title: "Honorários",
+        url: "/honorarios",
+        icon: DollarSignIcon,
+      },
+      {
+        title: "Remunerações",
+        url: "/remuneracoes",
+        icon: DollarSignIcon,
+      },
+    ],
+  },
+  {
+    name: "Equipe",
+    routes: [
+      {
+        title: "Funcionários",
+        url: "/funcionarios",
+        icon: UsersIcon,
+      },
+    ],
+  },
+  {
+    name: "Suporte",
+    routes: [
+      {
+        title: "Configurações",
+        url: "/configuracoes",
+        icon: Settings2Icon,
+      },
+      {
+        title: "Suporte",
+        url: "/suporte",
+        icon: LifeBuoyIcon,
+      },
+    ],
+  },
+] as const;
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -90,8 +98,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        <NavGroup routes={routes.main} />
-        <NavGroup routes={routes.secondary} className="mt-auto" />
+        <NavSection sections={sections} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
