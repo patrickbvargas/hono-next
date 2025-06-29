@@ -66,7 +66,7 @@ export const DataTable = <TData, TValue>({
       isHeaderSticky
       sortDescriptor={sort}
       onSortChange={handleSort}
-      selectionMode="single"
+      selectionMode="multiple"
       bottomContent={pages > 1 && bottomContent}
       {...props}
     >
@@ -94,7 +94,9 @@ export const DataTable = <TData, TValue>({
           <TableRow key={row.id}>
             {row.getVisibleCells().map((cell) => (
               <TableCell key={cell.id}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                <span>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </span>
               </TableCell>
             ))}
           </TableRow>

@@ -9,7 +9,12 @@ import {
   DropdownMenu,
   DropdownTrigger,
 } from "@heroui/react";
-import { EllipsisIcon } from "lucide-react";
+import {
+  EllipsisIcon,
+  PencilLineIcon,
+  SquareArrowOutUpRightIcon,
+  TrashIcon,
+} from "lucide-react";
 import { formatter } from "~/shared/lib/formatter";
 import type { Employee } from "~/shared/types/employee";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -27,9 +32,10 @@ export const columns = [
     cell: ({ row }) => (
       <Link
         href={`/funcionarios/${row.original.slug}`}
-        isBlock
         size="sm"
+        underline="hover"
         color="foreground"
+        className="py-1.5"
       >
         {row.original.fullName}
       </Link>
@@ -72,11 +78,27 @@ export const columns = [
           </Button>
         </DropdownTrigger>
         <DropdownMenu aria-label="Actions">
-          <DropdownItem key="view" href={`/funcionarios/${row.original.slug}`}>
+          <DropdownItem
+            key="view"
+            href={`/funcionarios/${row.original.slug}`}
+            startContent={
+              <SquareArrowOutUpRightIcon size={16} className="opacity-60" />
+            }
+          >
             Visualizar
           </DropdownItem>
-          <DropdownItem key="edit">Editar</DropdownItem>
-          <DropdownItem key="delete" className="text-danger" color="danger">
+          <DropdownItem
+            key="edit"
+            startContent={<PencilLineIcon size={16} className="opacity-60" />}
+          >
+            Editar
+          </DropdownItem>
+          <DropdownItem
+            key="delete"
+            className="text-danger"
+            color="danger"
+            startContent={<TrashIcon size={16} className="opacity-60" />}
+          >
             Excluir
           </DropdownItem>
         </DropdownMenu>
