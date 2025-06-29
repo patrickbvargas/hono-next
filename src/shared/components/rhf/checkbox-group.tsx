@@ -2,8 +2,9 @@
 
 import {
   CheckboxGroup,
-  Checkbox,
+  Checkbox as CheckboxPrimitive,
   type CheckboxGroupProps,
+  type CheckboxProps,
 } from "@heroui/checkbox";
 import {
   useController,
@@ -18,7 +19,6 @@ interface RHFRootProps<T extends FieldValues>
 
 const Root = <T extends FieldValues>({
   name,
-  size,
   classNames,
   validationBehavior = "aria",
   ...props
@@ -35,14 +35,17 @@ const Root = <T extends FieldValues>({
       isInvalid={fieldState.invalid}
       errorMessage={fieldState.error?.message}
       validationBehavior={validationBehavior}
-      size={size}
       classNames={{
         ...classNames,
-        label: cn(size === "sm" && "text-sm", classNames?.label),
+        label: cn("text-sm", classNames?.label),
       }}
       {...props}
     />
   );
+};
+
+const Checkbox = ({ ...props }: CheckboxProps) => {
+  return <CheckboxPrimitive classNames={{ label: "text-sm" }} {...props} />;
 };
 
 export const RHFCheckboxGroup = {

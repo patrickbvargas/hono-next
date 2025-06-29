@@ -1,5 +1,6 @@
-import type { EmployeeRole, EmployeeType } from "~/shared/types/employee";
+import type { ClientType } from "~/shared/types/client";
 import type { EntityStatus } from "~/shared/types/drizzle";
+import type { EmployeeRole, EmployeeType } from "~/shared/types/employee";
 
 const EntityStatusAlias = {
   active: "Ativo",
@@ -16,6 +17,11 @@ const EmployeeTypeAlias = {
   admin_assistant: "Aux. Admin.",
 } satisfies Record<EmployeeType, string>;
 
+const ClientTypeAlias = {
+  pf: "PF",
+  pj: "PJ",
+} satisfies Record<ClientType, string>;
+
 function formatEntityStatus(status: EntityStatus) {
   return EntityStatusAlias[status] ?? status;
 }
@@ -26,6 +32,10 @@ function formatEmployeeRole(role: EmployeeRole) {
 
 function formatEmployeeType(type: EmployeeType) {
   return EmployeeTypeAlias[type] ?? type;
+}
+
+function formatClientType(type: ClientType) {
+  return ClientTypeAlias[type] ?? type;
 }
 
 function formatOAB(oab: string) {
@@ -43,10 +53,23 @@ function formatPercent(percent: number, decimals = 2) {
   });
 }
 
+function formatCnpjf(cnpjf: string) {
+  if (cnpjf.length === 11)
+    return cnpjf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  if (cnpjf.length === 14)
+    return cnpjf.replace(
+      /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
+      "$1.$2.$3/$4-$5",
+    );
+  return cnpjf;
+}
+
 export const formatter = {
   entityStatus: formatEntityStatus,
   employeeRole: formatEmployeeRole,
   employeeType: formatEmployeeType,
+  clientType: formatClientType,
   percent: formatPercent,
   oab: formatOAB,
+  cnpjf: formatCnpjf,
 };

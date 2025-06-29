@@ -6,6 +6,7 @@ import {
   Search,
   WrapperTitle,
 } from "~/shared/components";
+import { ROUTES } from "~/shared/constants/route";
 import { EmployeeTable } from "./components/table";
 import { EmployeeFilter } from "./components/filter";
 import type { Employee } from "~/shared/types/employee";
@@ -19,7 +20,7 @@ export const EmployeeList = async ({ employees, count }: EmployeeListProps) => {
   return (
     <Wrapper>
       <WrapperHeader>
-        <WrapperTitle title="Funcionários" />
+        <WrapperTitle title={ROUTES.employee.label} />
       </WrapperHeader>
       <WrapperBody>
         <div className="flex items-center gap-2">

@@ -13,12 +13,12 @@ import { useForm } from "react-hook-form";
 import { formatter } from "~/shared/lib/formatter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFilter, useIsMobile } from "~/shared/hooks";
+import { CLIENT_TYPES } from "~/shared/constants/client";
 import { zFilter, type Filter } from "../schemas/filter";
 import { getDefaultFilterValues } from "../utils/default";
-import { EMPLOYEE_ROLES, EMPLOYEE_TYPES } from "~/shared/constants/employee";
 import { Button, Popover, PopoverContent, PopoverTrigger } from "@heroui/react";
 
-export const EmployeeFilter = () => {
+export const ClientFilter = () => {
   const isMobile = useIsMobile();
   const { filters, handleFilters } = useFilter(filterParser);
   const methods = useForm<Filter>({
@@ -50,20 +50,10 @@ export const EmployeeFilter = () => {
           {...methods}
         >
           <RHFFieldset>
-            <RHFCheckboxGroup.Root<Filter> name="role" label="Perfil">
-              {EMPLOYEE_ROLES.map((role) => (
-                <RHFCheckboxGroup.Checkbox key={role} value={role}>
-                  {formatter.employeeRole(role)}
-                </RHFCheckboxGroup.Checkbox>
-              ))}
-            </RHFCheckboxGroup.Root>
-          </RHFFieldset>
-          <RHFDivider />
-          <RHFFieldset>
-            <RHFCheckboxGroup.Root<Filter> name="type" label="Função">
-              {EMPLOYEE_TYPES.map((type) => (
+            <RHFCheckboxGroup.Root<Filter> name="type" label="Tipo">
+              {CLIENT_TYPES.map((type) => (
                 <RHFCheckboxGroup.Checkbox key={type} value={type}>
-                  {formatter.employeeType(type)}
+                  {formatter.clientType(type)}
                 </RHFCheckboxGroup.Checkbox>
               ))}
             </RHFCheckboxGroup.Root>
