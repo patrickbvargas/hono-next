@@ -2,86 +2,34 @@
 
 import * as React from "react";
 import {
-  BoxIcon,
-  BriefcaseIcon,
-  DollarSignIcon,
-  LayoutDashboardIcon,
-  LifeBuoyIcon,
-  Settings2Icon,
-  UserIcon,
-  UsersIcon,
-} from "lucide-react";
-import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
 } from "~/shared/components";
 import Link from "next/link";
+import { BoxIcon } from "lucide-react";
 import { NavUser } from "./components/nav-user";
-import type { RouteSection } from "./types/route";
+import { ROUTES } from "~/shared/constants/route";
 import { NavSection } from "./components/nav-section";
+import type { RouteSection } from "~/shared/types/route";
 
 const sections: RouteSection[] = [
   {
     name: "Geral",
-    routes: [
-      {
-        title: "Dashboard",
-        url: "/dashboard",
-        icon: LayoutDashboardIcon,
-      },
-      {
-        title: "Clientes",
-        url: "/clientes",
-        icon: UserIcon,
-      },
-      {
-        title: "Contratos",
-        url: "/contratos",
-        icon: BriefcaseIcon,
-      },
-    ],
+    routes: [ROUTES.dashboard, ROUTES.client, ROUTES.contract],
   },
   {
     name: "Financeiro",
-    routes: [
-      {
-        title: "Honorários",
-        url: "/honorarios",
-        icon: DollarSignIcon,
-      },
-      {
-        title: "Remunerações",
-        url: "/remuneracoes",
-        icon: DollarSignIcon,
-      },
-    ],
+    routes: [ROUTES.fee, ROUTES.remuneration],
   },
   {
     name: "Equipe",
-    routes: [
-      {
-        title: "Funcionários",
-        url: "/funcionarios",
-        icon: UsersIcon,
-      },
-    ],
+    routes: [ROUTES.employee],
   },
   {
     name: "Suporte",
-    routes: [
-      {
-        title: "Configurações",
-        url: "/configuracoes",
-        icon: Settings2Icon,
-      },
-      {
-        title: "Suporte",
-        url: "/suporte",
-        icon: LifeBuoyIcon,
-      },
-    ],
+    routes: [ROUTES.setting, ROUTES.support],
   },
 ] as const;
 

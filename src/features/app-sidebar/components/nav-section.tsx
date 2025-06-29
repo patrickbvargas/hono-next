@@ -1,5 +1,5 @@
 import { usePathname } from "next/navigation";
-import type { RouteSection } from "../types/route";
+import type { RouteSection } from "~/shared/types/route";
 import { cn, Listbox, ListboxItem, ListboxSection } from "@heroui/react";
 
 interface NavigationProps {
@@ -25,14 +25,14 @@ export function NavSection({ sections }: NavigationProps) {
             className="last:mt-auto"
             classNames={{ group: "space-y-1" }}
           >
-            {({ title, url, icon: Icon }) => (
+            {({ label, url, icon: Icon }) => (
               <ListboxItem
-                key={title}
+                key={label}
                 href={url}
                 startContent={<Icon size={16} />}
                 className={cn(isActive(url) && "border-l-4 border-primary")}
               >
-                {title}
+                {label}
               </ListboxItem>
             )}
           </ListboxSection>

@@ -15,6 +15,7 @@ import {
   SquareArrowOutUpRightIcon,
   TrashIcon,
 } from "lucide-react";
+import { ROUTES } from "~/shared/constants/route";
 import { formatter } from "~/shared/lib/formatter";
 import type { Employee } from "~/shared/types/employee";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -31,7 +32,7 @@ export const columns = [
     header: "Nome",
     cell: ({ row }) => (
       <Link
-        href={`/funcionarios/${row.original.slug}`}
+        href={`${ROUTES.employee.url}/${row.original.slug}`}
         size="sm"
         underline="hover"
         color="foreground"
@@ -80,7 +81,7 @@ export const columns = [
         <DropdownMenu aria-label="Actions">
           <DropdownItem
             key="view"
-            href={`/funcionarios/${row.original.slug}`}
+            href={`${ROUTES.employee.url}/${row.original.slug}`}
             startContent={
               <SquareArrowOutUpRightIcon size={16} className="opacity-60" />
             }
