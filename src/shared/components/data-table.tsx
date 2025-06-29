@@ -65,7 +65,7 @@ export const DataTable = <TData, TValue>({
       isHeaderSticky
       sortDescriptor={sort}
       onSortChange={handleSort}
-      bottomContent={bottomContent}
+      bottomContent={pages > 1 && bottomContent}
       {...props}
     >
       <TableHeader>
