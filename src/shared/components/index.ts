@@ -4,3 +4,6 @@ export * from "./data-table";
 export * from "./search";
 export * from "./wrapper";
 export * from "./button-filter";
+export * from "./definition-item";
+export * from "./entity-details";
+export * from "./section";

@@ -1,10 +1,11 @@
 import * as React from "react";
 import { cn } from "@heroui/react";
+import { SidebarTrigger } from "./ui";
 
-function Wrapper({
+export const Wrapper = ({
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <div
       data-slot="wrapper"
@@ -12,25 +13,29 @@ function Wrapper({
       {...props}
     />
   );
-}
+};
 
-function WrapperHeader({
+export const WrapperHeader = ({
+  children,
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <div
       data-slot="wrapper-header"
-      className={cn("flex items-center gap-3", className)}
+      className={cn("flex items-center gap-3 h-12", className)}
       {...props}
-    />
+    >
+      <SidebarTrigger />
+      {children}
+    </div>
   );
-}
+};
 
-function WrapperBody({
+export const WrapperBody = ({
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <div
       data-slot="wrapper-content"
@@ -38,12 +43,12 @@ function WrapperBody({
       {...props}
     />
   );
-}
+};
 
-function WrapperFooter({
+export const WrapperFooter = ({
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <div
       data-slot="wrapper-footer"
@@ -51,6 +56,23 @@ function WrapperFooter({
       {...props}
     />
   );
-}
+};
 
-export { Wrapper, WrapperHeader, WrapperBody, WrapperFooter };
+interface WrapperTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
+  title: string;
+}
+export const WrapperTitle = ({
+  title,
+  className,
+  ...props
+}: WrapperTitleProps) => (
+  <h1
+    className={cn(
+      "max-w-full text-xl sm:text-1xl font-medium uppercase tracking-wider text-foreground sm:truncate",
+      className,
+    )}
+    {...props}
+  >
+    {title}
+  </h1>
+);

@@ -8,7 +8,7 @@ export const Content = ({
   return (
     <div
       data-slot="content"
-      className={cn("size-full overflow-auto p-4", className)}
+      className={cn("size-full overflow-auto p-6", className)}
       {...props}
     />
   );

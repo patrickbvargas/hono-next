@@ -4,27 +4,29 @@ import {
   WrapperBody,
   WrapperHeader,
   Search,
+  WrapperTitle,
 } from "~/shared/components";
-import { api } from "~/trpc/server";
 import { EmployeeTable } from "./components/table";
 import { EmployeeFilter } from "./components/filter";
-import type { QueryManyParams } from "./utils/query";
+import type { Employee } from "~/shared/types/employee";
 
-interface Props {
-  queryParams: QueryManyParams;
+interface EmployeeListProps {
+  employees: Employee[];
+  count: number;
 }
 
-export const EmployeeList = async ({ queryParams }: Props) => {
-  const { data, count } = await api.employees.getMany(queryParams);
-
+export const EmployeeList = async ({ employees, count }: EmployeeListProps) => {
   return (
     <Wrapper>
       <WrapperHeader>
-        <Search placeholder="Filtrar por Nome ou OAB..." />
-        <EmployeeFilter />
+        <WrapperTitle title="Funcionários" />
       </WrapperHeader>
       <WrapperBody>
-        <EmployeeTable data={data} totalCount={count} />
+        <div className="flex items-center gap-2">
+          <Search placeholder="Filtrar por Nome ou OAB..." />
+          <EmployeeFilter />
+        </div>
+        <EmployeeTable data={employees} totalCount={count} />
       </WrapperBody>
     </Wrapper>
   );

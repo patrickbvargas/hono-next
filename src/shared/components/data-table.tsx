@@ -62,9 +62,11 @@ export const DataTable = <TData, TValue>({
 
   return (
     <Table
+      removeWrapper
       isHeaderSticky
       sortDescriptor={sort}
       onSortChange={handleSort}
+      selectionMode="single"
       bottomContent={pages > 1 && bottomContent}
       {...props}
     >

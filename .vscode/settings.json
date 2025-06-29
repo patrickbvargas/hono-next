@@ -1,7 +1,7 @@
 {
   "files.exclude": {
     ".env": true,
-    ".next": true,
+    // ".next": true,
     "**/env.js": true,
     ".gitignore": true,
     ".pnpm-store": true,

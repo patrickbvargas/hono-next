@@ -123,7 +123,7 @@ function SidebarProvider({
           } as React.CSSProperties
         }
         className={cn(
-          "relative group/sidebar-wrapper bg-content1 flex min-h-svh w-full h-screen max-w-7xl mx-auto rounded-lg overflow-hidden",
+          "relative group/sidebar-wrapper bg-background flex min-h-svh w-full h-screen max-w-7xl mx-auto rounded-lg overflow-hidden",
           className,
         )}
         {...props}
@@ -242,6 +242,7 @@ function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
       data-sidebar="content"
       className={cn(
         "flex min-h-0 flex-1 flex-col gap-2 p-1 overflow-auto",
+        "border-r-1 border-default-50",
         className,
       )}
       {...props}
@@ -265,7 +266,8 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
     <main
       data-slot="sidebar-inset"
       className={cn(
-        "bg-background relative flex w-full flex-1 flex-col m-2 rounded-lg",
+        // "bg-background relative flex w-full flex-1 flex-col m-2 rounded-lg",
+        "w-full flex-1 p-4 px-6",
         "peer-data-[state=expanded]:ml-0",
         className,
       )}

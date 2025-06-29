@@ -1,6 +1,14 @@
 "use client";
 
-import { Chip } from "@heroui/chip";
+import {
+  Chip,
+  Link,
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@heroui/react";
 import { EllipsisIcon } from "lucide-react";
 import { formatter } from "~/shared/lib/formatter";
 import type { Employee } from "~/shared/types/employee";
@@ -16,6 +24,16 @@ const columnHelper = createColumnHelper<Employee>();
 export const columns = [
   columnHelper.accessor("fullName", {
     header: "Nome",
+    cell: ({ row }) => (
+      <Link
+        href={`/funcionarios/${row.original.slug}`}
+        isBlock
+        size="sm"
+        color="foreground"
+      >
+        {row.original.fullName}
+      </Link>
+    ),
     enableSorting: isSortable("fullName"),
   }),
   columnHelper.accessor("oabNumber", {
@@ -46,6 +64,23 @@ export const columns = [
   }),
   columnHelper.display({
     id: "actions",
-    cell: () => <EllipsisIcon size={16} className="opacity-60" />,
+    cell: ({ row }) => (
+      <Dropdown placement="bottom-end">
+        <DropdownTrigger>
+          <Button isIconOnly size="sm" variant="light">
+            <EllipsisIcon size={16} className="opacity-60 rotate-90" />
+          </Button>
+        </DropdownTrigger>
+        <DropdownMenu aria-label="Actions">
+          <DropdownItem key="view" href={`/funcionarios/${row.original.slug}`}>
+            Visualizar
+          </DropdownItem>
+          <DropdownItem key="edit">Editar</DropdownItem>
+          <DropdownItem key="delete" className="text-danger" color="danger">
+            Excluir
+          </DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+    ),
   }),
 ];

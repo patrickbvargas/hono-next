@@ -2,8 +2,8 @@ import "~/styles/globals.css";
 import type { Metadata } from "next";
 import { Providers } from "./providers";
 import { Geist } from "next/font/google";
-import { Content, Header, Sidebar } from "~/layouts";
 import { SidebarInset, SidebarProvider } from "~/shared/components";
+import { AppSidebar } from "~/features/app-sidebar";
 
 export const metadata: Metadata = {
   title: "Hono T3",
@@ -24,11 +24,8 @@ export default function RootLayout({
       <body className="antialiased dark:!bg-black">
         <Providers>
           <SidebarProvider>
-            <Sidebar />
-            <SidebarInset>
-              <Header />
-              <Content>{children}</Content>
-            </SidebarInset>
+            <AppSidebar />
+            <SidebarInset>{children}</SidebarInset>
           </SidebarProvider>
         </Providers>
       </body>

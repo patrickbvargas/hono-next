@@ -1,4 +1,10 @@
 import type { EmployeeRole, EmployeeType } from "~/shared/types/employee";
+import type { EntityStatus } from "~/shared/types/drizzle";
+
+const EntityStatusAlias = {
+  active: "Ativo",
+  inactive: "Inativo",
+} satisfies Record<EntityStatus, string>;
 
 const EmployeeRoleAlias = {
   user: "Usuário",
@@ -9,6 +15,10 @@ const EmployeeTypeAlias = {
   lawyer: "Advogado",
   admin_assistant: "Aux. Admin.",
 } satisfies Record<EmployeeType, string>;
+
+function formatEntityStatus(status: EntityStatus) {
+  return EntityStatusAlias[status] ?? status;
+}
 
 function formatEmployeeRole(role: EmployeeRole) {
   return EmployeeRoleAlias[role] ?? role;
@@ -34,6 +44,7 @@ function formatPercent(percent: number, decimals = 2) {
 }
 
 export const formatter = {
+  entityStatus: formatEntityStatus,
   employeeRole: formatEmployeeRole,
   employeeType: formatEmployeeType,
   percent: formatPercent,
