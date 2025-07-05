@@ -1,4 +1,6 @@
+import type React from "react";
+
 export type DefinitionItemData = {
   term: string;
-  definition: string | number;
+  definition: React.ReactNode;
 };

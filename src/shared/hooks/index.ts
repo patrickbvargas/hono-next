@@ -4,3 +4,4 @@ export * from "./use-pagination";
 export * from "./use-sort";
 export * from "./use-filter";
 export * from "./use-mobile";
+export * from "./use-entity-details";

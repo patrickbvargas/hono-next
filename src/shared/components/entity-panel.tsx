@@ -1,0 +1,105 @@
+import * as React from "react";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  DrawerFooter,
+  type DrawerProps,
+  type DrawerFooterProps,
+} from "@heroui/drawer";
+import {
+  Accordion,
+  AccordionItem,
+  type AccordionProps,
+} from "@heroui/accordion";
+import { cn } from "@heroui/react";
+import { Button } from "@heroui/button";
+import { DefinitionList } from "./definition-item";
+import { PenLineIcon, TrashIcon } from "lucide-react";
+import type { EntityPanelData } from "~/shared/types/entity-data";
+
+export const EntityPanelHeader = DrawerHeader;
+export const EntityPanelBody = DrawerBody;
+
+export const EntityPanel = ({ children, ...props }: DrawerProps) => {
+  return (
+    <Drawer
+      size="sm"
+      classNames={{
+        base: "overflow-y-visible",
+        wrapper: "app-container",
+      }}
+      motionProps={{
+        initial: { x: 100, opacity: 0 },
+        animate: { x: 0, opacity: 1, transition: { duration: 0.1 } },
+        exit: { x: 100, opacity: 0, transition: { duration: 0.1 } },
+      }}
+      {...props}
+    >
+      <DrawerContent>{children}</DrawerContent>
+    </Drawer>
+  );
+};
+
+export const EntityPanelFooter = ({
+  className,
+  ...props
+}: DrawerFooterProps) => {
+  return (
+    <DrawerFooter
+      className={cn(
+        "md:flex-col md:absolute md:top-6 md:-left-12 md:p-0",
+        className,
+      )}
+      {...props}
+    />
+  );
+};
+
+interface EntityPanelAccordionProps extends Omit<AccordionProps, "children"> {
+  data: EntityPanelData[];
+}
+export const EntityPanelAccordion = ({
+  data,
+  ...props
+}: EntityPanelAccordionProps) => {
+  return (
+    <Accordion
+      selectionMode="multiple"
+      defaultExpandedKeys={data.map(({ title }) => title)}
+      className="p-0"
+      itemClasses={{
+        title: "text-xs font-semibold uppercase tracking-wider",
+        content: "mb-3",
+      }}
+      {...props}
+    >
+      {data.map(({ title, data }) => (
+        <AccordionItem key={title} title={title}>
+          <DefinitionList data={data} />
+        </AccordionItem>
+      ))}
+    </Accordion>
+  );
+};
+
+interface EntityPanelActionsProps extends DrawerFooterProps {
+  onEdit: () => void;
+  onDelete: () => void;
+}
+export const EntityPanelActions = ({
+  onEdit,
+  onDelete,
+}: EntityPanelActionsProps) => {
+  return (
+    <React.Fragment>
+      <Button isIconOnly onPress={onEdit}>
+        <PenLineIcon size={16} className="opacity-60" />
+      </Button>
+      <Button isIconOnly color="danger" onPress={onDelete}>
+        <TrashIcon size={16} className="opacity-60" />
+      </Button>
+    </React.Fragment>
+  );
+};

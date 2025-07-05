@@ -123,7 +123,7 @@ function SidebarProvider({
           } as React.CSSProperties
         }
         className={cn(
-          "relative group/sidebar-wrapper bg-background flex min-h-svh w-full h-screen max-w-7xl mx-auto rounded-lg overflow-hidden",
+          "relative group/sidebar-wrapper bg-background flex app-container",
           className,
         )}
         {...props}

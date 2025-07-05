@@ -3,6 +3,8 @@ import { cn } from "@heroui/react";
 import { SidebarTrigger } from "./ui";
 
 export const Wrapper = ({
+  title,
+  children,
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
@@ -11,7 +13,13 @@ export const Wrapper = ({
       data-slot="wrapper"
       className={cn("flex flex-col gap-3", className)}
       {...props}
-    />
+    >
+      <div className="flex items-center gap-2 h-12">
+        <SidebarTrigger />
+        {title && <WrapperTitle title={title} />}
+      </div>
+      {children}
+    </div>
   );
 };
 
@@ -23,10 +31,9 @@ export const WrapperHeader = ({
   return (
     <div
       data-slot="wrapper-header"
-      className={cn("flex items-center gap-3 h-12", className)}
+      className={cn("flex items-center gap-3", className)}
       {...props}
     >
-      <SidebarTrigger />
       {children}
     </div>
   );

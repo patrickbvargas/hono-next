@@ -1,14 +1,17 @@
+"use client";
+
 import * as React from "react";
 import {
   Wrapper,
   WrapperBody,
   WrapperHeader,
   Search,
-  WrapperTitle,
 } from "~/shared/components";
-import { ClientTable } from "./components/table";
+import { useEntityDetails } from "~/shared/hooks";
 import { ROUTES } from "~/shared/constants/route";
+import { ClientTable } from "./components/table";
 import { ClientFilter } from "./components/filter";
+import { ClientDetails } from "./components/details";
 import type { Client } from "~/shared/types/client";
 
 interface ClientListProps {
@@ -16,18 +19,27 @@ interface ClientListProps {
   count: number;
 }
 
-export const ClientList = async ({ clients, count }: ClientListProps) => {
+export const ClientList = ({ clients, count }: ClientListProps) => {
+  const { isOpen, onOpenChange, selectedItem, handleSelectItem } =
+    useEntityDetails<Client>();
+
   return (
-    <Wrapper>
+    <Wrapper title={ROUTES.client.label}>
       <WrapperHeader>
-        <WrapperTitle title={ROUTES.client.label} />
+        <Search placeholder="Filtrar por Nome..." />
+        <ClientFilter />
       </WrapperHeader>
       <WrapperBody>
-        <div className="flex items-center gap-2">
-          <Search placeholder="Filtrar por Nome..." />
-          <ClientFilter />
-        </div>
-        <ClientTable data={clients} totalCount={count} />
+        <ClientTable
+          clients={clients}
+          totalCount={count}
+          onSelectClient={handleSelectItem}
+        />
+        <ClientDetails
+          client={selectedItem}
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+        />
       </WrapperBody>
     </Wrapper>
   );

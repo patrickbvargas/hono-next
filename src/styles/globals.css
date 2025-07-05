@@ -12,6 +12,12 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+@layer components {
+  .app-container {
+    @apply container mx-auto !max-w-7xl min-h-svh h-screen overflow-hidden outline-hidden rounded-large shadow-small;
+  }
+}
+
 /* @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

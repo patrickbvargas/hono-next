@@ -13,7 +13,7 @@ export const DefinitionList = ({
   return (
     <dl
       className={cn(
-        "flex flex-col gap-1 text-foreground text-small font-normal",
+        "grid grid-cols-[100px_1fr] items-center gap-y-4 text-small font-normal",
         className,
       )}
       {...props}
@@ -27,7 +27,7 @@ export const DefinitionList = ({
 
 const DefinitionItem = ({ term, definition }: DefinitionItemData) => (
   <React.Fragment>
-    <dt className="truncate font-semibold">{term}</dt>
-    <dd className="not-last-of-type:mb-2">{definition}</dd>
+    <dt className="text-foreground/60">{term}</dt>
+    <dd>{definition}</dd>
   </React.Fragment>
 );
