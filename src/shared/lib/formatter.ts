@@ -1,5 +1,6 @@
 import type { ClientType } from "~/shared/types/client";
 import type { EntityStatus } from "~/shared/types/drizzle";
+import type { ContractLegalArea } from "~/shared/types/contract";
 import type { EmployeeRole, EmployeeType } from "~/shared/types/employee";
 
 const EntityStatusAlias = {
@@ -22,6 +23,14 @@ const ClientTypeAlias = {
   pj: "PJ",
 } satisfies Record<ClientType, string>;
 
+const ContractLegalAreaAlias = {
+  civil: "Civil",
+  family: "Familiar",
+  labor: "Trabalhista",
+  other: "Outro",
+  social_security: "Previdenciário",
+} satisfies Record<ContractLegalArea, string>;
+
 function formatEntityStatus(status: EntityStatus) {
   return EntityStatusAlias[status] ?? status;
 }
@@ -36,6 +45,10 @@ function formatEmployeeType(type: EmployeeType) {
 
 function formatClientType(type: ClientType) {
   return ClientTypeAlias[type] ?? type;
+}
+
+function formatContractLegalArea(legalArea: ContractLegalArea) {
+  return ContractLegalAreaAlias[legalArea] ?? legalArea;
 }
 
 function formatOAB(oab: string) {
@@ -69,6 +82,7 @@ export const formatter = {
   employeeRole: formatEmployeeRole,
   employeeType: formatEmployeeType,
   clientType: formatClientType,
+  contractLegalArea: formatContractLegalArea,
   percent: formatPercent,
   oab: formatOAB,
   cnpjf: formatCnpjf,

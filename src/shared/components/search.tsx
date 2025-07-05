@@ -24,7 +24,7 @@ export const Search = ({ className, ...props }: InputProps) => {
       onValueChange={handleInputSearch}
       isClearable
       startContent={<SearchIcon size={16} className="opacity-60" />}
-      className={cn("md:max-w-80", className)}
+      className={cn("md:max-w-96", className)}
       aria-label="Search"
       {...props}
     />

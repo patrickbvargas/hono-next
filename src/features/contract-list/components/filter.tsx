@@ -16,10 +16,10 @@ import { useFilter, useIsMobile } from "~/shared/hooks";
 import { zFilter, type Filter } from "../schemas/filter";
 import { getDefaultFilterValues } from "../utils/default";
 import { ENTITY_STATUS } from "~/shared/constants/entity";
-import { EMPLOYEE_ROLES, EMPLOYEE_TYPES } from "~/shared/constants/employee";
+import { CONTRACT_LEGAL_AREAS } from "~/shared/constants/contract";
 import { Button, Popover, PopoverContent, PopoverTrigger } from "@heroui/react";
 
-export const EmployeeFilter = () => {
+export const ContractFilter = () => {
   const isMobile = useIsMobile();
   const { filters, handleFilters } = useFilter(filterParser);
   const methods = useForm<Filter>({
@@ -51,24 +51,15 @@ export const EmployeeFilter = () => {
           {...methods}
         >
           <RHFFieldset>
-            <RHFCheckboxGroup.Root<Filter> name="role" label="Perfil">
-              {EMPLOYEE_ROLES.map((role) => (
-                <RHFCheckboxGroup.Checkbox key={role} value={role}>
-                  {formatter.employeeRole(role)}
+            <RHFCheckboxGroup.Root<Filter> name="legalArea" label="Área">
+              {CONTRACT_LEGAL_AREAS.map((area) => (
+                <RHFCheckboxGroup.Checkbox key={area} value={area}>
+                  {formatter.contractLegalArea(area)}
                 </RHFCheckboxGroup.Checkbox>
               ))}
             </RHFCheckboxGroup.Root>
           </RHFFieldset>
           <RHFDivider />
-          <RHFFieldset>
-            <RHFCheckboxGroup.Root<Filter> name="type" label="Função">
-              {EMPLOYEE_TYPES.map((type) => (
-                <RHFCheckboxGroup.Checkbox key={type} value={type}>
-                  {formatter.employeeType(type)}
-                </RHFCheckboxGroup.Checkbox>
-              ))}
-            </RHFCheckboxGroup.Root>
-          </RHFFieldset>
           <RHFFieldset>
             <RHFCheckboxGroup.Root<Filter> name="status" label="Status">
               {ENTITY_STATUS.map((status) => (
