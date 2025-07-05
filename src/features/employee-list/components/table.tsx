@@ -5,7 +5,7 @@ import { Chip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
 import type { Employee } from "~/shared/types/employee";
 import { createColumnHelper } from "@tanstack/react-table";
-import { ButtonEntityRow, DataTable } from "~/shared/components";
+import { ButtonEntityRow, ChipStatus, DataTable } from "~/shared/components";
 import { EMPLOYEE_SORT_COLUMNS } from "~/shared/constants/employee";
 
 const isSortable = (column: keyof Employee) =>
@@ -62,6 +62,11 @@ export const EmployeeTable = ({
           <Chip size="sm">{formatter.employeeRole(row.original.role)}</Chip>
         ),
         enableSorting: isSortable("role"),
+      }),
+      columnHelper.accessor("status", {
+        header: "Status",
+        cell: ({ row }) => <ChipStatus status={row.original.status} />,
+        enableSorting: isSortable("status"),
       }),
     ];
   }, []);

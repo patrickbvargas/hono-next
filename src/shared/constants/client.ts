@@ -12,4 +12,5 @@ export const CLIENT_SORT_COLUMNS = [
   "mobilePhone",
   "type",
   "contractCount",
+  "status",
 ] as const satisfies readonly ClientSortColumn[];

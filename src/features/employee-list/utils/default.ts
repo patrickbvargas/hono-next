@@ -4,5 +4,6 @@ export const getDefaultFilterValues = (): Filter => {
   return {
     role: [],
     type: [],
+    status: [],
   };
 };

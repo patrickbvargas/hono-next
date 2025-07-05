@@ -7,21 +7,23 @@ import { TRPCError } from "@trpc/server";
 import type { Client } from "~/shared/types/client";
 import { clients, contracts } from "~/server/db/schemas";
 import { SORT_DIRECTIONS } from "~/shared/constants/sort";
+import { ENTITY_STATUS } from "~/shared/constants/entity";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { and, eq, sql, inArray, count, ilike, or, desc } from "drizzle-orm";
+import { and, eq, sql, inArray, count, ilike, desc } from "drizzle-orm";
 import { CLIENT_TYPES, CLIENT_SORT_COLUMNS } from "~/shared/constants/client";
 
 const zQueryOneParams = z.object({
   slug: z.string(),
 });
 
-const zQueryManyParams = zSearchParser.merge(zPaginationParser).merge(
-  z.object({
-    column: z.enum(CLIENT_SORT_COLUMNS),
-    direction: z.enum(SORT_DIRECTIONS),
-    type: z.enum(CLIENT_TYPES).array(),
-  }),
-);
+const zQueryManyParams = z.object({
+  ...zSearchParser.shape,
+  ...zPaginationParser.shape,
+  column: z.enum(CLIENT_SORT_COLUMNS),
+  direction: z.enum(SORT_DIRECTIONS),
+  type: z.enum(CLIENT_TYPES).array(),
+  status: z.enum(ENTITY_STATUS).array(),
+});
 
 export type QueryManyParams = z.infer<typeof zQueryManyParams>;
 export type QueryOneParams = z.infer<typeof zQueryOneParams>;
@@ -64,7 +66,7 @@ export const clientRouter = createTRPCRouter({
     .query(
       async ({
         ctx: { db },
-        input: { query, page, limit, column, direction, type },
+        input: { query, page, limit, column, direction, type, status },
       }): Promise<{ count: number; data: Client[] }> => {
         const sort =
           direction === "descending"
@@ -76,6 +78,7 @@ export const clientRouter = createTRPCRouter({
         const filters = and(
           ilike(clients.fullName, `%${query}%`),
           type.length > 0 ? inArray(clients.type, type) : undefined,
+          status.length > 0 ? inArray(clients.status, status) : undefined,
         );
 
         const [rawCount, rawData] = await Promise.all([

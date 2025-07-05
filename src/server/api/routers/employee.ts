@@ -11,6 +11,7 @@ import { z } from "zod/v4";
 import { TRPCError } from "@trpc/server";
 import type { Employee } from "~/shared/types/employee";
 import { SORT_DIRECTIONS } from "~/shared/constants/sort";
+import { ENTITY_STATUS } from "~/shared/constants/entity";
 import { contractEmployees, employees } from "~/server/db/schemas";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { and, eq, sql, inArray, count, ilike, or, desc } from "drizzle-orm";
@@ -19,14 +20,15 @@ const zQueryOneParams = z.object({
   slug: z.string(),
 });
 
-const zQueryManyParams = zSearchParser.merge(zPaginationParser).merge(
-  z.object({
-    column: z.enum(EMPLOYEE_SORT_COLUMNS),
-    direction: z.enum(SORT_DIRECTIONS),
-    type: z.enum(EMPLOYEE_TYPES).array(),
-    role: z.enum(EMPLOYEE_ROLES).array(),
-  }),
-);
+const zQueryManyParams = z.object({
+  ...zSearchParser.shape,
+  ...zPaginationParser.shape,
+  column: z.enum(EMPLOYEE_SORT_COLUMNS),
+  direction: z.enum(SORT_DIRECTIONS),
+  type: z.enum(EMPLOYEE_TYPES).array(),
+  role: z.enum(EMPLOYEE_ROLES).array(),
+  status: z.enum(ENTITY_STATUS).array(),
+});
 
 export type QueryManyParams = z.infer<typeof zQueryManyParams>;
 export type QueryOneParams = z.infer<typeof zQueryOneParams>;
@@ -81,7 +83,7 @@ export const employeeRouter = createTRPCRouter({
     .query(
       async ({
         ctx: { db },
-        input: { query, page, limit, column, direction, type, role },
+        input: { query, page, limit, column, direction, type, role, status },
       }): Promise<{ count: number; data: Employee[] }> => {
         const sort =
           direction === "descending"
@@ -97,6 +99,7 @@ export const employeeRouter = createTRPCRouter({
           ),
           type.length > 0 ? inArray(employees.type, type) : undefined,
           role.length > 0 ? inArray(employees.role, role) : undefined,
+          status.length > 0 ? inArray(employees.status, status) : undefined,
         );
 
         const [rawCount, rawData] = await Promise.all([

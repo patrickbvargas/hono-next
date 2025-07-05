@@ -10,9 +10,8 @@ export const ChipStatus = ({ status, ...props }: ChipStatusProps) => {
   return (
     <Chip
       size="sm"
-      variant="dot"
-      color="success"
-      className="border-none -ml-1.5"
+      variant="flat"
+      color={status === "active" ? "success" : "default"}
       {...props}
     >
       {formatter.entityStatus(status)}

@@ -21,4 +21,5 @@ export const EMPLOYEE_SORT_COLUMNS = [
   "role",
   "type",
   "contractCount",
+  "status",
 ] as const satisfies readonly EmployeeSortColumn[];

@@ -17,6 +17,7 @@ import { zFilter, type Filter } from "../schemas/filter";
 import { getDefaultFilterValues } from "../utils/default";
 import { EMPLOYEE_ROLES, EMPLOYEE_TYPES } from "~/shared/constants/employee";
 import { Button, Popover, PopoverContent, PopoverTrigger } from "@heroui/react";
+import { ENTITY_STATUS } from "~/shared/constants/entity";
 
 export const EmployeeFilter = () => {
   const isMobile = useIsMobile();
@@ -64,6 +65,15 @@ export const EmployeeFilter = () => {
               {EMPLOYEE_TYPES.map((type) => (
                 <RHFCheckboxGroup.Checkbox key={type} value={type}>
                   {formatter.employeeType(type)}
+                </RHFCheckboxGroup.Checkbox>
+              ))}
+            </RHFCheckboxGroup.Root>
+          </RHFFieldset>
+          <RHFFieldset>
+            <RHFCheckboxGroup.Root<Filter> name="status" label="Status">
+              {ENTITY_STATUS.map((status) => (
+                <RHFCheckboxGroup.Checkbox key={status} value={status}>
+                  {formatter.entityStatus(status)}
                 </RHFCheckboxGroup.Checkbox>
               ))}
             </RHFCheckboxGroup.Root>

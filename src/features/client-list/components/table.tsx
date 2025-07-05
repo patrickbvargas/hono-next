@@ -6,7 +6,7 @@ import { formatter } from "~/shared/lib/formatter";
 import type { Client } from "~/shared/types/client";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CLIENT_SORT_COLUMNS } from "~/shared/constants/client";
-import { ButtonEntityRow, DataTable } from "~/shared/components";
+import { ButtonEntityRow, ChipStatus, DataTable } from "~/shared/components";
 
 const isSortable = (column: keyof Client) =>
   CLIENT_SORT_COLUMNS.includes(column as (typeof CLIENT_SORT_COLUMNS)[number]);
@@ -54,6 +54,11 @@ export const ClientTable = ({
           <Chip size="sm">{formatter.clientType(row.original.type)}</Chip>
         ),
         enableSorting: isSortable("type"),
+      }),
+      columnHelper.accessor("status", {
+        header: "Status",
+        cell: ({ row }) => <ChipStatus status={row.original.status} />,
+        enableSorting: isSortable("status"),
       }),
     ];
   }, []);
