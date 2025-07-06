@@ -1,3 +1,4 @@
+import type { RevenueType } from "~/shared/types/revenue";
 import type { ClientType } from "~/shared/types/client";
 import type { EntityStatus } from "~/shared/types/drizzle";
 import type { ContractLegalArea } from "~/shared/types/contract";
@@ -31,6 +32,12 @@ const ContractLegalAreaAlias = {
   social_security: "Previdenciário",
 } satisfies Record<ContractLegalArea, string>;
 
+const RevenueTypeAlias = {
+  administrative: "Administrativo",
+  judicial: "Judicial",
+  compliance: "Sucumbência",
+} satisfies Record<RevenueType, string>;
+
 function formatEntityStatus(status: EntityStatus) {
   return EntityStatusAlias[status] ?? status;
 }
@@ -49,6 +56,10 @@ function formatClientType(type: ClientType) {
 
 function formatContractLegalArea(legalArea: ContractLegalArea) {
   return ContractLegalAreaAlias[legalArea] ?? legalArea;
+}
+
+function formatRevenueType(type: RevenueType) {
+  return RevenueTypeAlias[type] ?? type;
 }
 
 function formatOAB(oab: string) {
@@ -77,13 +88,31 @@ function formatCnpjf(cnpjf: string) {
   return cnpjf;
 }
 
+function formatDate(isoDate: string) {
+  const [year, month, day] = isoDate.split("-");
+
+  return `${day}/${month}/${year}`;
+}
+
+function formatCurrency(value: number, decimals = 2) {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
+}
+
 export const formatter = {
   entityStatus: formatEntityStatus,
   employeeRole: formatEmployeeRole,
   employeeType: formatEmployeeType,
   clientType: formatClientType,
   contractLegalArea: formatContractLegalArea,
+  revenueType: formatRevenueType,
   percent: formatPercent,
   oab: formatOAB,
   cnpjf: formatCnpjf,
+  date: formatDate,
+  currency: formatCurrency,
 };
