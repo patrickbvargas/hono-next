@@ -1,6 +1,7 @@
 import { feeRouter } from "./routers/fee";
 import { contractRouter } from "./routers/contract";
 import { clientRouter } from "~/server/api/routers/client";
+import { remunerationRouter } from "./routers/remuneration";
 import { employeeRouter } from "~/server/api/routers/employee";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   clients: clientRouter,
   contracts: contractRouter,
   fees: feeRouter,
+  remunerations: remunerationRouter,
 });
 
 // export type definition of API
