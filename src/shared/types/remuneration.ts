@@ -5,7 +5,7 @@ import type { ContractLegalArea } from "./contract";
 
 type RemunerationTable = InferSelectModel<typeof remunerations>;
 
-export type Remuneration = Pick<
+export type RemunerationSummary = Pick<
   RemunerationTable,
   "id" | "value" | "paymentDate" | "remunerationPercent"
 > & {
@@ -15,4 +15,4 @@ export type Remuneration = Pick<
   employee: string;
 };
 
-export type RemunerationSortColumn = keyof Remuneration;
+export type RemunerationSortColumn = keyof RemunerationSummary;

@@ -9,12 +9,12 @@ import {
   EntityPanelHeader,
 } from "~/shared/components";
 import { formatter } from "~/shared/lib/formatter";
-import type { Employee } from "~/shared/types/employee";
+import type { EmployeeSummary } from "~/shared/types/employee";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
 interface EmployeeDetailsProps
   extends Omit<React.ComponentProps<typeof EntityPanel>, "children"> {
-  employee: Employee | null;
+  employee: EmployeeSummary | null;
 }
 
 export const EmployeeDetails = ({

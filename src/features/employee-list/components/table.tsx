@@ -3,20 +3,20 @@
 import * as React from "react";
 import { Chip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
-import type { Employee } from "~/shared/types/employee";
 import { createColumnHelper } from "@tanstack/react-table";
+import type { EmployeeSummary } from "~/shared/types/employee";
 import { ButtonEntityRow, ChipStatus, DataTable } from "~/shared/components";
 import { EMPLOYEE_SORT_COLUMNS } from "~/shared/constants/employee";
 
-const isSortable = (column: keyof Employee) =>
+const isSortable = (column: keyof EmployeeSummary) =>
   EMPLOYEE_SORT_COLUMNS.includes(
     column as (typeof EMPLOYEE_SORT_COLUMNS)[number],
   );
 
 interface EmployeeTableProps {
-  employees: Employee[];
+  employees: EmployeeSummary[];
   totalCount: number;
-  onSelectEmployee: (employee: Employee) => void;
+  onSelectEmployee: (employee: EmployeeSummary) => void;
 }
 
 export const EmployeeTable = ({
@@ -25,7 +25,7 @@ export const EmployeeTable = ({
   onSelectEmployee,
 }: EmployeeTableProps) => {
   const columns = React.useMemo(() => {
-    const columnHelper = createColumnHelper<Employee>();
+    const columnHelper = createColumnHelper<EmployeeSummary>();
 
     return [
       columnHelper.accessor("fullName", {

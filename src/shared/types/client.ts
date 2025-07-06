@@ -3,19 +3,12 @@ import type { InferSelectModel } from "drizzle-orm";
 
 type ClientTable = InferSelectModel<typeof clients>;
 
-export type Client = Pick<
+export type ClientSummary = Pick<
   ClientTable,
-  | "id"
-  | "fullName"
-  | "cnpjf"
-  | "email"
-  | "mobilePhone"
-  | "type"
-  | "slug"
-  | "status"
+  "id" | "fullName" | "cnpjf" | "email" | "type" | "status"
 > & {
   contractCount: number;
 };
 
-export type ClientType = Client["type"];
-export type ClientSortColumn = keyof Client;
+export type ClientType = ClientSummary["type"];
+export type ClientSortColumn = keyof ClientSummary;

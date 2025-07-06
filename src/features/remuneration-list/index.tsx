@@ -12,10 +12,10 @@ import { ROUTES } from "~/shared/constants/route";
 import { RemunerationTable } from "./components/table";
 import { RemunerationFilter } from "./components/filter";
 import { RemunerationDetails } from "./components/details";
-import type { Remuneration } from "~/shared/types/remuneration";
+import type { RemunerationSummary } from "~/shared/types/remuneration";
 
 interface RemunerationListProps {
-  remunerations: Remuneration[];
+  remunerations: RemunerationSummary[];
   count: number;
 }
 
@@ -24,7 +24,7 @@ export const RemunerationList = ({
   count,
 }: RemunerationListProps) => {
   const { isOpen, onOpenChange, selectedItem, handleSelectItem } =
-    useEntityDetails<Remuneration>();
+    useEntityDetails<RemunerationSummary>();
 
   return (
     <Wrapper title={ROUTES.remuneration.label}>

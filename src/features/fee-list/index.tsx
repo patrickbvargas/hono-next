@@ -12,16 +12,16 @@ import { ROUTES } from "~/shared/constants/route";
 import { FeeTable } from "./components/table";
 import { FeeFilter } from "./components/filter";
 import { FeeDetails } from "./components/details";
-import type { Fee } from "~/shared/types/fee";
+import type { FeeSummary } from "~/shared/types/fee";
 
 interface FeeListProps {
-  fees: Fee[];
+  fees: FeeSummary[];
   count: number;
 }
 
 export const FeeList = ({ fees, count }: FeeListProps) => {
   const { isOpen, onOpenChange, selectedItem, handleSelectItem } =
-    useEntityDetails<Fee>();
+    useEntityDetails<FeeSummary>();
 
   return (
     <Wrapper title={ROUTES.fee.label}>

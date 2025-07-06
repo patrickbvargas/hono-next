@@ -3,13 +3,13 @@ import type { InferSelectModel } from "drizzle-orm";
 
 type ContractTable = InferSelectModel<typeof contracts>;
 
-export type Contract = Pick<
+export type ContractSummary = Pick<
   ContractTable,
-  "id" | "identification" | "feePercent" | "legalArea" | "slug" | "status"
+  "id" | "identification" | "feePercent" | "legalArea" | "status"
 > & {
   client: string;
   lawyer: string;
 };
 
-export type ContractLegalArea = Contract["legalArea"];
-export type ContractSortColumn = keyof Contract;
+export type ContractLegalArea = ContractSummary["legalArea"];
+export type ContractSortColumn = keyof ContractSummary;

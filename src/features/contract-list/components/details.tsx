@@ -9,12 +9,12 @@ import {
   EntityPanelHeader,
 } from "~/shared/components";
 import { formatter } from "~/shared/lib/formatter";
-import type { Contract } from "~/shared/types/contract";
+import type { ContractSummary } from "~/shared/types/contract";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
 interface ContractDetailsProps
   extends Omit<React.ComponentProps<typeof EntityPanel>, "children"> {
-  contract: Contract | null;
+  contract: ContractSummary | null;
 }
 
 export const ContractDetails = ({

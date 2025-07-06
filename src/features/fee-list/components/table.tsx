@@ -2,24 +2,24 @@
 
 import * as React from "react";
 import { Chip } from "@heroui/react";
-import type { Fee } from "~/shared/types/fee";
 import { formatter } from "~/shared/lib/formatter";
+import type { FeeSummary } from "~/shared/types/fee";
 import { createColumnHelper } from "@tanstack/react-table";
 import { FEE_SORT_COLUMNS } from "~/shared/constants/fee";
 import { ButtonEntityRow, DataTable } from "~/shared/components";
 
-const isSortable = (column: keyof Fee) =>
+const isSortable = (column: keyof FeeSummary) =>
   FEE_SORT_COLUMNS.includes(column as (typeof FEE_SORT_COLUMNS)[number]);
 
 interface FeeTableProps {
-  fees: Fee[];
+  fees: FeeSummary[];
   totalCount: number;
-  onSelectFee: (fee: Fee) => void;
+  onSelectFee: (fee: FeeSummary) => void;
 }
 
 export const FeeTable = ({ fees, totalCount, onSelectFee }: FeeTableProps) => {
   const columns = React.useMemo(() => {
-    const columnHelper = createColumnHelper<Fee>();
+    const columnHelper = createColumnHelper<FeeSummary>();
 
     return [
       columnHelper.accessor("contract", {

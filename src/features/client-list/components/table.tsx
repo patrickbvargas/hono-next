@@ -3,18 +3,18 @@
 import * as React from "react";
 import { Chip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
-import type { Client } from "~/shared/types/client";
+import type { ClientSummary } from "~/shared/types/client";
 import { createColumnHelper } from "@tanstack/react-table";
 import { CLIENT_SORT_COLUMNS } from "~/shared/constants/client";
 import { ButtonEntityRow, ChipStatus, DataTable } from "~/shared/components";
 
-const isSortable = (column: keyof Client) =>
+const isSortable = (column: keyof ClientSummary) =>
   CLIENT_SORT_COLUMNS.includes(column as (typeof CLIENT_SORT_COLUMNS)[number]);
 
 interface ClientTableProps {
-  clients: Client[];
+  clients: ClientSummary[];
   totalCount: number;
-  onSelectClient: (client: Client) => void;
+  onSelectClient: (client: ClientSummary) => void;
 }
 
 export const ClientTable = ({
@@ -23,7 +23,7 @@ export const ClientTable = ({
   onSelectClient,
 }: ClientTableProps) => {
   const columns = React.useMemo(() => {
-    const columnHelper = createColumnHelper<Client>();
+    const columnHelper = createColumnHelper<ClientSummary>();
 
     return [
       columnHelper.accessor("fullName", {

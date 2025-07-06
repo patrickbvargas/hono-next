@@ -9,7 +9,6 @@ export const CLIENT_SORT_COLUMNS = [
   "fullName",
   "cnpjf",
   "email",
-  "mobilePhone",
   "type",
   "contractCount",
   "status",

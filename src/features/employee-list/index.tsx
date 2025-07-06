@@ -12,16 +12,16 @@ import { ROUTES } from "~/shared/constants/route";
 import { EmployeeTable } from "./components/table";
 import { EmployeeFilter } from "./components/filter";
 import { EmployeeDetails } from "./components/details";
-import type { Employee } from "~/shared/types/employee";
+import type { EmployeeSummary } from "~/shared/types/employee";
 
 interface EmployeeListProps {
-  employees: Employee[];
+  employees: EmployeeSummary[];
   count: number;
 }
 
 export const EmployeeList = ({ employees, count }: EmployeeListProps) => {
   const { isOpen, onOpenChange, selectedItem, handleSelectItem } =
-    useEntityDetails<Employee>();
+    useEntityDetails<EmployeeSummary>();
 
   return (
     <Wrapper title={ROUTES.employee.label}>

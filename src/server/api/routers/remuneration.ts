@@ -11,16 +11,17 @@ import {
   zSearchParser,
 } from "~/shared/schemas/query-parser";
 import { z } from "zod/v4";
-import { SORT_DIRECTIONS } from "~/shared/constants/sort";
 import { REVENUE_TYPES } from "~/shared/constants/revenue";
-import type { Remuneration } from "~/shared/types/remuneration";
+import { SORT_DIRECTIONS } from "~/shared/constants/sort";
 import { CONTRACT_LEGAL_AREAS } from "~/shared/constants/contract";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import type { RemunerationSummary } from "~/shared/types/remuneration";
+import type { QueryManyFields, QueryManyReturnType } from "../types/query";
 import { REMUNERATION_SORT_COLUMNS } from "~/shared/constants/remuneration";
 import { and, eq, inArray, count, ilike, or, desc, SQL } from "drizzle-orm";
 
 const zQueryOneParams = z.object({
-  slug: z.string(),
+  id: z.string(),
 });
 
 const zQueryManyParams = z.object({
@@ -35,7 +36,52 @@ const zQueryManyParams = z.object({
 export type QueryManyParams = z.infer<typeof zQueryManyParams>;
 export type QueryOneParams = z.infer<typeof zQueryOneParams>;
 
-const remunerationFields: Record<keyof Remuneration, any> = {
+function getFilters({
+  query,
+  legalArea,
+  revenueType,
+}: Pick<QueryManyParams, "query" | "legalArea" | "revenueType">) {
+  const filters: (SQL | undefined)[] = [];
+
+  if (query)
+    filters.push(
+      or(
+        ilike(contracts.identification, `%${query}%`),
+        ilike(employees.fullName, `%${query}%`),
+      ),
+    );
+
+  if (legalArea.length > 0)
+    filters.push(inArray(contracts.legalArea, legalArea));
+
+  if (revenueType.length > 0) filters.push(inArray(revenues.type, revenueType));
+
+  return filters.length > 0 ? and(...filters) : undefined;
+}
+
+function getSort({
+  column,
+  direction,
+}: Pick<QueryManyParams, "column" | "direction">) {
+  return direction === "descending"
+    ? desc(selectFields[column])
+    : selectFields[column];
+}
+
+function getJoinRules() {
+  return {
+    fees: eq(fees.id, remunerations.feeId),
+    revenues: eq(revenues.id, fees.revenueId),
+    contractEmployees: eq(
+      contractEmployees.id,
+      remunerations.contractEmployeeId,
+    ),
+    contracts: eq(contracts.id, contractEmployees.contractId),
+    employees: eq(employees.id, contractEmployees.employeeId),
+  };
+}
+
+const selectFields = {
   id: remunerations.id,
   paymentDate: remunerations.paymentDate,
   value: remunerations.value,
@@ -44,7 +90,7 @@ const remunerationFields: Record<keyof Remuneration, any> = {
   legalArea: contracts.legalArea,
   revenueType: revenues.type,
   employee: employees.fullName,
-};
+} satisfies QueryManyFields<RemunerationSummary>;
 
 export const remunerationRouter = createTRPCRouter({
   getMany: publicProcedure
@@ -61,72 +107,39 @@ export const remunerationRouter = createTRPCRouter({
           legalArea,
           revenueType,
         },
-      }): Promise<{ count: number; data: Remuneration[] }> => {
-        const sort =
-          direction === "descending"
-            ? desc(remunerationFields[column])
-            : remunerationFields[column];
-
+      }): Promise<QueryManyReturnType<RemunerationSummary>> => {
         const offset = (page - 1) * limit;
-
-        const joinConditions = {
-          fees: eq(fees.id, remunerations.feeId),
-          revenues: eq(revenues.id, fees.revenueId),
-          contractEmployees: eq(
-            contractEmployees.id,
-            remunerations.contractEmployeeId,
-          ),
-          contracts: eq(contracts.id, contractEmployees.contractId),
-          employees: eq(employees.id, contractEmployees.employeeId),
-        };
-
-        const filters = (() => {
-          const filters: (SQL | undefined)[] = [];
-
-          if (query)
-            filters.push(
-              or(
-                ilike(contracts.identification, `%${query}%`),
-                ilike(employees.fullName, `%${query}%`),
-              ),
-            );
-
-          if (legalArea.length > 0)
-            filters.push(inArray(contracts.legalArea, legalArea));
-
-          if (revenueType.length > 0)
-            filters.push(inArray(revenues.type, revenueType));
-
-          return filters.length > 0 ? and(...filters) : undefined;
-        })();
+        const joinRules = getJoinRules();
+        const sortBy = getSort({ column, direction });
+        const filters = getFilters({ query, legalArea, revenueType });
 
         const [rawCount, rawData] = await Promise.all([
           db
             .select({ count: count() })
             .from(remunerations)
-            .innerJoin(fees, joinConditions.fees)
-            .innerJoin(revenues, joinConditions.revenues)
-            .innerJoin(contractEmployees, joinConditions.contractEmployees)
-            .innerJoin(contracts, joinConditions.contracts)
-            .innerJoin(employees, joinConditions.employees)
+            .innerJoin(fees, joinRules.fees)
+            .innerJoin(revenues, joinRules.revenues)
+            .innerJoin(contractEmployees, joinRules.contractEmployees)
+            .innerJoin(contracts, joinRules.contracts)
+            .innerJoin(employees, joinRules.employees)
             .where(filters),
           db
-            .select(remunerationFields)
+            .select(selectFields)
             .from(remunerations)
-            .innerJoin(fees, joinConditions.fees)
-            .innerJoin(revenues, joinConditions.revenues)
-            .innerJoin(contractEmployees, joinConditions.contractEmployees)
-            .innerJoin(contracts, joinConditions.contracts)
-            .innerJoin(employees, joinConditions.employees)
+            .innerJoin(fees, joinRules.fees)
+            .innerJoin(revenues, joinRules.revenues)
+            .innerJoin(contractEmployees, joinRules.contractEmployees)
+            .innerJoin(contracts, joinRules.contracts)
+            .innerJoin(employees, joinRules.employees)
             .where(filters)
-            .orderBy(sort)
+            .orderBy(sortBy)
             .limit(limit)
             .offset(offset),
         ]);
 
         return {
-          count: rawCount[0]?.count ?? 0,
           data: rawData,
+          count: rawCount[0]?.count ?? 0,
         };
       },
     ),

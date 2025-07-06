@@ -3,20 +3,20 @@
 import * as React from "react";
 import { Chip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
-import type { Contract } from "~/shared/types/contract";
 import { createColumnHelper } from "@tanstack/react-table";
+import type { ContractSummary } from "~/shared/types/contract";
 import { CONTRACT_SORT_COLUMNS } from "~/shared/constants/contract";
 import { ButtonEntityRow, ChipStatus, DataTable } from "~/shared/components";
 
-const isSortable = (column: keyof Contract) =>
+const isSortable = (column: keyof ContractSummary) =>
   CONTRACT_SORT_COLUMNS.includes(
     column as (typeof CONTRACT_SORT_COLUMNS)[number],
   );
 
 interface ContractTableProps {
-  contracts: Contract[];
+  contracts: ContractSummary[];
   totalCount: number;
-  onSelectContract: (contract: Contract) => void;
+  onSelectContract: (contract: ContractSummary) => void;
 }
 
 export const ContractTable = ({
@@ -25,7 +25,7 @@ export const ContractTable = ({
   onSelectContract,
 }: ContractTableProps) => {
   const columns = React.useMemo(() => {
-    const columnHelper = createColumnHelper<Contract>();
+    const columnHelper = createColumnHelper<ContractSummary>();
 
     return [
       columnHelper.accessor("identification", {

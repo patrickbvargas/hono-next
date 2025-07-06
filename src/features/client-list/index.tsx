@@ -12,16 +12,16 @@ import { ROUTES } from "~/shared/constants/route";
 import { ClientTable } from "./components/table";
 import { ClientFilter } from "./components/filter";
 import { ClientDetails } from "./components/details";
-import type { Client } from "~/shared/types/client";
+import type { ClientSummary } from "~/shared/types/client";
 
 interface ClientListProps {
-  clients: Client[];
+  clients: ClientSummary[];
   count: number;
 }
 
 export const ClientList = ({ clients, count }: ClientListProps) => {
   const { isOpen, onOpenChange, selectedItem, handleSelectItem } =
-    useEntityDetails<Client>();
+    useEntityDetails<ClientSummary>();
 
   return (
     <Wrapper title={ROUTES.client.label}>

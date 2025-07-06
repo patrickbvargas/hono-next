@@ -3,17 +3,17 @@ import {
   zSearchParser,
 } from "~/shared/schemas/query-parser";
 import { z } from "zod/v4";
-import { TRPCError } from "@trpc/server";
-import type { Client } from "~/shared/types/client";
 import { clients, contracts } from "~/server/db/schemas";
 import { SORT_DIRECTIONS } from "~/shared/constants/sort";
 import { ENTITY_STATUS } from "~/shared/constants/entity";
+import type { ClientSummary } from "~/shared/types/client";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { and, eq, sql, inArray, count, ilike, desc } from "drizzle-orm";
+import type { QueryManyFields, QueryManyReturnType } from "../types/query";
+import { and, eq, sql, inArray, count, ilike, desc, SQL } from "drizzle-orm";
 import { CLIENT_TYPES, CLIENT_SORT_COLUMNS } from "~/shared/constants/client";
 
 const zQueryOneParams = z.object({
-  slug: z.string(),
+  id: z.string(),
 });
 
 const zQueryManyParams = z.object({
@@ -28,75 +28,80 @@ const zQueryManyParams = z.object({
 export type QueryManyParams = z.infer<typeof zQueryManyParams>;
 export type QueryOneParams = z.infer<typeof zQueryOneParams>;
 
-const clientFields: Record<keyof Client, any> = {
+function getFilters({
+  query,
+  type,
+  status,
+}: Pick<QueryManyParams, "query" | "type" | "status">) {
+  const filters: (SQL | undefined)[] = [];
+
+  if (query) filters.push(ilike(clients.fullName, `%${query}%`));
+
+  if (type.length > 0) filters.push(inArray(clients.type, type));
+
+  if (status.length > 0) filters.push(inArray(clients.status, status));
+
+  return filters.length > 0 ? and(...filters) : undefined;
+}
+
+function getSort({
+  column,
+  direction,
+}: Pick<QueryManyParams, "column" | "direction">) {
+  return direction === "descending"
+    ? desc(selectFields[column])
+    : selectFields[column];
+}
+
+function getJoinRules() {
+  return {
+    contracts: eq(contracts.clientId, clients.id),
+  };
+}
+
+const selectFields = {
   id: clients.id,
   fullName: clients.fullName,
   cnpjf: clients.cnpjf,
   email: clients.email,
-  mobilePhone: clients.mobilePhone,
   type: clients.type,
-  slug: clients.slug,
   status: clients.status,
   contractCount: sql<number>`count(${contracts.id})`,
-};
+} satisfies QueryManyFields<ClientSummary>;
 
 export const clientRouter = createTRPCRouter({
-  getOne: publicProcedure
-    .input(zQueryOneParams)
-    .query(async ({ ctx: { db }, input: { slug } }): Promise<Client> => {
-      const data = await db
-        .select(clientFields)
-        .from(clients)
-        .leftJoin(contracts, eq(contracts.clientId, clients.id))
-        .where(eq(clients.slug, slug))
-        .groupBy(clients.id);
-
-      if (!data[0]) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Client not found",
-        });
-      }
-
-      return data[0];
-    }),
-
   getMany: publicProcedure
     .input(zQueryManyParams)
     .query(
       async ({
         ctx: { db },
         input: { query, page, limit, column, direction, type, status },
-      }): Promise<{ count: number; data: Client[] }> => {
-        const sort =
-          direction === "descending"
-            ? desc(clientFields[column])
-            : clientFields[column];
-
+      }): Promise<QueryManyReturnType<ClientSummary>> => {
         const offset = (page - 1) * limit;
-
-        const filters = and(
-          ilike(clients.fullName, `%${query}%`),
-          type.length > 0 ? inArray(clients.type, type) : undefined,
-          status.length > 0 ? inArray(clients.status, status) : undefined,
-        );
+        const joinRules = getJoinRules();
+        const sortBy = getSort({ column, direction });
+        const filters = getFilters({ query, type, status });
 
         const [rawCount, rawData] = await Promise.all([
-          db.select({ count: count() }).from(clients).where(filters),
           db
-            .select(clientFields)
+            .select({ count: count() })
             .from(clients)
-            .leftJoin(contracts, eq(contracts.clientId, clients.id))
+            .leftJoin(contracts, joinRules.contracts)
+            .where(filters),
+          db
+            .select(selectFields)
+            .from(clients)
+            .leftJoin(contracts, joinRules.contracts)
             .where(filters)
             .groupBy(clients.id)
-            .orderBy(sort)
+            .orderBy(sortBy)
             .limit(limit)
             .offset(offset),
         ]);
 
         return {
-          count: rawCount[0]?.count ?? 0,
           data: rawData,
+          count: rawCount[0]?.count ?? 0,
         };
       },
     ),

@@ -7,13 +7,13 @@ import {
   EntityPanelFooter,
   EntityPanelHeader,
 } from "~/shared/components";
-import type { Fee } from "~/shared/types/fee";
 import { formatter } from "~/shared/lib/formatter";
+import type { FeeSummary } from "~/shared/types/fee";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
 interface FeeDetailsProps
   extends Omit<React.ComponentProps<typeof EntityPanel>, "children"> {
-  fee: Fee | null;
+  fee: FeeSummary | null;
 }
 
 export const FeeDetails = ({ fee, ...props }: FeeDetailsProps) => {

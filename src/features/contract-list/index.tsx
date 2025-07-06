@@ -12,16 +12,16 @@ import { ROUTES } from "~/shared/constants/route";
 import { ContractTable } from "./components/table";
 import { ContractFilter } from "./components/filter";
 import { ContractDetails } from "./components/details";
-import type { Contract } from "~/shared/types/contract";
+import type { ContractSummary } from "~/shared/types/contract";
 
 interface ContractListProps {
-  contracts: Contract[];
+  contracts: ContractSummary[];
   count: number;
 }
 
 export const ContractList = ({ contracts, count }: ContractListProps) => {
   const { isOpen, onOpenChange, selectedItem, handleSelectItem } =
-    useEntityDetails<Contract>();
+    useEntityDetails<ContractSummary>();
 
   return (
     <Wrapper title={ROUTES.contract.label}>

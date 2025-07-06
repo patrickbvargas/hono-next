@@ -5,11 +5,11 @@ import type { ContractLegalArea } from "./contract";
 
 type FeeTable = InferSelectModel<typeof fees>;
 
-export type Fee = Pick<FeeTable, "id" | "value" | "paymentDate"> & {
+export type FeeSummary = Pick<FeeTable, "id" | "value" | "paymentDate"> & {
   contract: string;
   legalArea: ContractLegalArea;
   revenueType: RevenueType;
   client: string;
 };
 
-export type FeeSortColumn = keyof Fee;
+export type FeeSortColumn = keyof FeeSummary;

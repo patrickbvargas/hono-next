@@ -9,12 +9,12 @@ import {
   EntityPanelHeader,
 } from "~/shared/components";
 import { formatter } from "~/shared/lib/formatter";
-import type { Client } from "~/shared/types/client";
+import type { ClientSummary } from "~/shared/types/client";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
 interface ClientDetailsProps
   extends Omit<React.ComponentProps<typeof EntityPanel>, "children"> {
-  client: Client | null;
+  client: ClientSummary | null;
 }
 
 export const ClientDetails = ({ client, ...props }: ClientDetailsProps) => {
@@ -37,10 +37,6 @@ export const ClientDetails = ({ client, ...props }: ClientDetailsProps) => {
     {
       title: "Contato",
       data: [
-        {
-          term: "Celular",
-          definition: client.mobilePhone,
-        },
         {
           term: "Email",
           definition: client.email,

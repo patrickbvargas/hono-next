@@ -4,19 +4,19 @@ import * as React from "react";
 import { Chip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
 import { createColumnHelper } from "@tanstack/react-table";
-import type { Remuneration } from "~/shared/types/remuneration";
 import { ButtonEntityRow, DataTable } from "~/shared/components";
+import type { RemunerationSummary } from "~/shared/types/remuneration";
 import { REMUNERATION_SORT_COLUMNS } from "~/shared/constants/remuneration";
 
-const isSortable = (column: keyof Remuneration) =>
+const isSortable = (column: keyof RemunerationSummary) =>
   REMUNERATION_SORT_COLUMNS.includes(
     column as (typeof REMUNERATION_SORT_COLUMNS)[number],
   );
 
 interface RemunerationTableProps {
-  remunerations: Remuneration[];
+  remunerations: RemunerationSummary[];
   totalCount: number;
-  onSelectRemuneration: (remuneration: Remuneration) => void;
+  onSelectRemuneration: (remuneration: RemunerationSummary) => void;
 }
 
 export const RemunerationTable = ({
@@ -25,7 +25,7 @@ export const RemunerationTable = ({
   onSelectRemuneration,
 }: RemunerationTableProps) => {
   const columns = React.useMemo(() => {
-    const columnHelper = createColumnHelper<Remuneration>();
+    const columnHelper = createColumnHelper<RemunerationSummary>();
 
     return [
       columnHelper.accessor("contract", {

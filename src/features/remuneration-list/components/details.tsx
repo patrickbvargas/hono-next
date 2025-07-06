@@ -8,12 +8,12 @@ import {
   EntityPanelHeader,
 } from "~/shared/components";
 import { formatter } from "~/shared/lib/formatter";
-import type { Remuneration } from "~/shared/types/remuneration";
 import type { EntityPanelData } from "~/shared/types/entity-data";
+import type { RemunerationSummary } from "~/shared/types/remuneration";
 
 interface RemunerationDetailsProps
   extends Omit<React.ComponentProps<typeof EntityPanel>, "children"> {
-  remuneration: Remuneration | null;
+  remuneration: RemunerationSummary | null;
 }
 
 export const RemunerationDetails = ({

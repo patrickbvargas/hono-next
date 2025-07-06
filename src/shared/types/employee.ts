@@ -3,7 +3,7 @@ import type { InferSelectModel } from "drizzle-orm";
 
 type EmployeeTable = InferSelectModel<typeof employees>;
 
-export type Employee = Pick<
+export type EmployeeSummary = Pick<
   EmployeeTable,
   | "id"
   | "fullName"
@@ -11,12 +11,11 @@ export type Employee = Pick<
   | "remunerationPercent"
   | "type"
   | "role"
-  | "slug"
   | "status"
 > & {
   contractCount: number;
 };
 
-export type EmployeeType = Employee["type"];
-export type EmployeeRole = Employee["role"];
-export type EmployeeSortColumn = keyof Employee;
+export type EmployeeType = EmployeeSummary["type"];
+export type EmployeeRole = EmployeeSummary["role"];
+export type EmployeeSortColumn = keyof EmployeeSummary;
