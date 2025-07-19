@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  AnchorLink,
   ChipStatus,
   EntityPanel,
   EntityPanelAccordion,
@@ -7,21 +8,35 @@ import {
   EntityPanelBody,
   EntityPanelFooter,
   EntityPanelHeader,
+  type EntityPanelProps,
 } from "~/shared/components";
+import { api } from "~/trpc/client";
+import { Spinner } from "@heroui/react";
+import { ROUTES } from "~/shared/constants/route";
 import { formatter } from "~/shared/lib/formatter";
-import type { EmployeeSummary } from "~/shared/types/employee";
+import { searchSerializer } from "~/shared/lib/nuqs";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
-interface EmployeeDetailsProps
-  extends Omit<React.ComponentProps<typeof EntityPanel>, "children"> {
-  employee: EmployeeSummary | null;
+interface EmployeeDetailsProps extends EntityPanelProps {
+  id: string;
 }
 
-export const EmployeeDetails = ({
-  employee,
-  ...props
-}: EmployeeDetailsProps) => {
-  if (!employee) return null;
+export const EmployeeDetails = ({ id, ...props }: EmployeeDetailsProps) => {
+  return (
+    <EntityPanel {...props}>
+      <React.Suspense fallback={<Spinner />}>
+        <EmployeeDetailsContent id={id} />
+      </React.Suspense>
+    </EntityPanel>
+  );
+};
+
+interface EmployeeDetailsContentProps {
+  id: string;
+}
+
+const EmployeeDetailsContent = ({ id }: EmployeeDetailsContentProps) => {
+  const [employee] = api.employees.getOne.useSuspenseQuery({ id });
 
   const employeeData: EntityPanelData[] = [
     {
@@ -55,18 +70,30 @@ export const EmployeeDetails = ({
       data: [
         {
           term: "Contratos",
-          definition: employee.contractCount,
+          definition: (
+            <AnchorLink
+              href={`${ROUTES.contract.url}${searchSerializer({
+                query: employee.fullName,
+              })}`}
+            >
+              {employee.contractCount}
+            </AnchorLink>
+          ),
         },
         {
           term: "Status",
           definition: <ChipStatus status={employee.status} />,
+        },
+        {
+          term: "Criado em",
+          definition: formatter.timestamp(employee.createdAt),
         },
       ],
     },
   ];
 
   return (
-    <EntityPanel {...props}>
+    <React.Fragment>
       <EntityPanelHeader>{employee.fullName}</EntityPanelHeader>
       <EntityPanelBody>
         <EntityPanelAccordion data={employeeData} />
@@ -77,6 +104,6 @@ export const EmployeeDetails = ({
           onDelete={() => console.log("delete")}
         />
       </EntityPanelFooter>
-    </EntityPanel>
+    </React.Fragment>
   );
 };
