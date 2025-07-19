@@ -23,18 +23,23 @@ import type { EntityPanelData } from "~/shared/types/entity-data";
 export const EntityPanelHeader = DrawerHeader;
 export const EntityPanelBody = DrawerBody;
 
-export const EntityPanel = ({ children, ...props }: DrawerProps) => {
+export interface EntityPanelProps extends Omit<DrawerProps, "children"> {}
+
+export const EntityPanel = ({
+  children,
+  ...props
+}: EntityPanelProps & { children: React.ReactNode }) => {
   return (
     <Drawer
       size="sm"
-      classNames={{
-        base: "overflow-y-visible",
-        wrapper: "app-container",
-      }}
       motionProps={{
         initial: { x: 100, opacity: 0 },
         animate: { x: 0, opacity: 1, transition: { duration: 0.1 } },
         exit: { x: 100, opacity: 0, transition: { duration: 0.1 } },
+      }}
+      classNames={{
+        base: "overflow-y-visible",
+        wrapper: "app-container",
       }}
       {...props}
     >

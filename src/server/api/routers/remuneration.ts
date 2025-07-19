@@ -16,7 +16,7 @@ import { SORT_DIRECTIONS } from "~/shared/constants/sort";
 import { CONTRACT_LEGAL_AREAS } from "~/shared/constants/contract";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import type { RemunerationSummary } from "~/shared/types/remuneration";
-import type { QueryManyFields, QueryManyReturnType } from "../types/query";
+import type { QueryFields, QueryManyReturnType } from "../types/query";
 import { REMUNERATION_SORT_COLUMNS } from "~/shared/constants/remuneration";
 import { and, eq, inArray, count, ilike, or, desc, SQL } from "drizzle-orm";
 
@@ -90,7 +90,7 @@ const selectFields = {
   legalArea: contracts.legalArea,
   revenueType: revenues.type,
   employee: employees.fullName,
-} satisfies QueryManyFields<RemunerationSummary>;
+} satisfies QueryFields<RemunerationSummary>;
 
 export const remunerationRouter = createTRPCRouter({
   getMany: publicProcedure

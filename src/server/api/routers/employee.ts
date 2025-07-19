@@ -24,7 +24,7 @@ import { SORT_DIRECTIONS } from "~/shared/constants/sort";
 import type { EmployeeSummary } from "~/shared/types/employee";
 import { contractEmployees, employees } from "~/server/db/schemas";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import type { QueryManyFields, QueryManyReturnType } from "../types/query";
+import type { QueryFields, QueryManyReturnType } from "../types/query";
 
 const zQueryOneParams = z.object({
   id: z.string(),
@@ -99,7 +99,7 @@ const selectFields = {
   role: employees.role,
   status: employees.status,
   contractCount: sql<number>`count(${contractEmployees.id})`,
-} satisfies QueryManyFields<EmployeeSummary>;
+} satisfies QueryFields<EmployeeSummary>;
 
 export const employeeRouter = createTRPCRouter({
   getMany: publicProcedure

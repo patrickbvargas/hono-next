@@ -38,6 +38,7 @@ export const DataTable = <TData, TValue>({
 }: DataTableProps<TData, TValue>) => {
   const { sort, handleSort } = useSort();
   const { pagination, handlePagination } = usePagination();
+
   const table = useReactTable({
     data,
     columns,
@@ -46,8 +47,8 @@ export const DataTable = <TData, TValue>({
 
   const pages = Math.ceil(totalCount / pagination.limit);
 
-  const bottomContent = React.useMemo(() => {
-    return (
+  const bottomContent = React.useMemo(
+    () => (
       <Pagination
         total={pages}
         page={pagination.page}
@@ -57,8 +58,9 @@ export const DataTable = <TData, TValue>({
         showControls
         className="place-self-center"
       />
-    );
-  }, []);
+    ),
+    [],
+  );
 
   return (
     <Table

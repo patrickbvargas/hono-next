@@ -9,3 +9,4 @@ export * from "./section";
 export * from "./chip-status";
 export * from "./entity-panel";
 export * from "./button-entity-row";
+export * from "./anchor-link";

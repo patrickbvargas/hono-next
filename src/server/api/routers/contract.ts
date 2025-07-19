@@ -17,7 +17,7 @@ import { ENTITY_STATUS } from "~/shared/constants/entity";
 import { SORT_DIRECTIONS } from "~/shared/constants/sort";
 import type { ContractSummary } from "~/shared/types/contract";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import type { QueryManyFields, QueryManyReturnType } from "../types/query";
+import type { QueryFields, QueryManyReturnType } from "../types/query";
 import { and, eq, inArray, count, ilike, or, desc, SQL } from "drizzle-orm";
 
 const zQueryOneParams = z.object({
@@ -88,7 +88,7 @@ const selectFields = {
   status: contracts.status,
   client: clients.fullName,
   lawyer: employees.fullName,
-} satisfies QueryManyFields<ContractSummary>;
+} satisfies QueryFields<ContractSummary>;
 
 export const contractRouter = createTRPCRouter({
   getMany: publicProcedure

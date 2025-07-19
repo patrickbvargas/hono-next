@@ -1,4 +1,5 @@
 import {
+  createSerializer,
   parseAsInteger,
   parseAsString,
   parseAsStringLiteral,
@@ -26,3 +27,5 @@ export const sortParser = {
   direction:
     parseAsStringLiteral(SORT_DIRECTIONS).withDefault(DEFAULT_DIRECTION),
 };
+
+export const searchSerializer = createSerializer(searchParser);

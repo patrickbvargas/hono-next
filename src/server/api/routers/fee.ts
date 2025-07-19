@@ -10,7 +10,7 @@ import { REVENUE_TYPES } from "~/shared/constants/revenue";
 import { CONTRACT_LEGAL_AREAS } from "~/shared/constants/contract";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { clients, contracts, fees, revenues } from "~/server/db/schemas";
-import type { QueryManyFields, QueryManyReturnType } from "../types/query";
+import type { QueryFields, QueryManyReturnType } from "../types/query";
 import { and, eq, inArray, count, ilike, or, desc, SQL } from "drizzle-orm";
 
 const zQueryOneParams = z.object({
@@ -77,7 +77,7 @@ const selectFields = {
   legalArea: contracts.legalArea,
   client: clients.fullName,
   revenueType: revenues.type,
-} satisfies QueryManyFields<FeeSummary>;
+} satisfies QueryFields<FeeSummary>;
 
 export const feeRouter = createTRPCRouter({
   getMany: publicProcedure

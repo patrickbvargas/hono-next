@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { Chip } from "@heroui/react";
+import { ClientDetails } from "./details";
+import { useEntityPanel } from "~/shared/hooks";
 import { formatter } from "~/shared/lib/formatter";
 import type { ClientSummary } from "~/shared/types/client";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -14,43 +16,41 @@ const isSortable = (column: keyof ClientSummary) =>
 interface ClientTableProps {
   clients: ClientSummary[];
   totalCount: number;
-  onRowAction: (rowIndex: React.Key) => void;
 }
 
-export const ClientTable = ({
-  clients,
-  totalCount,
-  onRowAction,
-}: ClientTableProps) => {
+export const ClientTable = ({ clients, totalCount }: ClientTableProps) => {
+  const { isOpen, onOpenChange, selectedItem, selectItem } =
+    useEntityPanel<ClientSummary>();
+
   const columns = React.useMemo(() => {
-    const columnHelper = createColumnHelper<ClientSummary>();
+    const c = createColumnHelper<ClientSummary>();
 
     return [
-      columnHelper.accessor("fullName", {
+      c.accessor("fullName", {
         header: "Nome",
         enableSorting: isSortable("fullName"),
       }),
-      columnHelper.accessor("cnpjf", {
+      c.accessor("cnpjf", {
         header: "CNPJF",
         cell: ({ row }) => formatter.cnpjf(row.original.cnpjf ?? ""),
         enableSorting: isSortable("cnpjf"),
       }),
-      columnHelper.accessor("email", {
+      c.accessor("email", {
         header: "Email",
         enableSorting: isSortable("email"),
       }),
-      columnHelper.accessor("contractCount", {
+      c.accessor("contractCount", {
         header: "Contratos",
         enableSorting: isSortable("contractCount"),
       }),
-      columnHelper.accessor("type", {
+      c.accessor("type", {
         header: "Tipo",
         cell: ({ row }) => (
           <Chip size="sm">{formatter.clientType(row.original.type)}</Chip>
         ),
         enableSorting: isSortable("type"),
       }),
-      columnHelper.accessor("status", {
+      c.accessor("status", {
         header: "Status",
         cell: ({ row }) => <ChipStatus status={row.original.status} />,
         enableSorting: isSortable("status"),
@@ -59,11 +59,20 @@ export const ClientTable = ({
   }, []);
 
   return (
-    <DataTable
-      totalCount={totalCount}
-      columns={columns}
-      data={clients}
-      onRowAction={onRowAction}
-    />
+    <React.Fragment>
+      <DataTable
+        totalCount={totalCount}
+        columns={columns}
+        data={clients}
+        onRowAction={(index) => selectItem(clients[Number(index)])}
+      />
+      {selectedItem && (
+        <ClientDetails
+          id={selectedItem.id}
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+        />
+      )}
+    </React.Fragment>
   );
 };

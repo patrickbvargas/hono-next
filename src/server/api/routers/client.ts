@@ -2,13 +2,18 @@ import {
   zPaginationParser,
   zSearchParser,
 } from "~/shared/schemas/query-parser";
+import type {
+  QueryFields,
+  QueryManyReturnType,
+  QueryOneReturnType,
+} from "../types/query";
 import { z } from "zod/v4";
+import { TRPCError } from "@trpc/server";
 import { clients, contracts } from "~/server/db/schemas";
 import { SORT_DIRECTIONS } from "~/shared/constants/sort";
 import { ENTITY_STATUS } from "~/shared/constants/entity";
-import type { ClientSummary } from "~/shared/types/client";
+import type { Client, ClientSummary } from "~/shared/types/client";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import type { QueryManyFields, QueryManyReturnType } from "../types/query";
 import { and, eq, sql, inArray, count, ilike, desc, SQL } from "drizzle-orm";
 import { CLIENT_TYPES, CLIENT_SORT_COLUMNS } from "~/shared/constants/client";
 
@@ -25,8 +30,8 @@ const zQueryManyParams = z.object({
   status: z.enum(ENTITY_STATUS).array(),
 });
 
-export type QueryManyParams = z.infer<typeof zQueryManyParams>;
 export type QueryOneParams = z.infer<typeof zQueryOneParams>;
+export type QueryManyParams = z.infer<typeof zQueryManyParams>;
 
 function getFilters({
   query,
@@ -49,8 +54,8 @@ function getSort({
   direction,
 }: Pick<QueryManyParams, "column" | "direction">) {
   return direction === "descending"
-    ? desc(selectFields[column])
-    : selectFields[column];
+    ? desc(queryManyFields[column])
+    : queryManyFields[column];
 }
 
 function getJoinRules() {
@@ -59,7 +64,19 @@ function getJoinRules() {
   };
 }
 
-const selectFields = {
+const queryOneFields = {
+  id: clients.id,
+  fullName: clients.fullName,
+  cnpjf: clients.cnpjf,
+  email: clients.email,
+  mobilePhone: clients.mobilePhone,
+  type: clients.type,
+  status: clients.status,
+  createdAt: clients.createdAt,
+  contractCount: sql<number>`count(${contracts.id})`,
+} satisfies QueryFields<Client>;
+
+const queryManyFields = {
   id: clients.id,
   fullName: clients.fullName,
   cnpjf: clients.cnpjf,
@@ -67,9 +84,36 @@ const selectFields = {
   type: clients.type,
   status: clients.status,
   contractCount: sql<number>`count(${contracts.id})`,
-} satisfies QueryManyFields<ClientSummary>;
+} satisfies QueryFields<ClientSummary>;
 
 export const clientRouter = createTRPCRouter({
+  getOne: publicProcedure
+    .input(zQueryOneParams)
+    .query(
+      async ({
+        ctx: { db },
+        input: { id },
+      }): Promise<QueryOneReturnType<Client>> => {
+        const joinRules = getJoinRules();
+
+        const data = await db
+          .select(queryOneFields)
+          .from(clients)
+          .leftJoin(contracts, joinRules.contracts)
+          .where(eq(clients.id, id))
+          .groupBy(clients.id);
+
+        if (!data[0]) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Client not found",
+          });
+        }
+
+        return data[0];
+      },
+    ),
+
   getMany: publicProcedure
     .input(zQueryManyParams)
     .query(
@@ -89,7 +133,7 @@ export const clientRouter = createTRPCRouter({
             .leftJoin(contracts, joinRules.contracts)
             .where(filters),
           db
-            .select(selectFields)
+            .select(queryManyFields)
             .from(clients)
             .leftJoin(contracts, joinRules.contracts)
             .where(filters)
