@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import {
   Wrapper,
@@ -7,11 +5,9 @@ import {
   WrapperHeader,
   Search,
 } from "~/shared/components";
-import { useEntityDetails } from "~/shared/hooks";
 import { ROUTES } from "~/shared/constants/route";
 import { ContractTable } from "./components/table";
 import { ContractFilter } from "./components/filter";
-import { ContractDetails } from "./components/details";
 import type { ContractSummary } from "~/shared/types/contract";
 
 interface ContractListProps {
@@ -20,9 +16,6 @@ interface ContractListProps {
 }
 
 export const ContractList = ({ contracts, count }: ContractListProps) => {
-  const { isOpen, onOpenChange, selectedItem, onRowAction } =
-    useEntityDetails<ContractSummary>(contracts);
-
   return (
     <Wrapper title={ROUTES.contract.label}>
       <WrapperHeader>
@@ -30,16 +23,7 @@ export const ContractList = ({ contracts, count }: ContractListProps) => {
         <ContractFilter />
       </WrapperHeader>
       <WrapperBody>
-        <ContractTable
-          contracts={contracts}
-          totalCount={count}
-          onRowAction={onRowAction}
-        />
-        <ContractDetails
-          contract={selectedItem}
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-        />
+        <ContractTable contracts={contracts} totalCount={count} />
       </WrapperBody>
     </Wrapper>
   );

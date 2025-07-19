@@ -12,12 +12,17 @@ import {
   zPaginationParser,
   zSearchParser,
 } from "~/shared/schemas/query-parser";
+import type {
+  QueryFields,
+  QueryManyReturnType,
+  QueryOneReturnType,
+} from "../types/query";
 import { z } from "zod/v4";
+import { TRPCError } from "@trpc/server";
 import { ENTITY_STATUS } from "~/shared/constants/entity";
 import { SORT_DIRECTIONS } from "~/shared/constants/sort";
-import type { ContractSummary } from "~/shared/types/contract";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import type { QueryFields, QueryManyReturnType } from "../types/query";
+import type { Contract, ContractSummary } from "~/shared/types/contract";
 import { and, eq, inArray, count, ilike, or, desc, SQL } from "drizzle-orm";
 
 const zQueryOneParams = z.object({
@@ -33,8 +38,8 @@ const zQueryManyParams = z.object({
   status: z.enum(ENTITY_STATUS).array(),
 });
 
-export type QueryManyParams = z.infer<typeof zQueryManyParams>;
 export type QueryOneParams = z.infer<typeof zQueryOneParams>;
+export type QueryManyParams = z.infer<typeof zQueryManyParams>;
 
 function getFilters({
   query,
@@ -65,8 +70,8 @@ function getSort({
   direction,
 }: Pick<QueryManyParams, "column" | "direction">) {
   return direction === "descending"
-    ? desc(selectFields[column])
-    : selectFields[column];
+    ? desc(queryManyFields[column])
+    : queryManyFields[column];
 }
 
 function getJoinRules() {
@@ -80,7 +85,7 @@ function getJoinRules() {
   };
 }
 
-const selectFields = {
+const queryManyFields = {
   id: contracts.id,
   identification: contracts.identification,
   feePercent: contracts.feePercent,
@@ -91,6 +96,66 @@ const selectFields = {
 } satisfies QueryFields<ContractSummary>;
 
 export const contractRouter = createTRPCRouter({
+  getOne: publicProcedure
+    .input(zQueryOneParams)
+    .query(
+      async ({
+        ctx: { db },
+        input: { id },
+      }): Promise<QueryOneReturnType<Contract>> => {
+        const data = await db.query.contracts.findFirst({
+          columns: {
+            id: true,
+            identification: true,
+            feePercent: true,
+            observation: true,
+            legalArea: true,
+            status: true,
+            createdAt: true,
+          },
+          with: {
+            client: {
+              columns: {
+                fullName: true,
+              },
+            },
+            employees: {
+              columns: {
+                assignment: true,
+              },
+              with: {
+                employee: {
+                  columns: {
+                    fullName: true,
+                  },
+                },
+              },
+            },
+            revenues: {
+              columns: {
+                amount: true,
+                entryValue: true,
+                installmentsTotal: true,
+                installmentsPaid: true,
+                paymentStartDate: true,
+                type: true,
+              },
+            },
+          },
+          where: eq(contracts.id, id),
+        });
+
+        if (!data) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Contract not found",
+          });
+        }
+
+        return data;
+      },
+    ),
+
   getMany: publicProcedure
     .input(zQueryManyParams)
     .query(
@@ -112,7 +177,7 @@ export const contractRouter = createTRPCRouter({
             .innerJoin(employees, joinRules.employees)
             .where(filters),
           db
-            .select(selectFields)
+            .select(queryManyFields)
             .from(contracts)
             .innerJoin(clients, joinRules.clients)
             .innerJoin(contractEmployees, joinRules.contractEmployees)

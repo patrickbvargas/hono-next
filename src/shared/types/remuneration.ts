@@ -1,12 +1,9 @@
-import { remunerations } from "~/server/db/schemas";
-import type { InferSelectModel } from "drizzle-orm";
 import type { RevenueType } from "./revenue";
+import type { RemunerationRaw } from "./drizzle";
 import type { ContractLegalArea } from "./contract";
 
-type RemunerationTable = InferSelectModel<typeof remunerations>;
-
 export type RemunerationSummary = Pick<
-  RemunerationTable,
+  RemunerationRaw,
   "id" | "value" | "paymentDate" | "remunerationPercent"
 > & {
   contract: string;

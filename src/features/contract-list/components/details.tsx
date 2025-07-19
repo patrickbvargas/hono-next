@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  AnchorLink,
   ChipStatus,
   EntityPanel,
   EntityPanelAccordion,
@@ -7,66 +8,129 @@ import {
   EntityPanelBody,
   EntityPanelFooter,
   EntityPanelHeader,
+  type EntityPanelProps,
 } from "~/shared/components";
+import { api } from "~/trpc/client";
+import { Spinner } from "@heroui/react";
+import { ROUTES } from "~/shared/constants/route";
 import { formatter } from "~/shared/lib/formatter";
-import type { ContractSummary } from "~/shared/types/contract";
+import { searchSerializer } from "~/shared/lib/nuqs";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
-interface ContractDetailsProps
-  extends Omit<React.ComponentProps<typeof EntityPanel>, "children"> {
-  contract: ContractSummary | null;
+interface ContractDetailsProps extends EntityPanelProps {
+  id: string;
 }
 
-export const ContractDetails = ({
-  contract,
-  ...props
-}: ContractDetailsProps) => {
-  if (!contract) return null;
+export const ContractDetails = ({ id, ...props }: ContractDetailsProps) => {
+  return (
+    <EntityPanel {...props}>
+      <React.Suspense fallback={<Spinner />}>
+        <ContractDetailsContent id={id} />
+      </React.Suspense>
+    </EntityPanel>
+  );
+};
 
-  const contractData: EntityPanelData[] = [
-    {
-      title: "Identificação",
+interface ContractDetailsContentProps {
+  id: string;
+}
+
+const ContractDetailsContent = ({ id }: ContractDetailsContentProps) => {
+  const [contract] = api.contracts.getOne.useSuspenseQuery({ id });
+
+  const contractData: EntityPanelData[] = React.useMemo(() => {
+    const generalSection: EntityPanelData = {
+      title: "Informações Gerais",
       data: [
         {
-          term: "Processo",
-          definition: contract.identification,
+          term: "Cliente",
+          definition: (
+            <AnchorLink
+              href={`${ROUTES.client.url}${searchSerializer({
+                query: contract.client.fullName,
+              })}`}
+            >
+              {contract.client.fullName}
+            </AnchorLink>
+          ),
         },
         {
           term: "Área",
           definition: formatter.contractLegalArea(contract.legalArea),
         },
         {
-          term: "Cliente",
-          definition: contract.client,
-        },
-        {
-          term: "Advogado",
-          definition: contract.lawyer,
-        },
-      ],
-    },
-    {
-      title: "Financeiro",
-      data: [
-        {
-          term: "Honorários",
+          term: "Honorários",
           definition: formatter.percent(contract.feePercent),
         },
+        {
+          term: "Observações",
+          definition: contract.observation ?? "-",
+        },
       ],
-    },
-    {
-      title: "Detalhes",
+    };
+
+    const employeesSection: EntityPanelData = {
+      title: "Responsáveis",
+      data: contract.employees.map((e) => ({
+        term: formatter.employeeAssignment(e.assignment),
+        definition: (
+          <AnchorLink
+            href={`${ROUTES.employee.url}${searchSerializer({
+              query: e.employee.fullName,
+            })}`}
+          >
+            {e.employee.fullName}
+          </AnchorLink>
+        ),
+      })),
+    };
+
+    const revenuesSections: EntityPanelData[] = contract.revenues.map((r) => ({
+      title: `Receita - ${formatter.revenueType(r.type)}`,
+      data: [
+        {
+          term: "Total",
+          definition: formatter.currency(r.amount),
+        },
+        {
+          term: "Entrada",
+          definition: formatter.currency(r.entryValue),
+        },
+        {
+          term: "Pago",
+          definition: `${r.installmentsPaid}/${r.installmentsTotal}`,
+        },
+        {
+          term: "Início Pagto",
+          definition: formatter.date(r.paymentStartDate),
+        },
+      ],
+    }));
+
+    const detailsSection: EntityPanelData = {
+      title: "Registro",
       data: [
         {
           term: "Status",
           definition: <ChipStatus status={contract.status} />,
         },
+        {
+          term: "Criado em",
+          definition: formatter.timestamp(contract.createdAt),
+        },
       ],
-    },
-  ];
+    };
+
+    return [
+      generalSection,
+      employeesSection,
+      ...revenuesSections,
+      detailsSection,
+    ];
+  }, [contract]);
 
   return (
-    <EntityPanel {...props}>
+    <React.Fragment>
       <EntityPanelHeader>{contract.identification}</EntityPanelHeader>
       <EntityPanelBody>
         <EntityPanelAccordion data={contractData} />
@@ -77,6 +141,6 @@ export const ContractDetails = ({
           onDelete={() => console.log("delete")}
         />
       </EntityPanelFooter>
-    </EntityPanel>
+    </React.Fragment>
   );
 };

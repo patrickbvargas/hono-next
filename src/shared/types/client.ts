@@ -1,18 +1,15 @@
-import { clients } from "~/server/db/schemas";
-import type { InferSelectModel } from "drizzle-orm";
-
-type ClientTable = InferSelectModel<typeof clients>;
+import type { ClientRaw } from "./drizzle";
 
 type ContractCount = { contractCount: number };
 
 export type ClientSummary = Pick<
-  ClientTable,
+  ClientRaw,
   "id" | "fullName" | "cnpjf" | "email" | "type" | "status"
 > &
   ContractCount;
 
 export type Client = Pick<
-  ClientTable,
+  ClientRaw,
   | "id"
   | "fullName"
   | "cnpjf"
@@ -24,5 +21,5 @@ export type Client = Pick<
 > &
   ContractCount;
 
-export type ClientType = ClientSummary["type"];
+export type ClientType = ClientRaw["type"];
 export type ClientSortColumn = keyof ClientSummary;

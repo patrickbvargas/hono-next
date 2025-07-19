@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { Chip } from "@heroui/react";
+import { ContractDetails } from "./details";
+import { useEntityPanel } from "~/shared/hooks";
 import { formatter } from "~/shared/lib/formatter";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ChipStatus, DataTable } from "~/shared/components";
@@ -16,36 +18,37 @@ const isSortable = (column: keyof ContractSummary) =>
 interface ContractTableProps {
   contracts: ContractSummary[];
   totalCount: number;
-  onRowAction: (rowIndex: React.Key) => void;
 }
 
 export const ContractTable = ({
   contracts,
   totalCount,
-  onRowAction,
 }: ContractTableProps) => {
+  const { isOpen, onOpenChange, selectedItem, selectItem } =
+    useEntityPanel<ContractSummary>();
+
   const columns = React.useMemo(() => {
-    const columnHelper = createColumnHelper<ContractSummary>();
+    const c = createColumnHelper<ContractSummary>();
 
     return [
-      columnHelper.accessor("identification", {
+      c.accessor("identification", {
         header: "Processo",
         enableSorting: isSortable("identification"),
       }),
-      columnHelper.accessor("client", {
+      c.accessor("client", {
         header: "Cliente",
         enableSorting: isSortable("client"),
       }),
-      columnHelper.accessor("lawyer", {
+      c.accessor("lawyer", {
         header: "Advogado",
         enableSorting: isSortable("lawyer"),
       }),
-      columnHelper.accessor("feePercent", {
+      c.accessor("feePercent", {
         header: "Honorários",
         cell: ({ row }) => formatter.percent(row.original.feePercent),
         enableSorting: isSortable("feePercent"),
       }),
-      columnHelper.accessor("legalArea", {
+      c.accessor("legalArea", {
         header: "Área",
         cell: ({ row }) => (
           <Chip size="sm">
@@ -54,7 +57,7 @@ export const ContractTable = ({
         ),
         enableSorting: isSortable("legalArea"),
       }),
-      columnHelper.accessor("status", {
+      c.accessor("status", {
         header: "Status",
         cell: ({ row }) => <ChipStatus status={row.original.status} />,
         enableSorting: isSortable("status"),
@@ -63,11 +66,20 @@ export const ContractTable = ({
   }, []);
 
   return (
-    <DataTable
-      totalCount={totalCount}
-      columns={columns}
-      data={contracts}
-      onRowAction={onRowAction}
-    />
+    <React.Fragment>
+      <DataTable
+        totalCount={totalCount}
+        columns={columns}
+        data={contracts}
+        onRowAction={(index) => selectItem(contracts[Number(index)])}
+      />
+      {selectedItem && (
+        <ContractDetails
+          id={selectedItem.id}
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+        />
+      )}
+    </React.Fragment>
   );
 };

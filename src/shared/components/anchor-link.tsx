@@ -7,7 +7,7 @@ export const AnchorLink = ({ ...props }: LinkProps) => {
     <Tooltip content="Ver detalhes">
       <Link
         size="sm"
-        isBlock
+        underline="hover"
         showAnchorIcon
         color="foreground"
         anchorIcon={<LinkIcon size={14} className="ml-2" />}

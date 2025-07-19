@@ -1,8 +1,12 @@
-import type { RevenueType } from "~/shared/types/revenue";
+import type {
+  EmployeeAssignment,
+  EmployeeRole,
+  EmployeeType,
+} from "~/shared/types/employee";
 import type { ClientType } from "~/shared/types/client";
+import type { RevenueType } from "~/shared/types/revenue";
 import type { EntityStatus } from "~/shared/types/drizzle";
 import type { ContractLegalArea } from "~/shared/types/contract";
-import type { EmployeeRole, EmployeeType } from "~/shared/types/employee";
 
 const EntityStatusAlias = {
   active: "Ativo",
@@ -18,6 +22,14 @@ const EmployeeTypeAlias = {
   lawyer: "Advogado",
   admin_assistant: "Aux. Admin.",
 } satisfies Record<EmployeeType, string>;
+
+const EmployeeAssignmentAlias = {
+  responsible: "Advogado",
+  recommended: "Advogado",
+  recommending: "Indicação",
+  aditional: "Adicional",
+  admin_assistant: "Aux. Admin.",
+} satisfies Record<EmployeeAssignment, string>;
 
 const ClientTypeAlias = {
   pf: "PF",
@@ -48,6 +60,10 @@ function formatEmployeeRole(role: EmployeeRole) {
 
 function formatEmployeeType(type: EmployeeType) {
   return EmployeeTypeAlias[type] ?? type;
+}
+
+function formatEmployeeAssignment(assignment: EmployeeAssignment) {
+  return EmployeeAssignmentAlias[assignment] ?? assignment;
 }
 
 function formatClientType(type: ClientType) {
@@ -118,6 +134,7 @@ export const formatter = {
   entityStatus: formatEntityStatus,
   employeeRole: formatEmployeeRole,
   employeeType: formatEmployeeType,
+  employeeAssignment: formatEmployeeAssignment,
   clientType: formatClientType,
   contractLegalArea: formatContractLegalArea,
   revenueType: formatRevenueType,

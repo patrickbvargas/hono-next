@@ -1,12 +1,9 @@
-import { employees } from "~/server/db/schemas";
-import type { InferSelectModel } from "drizzle-orm";
-
-type EmployeeTable = InferSelectModel<typeof employees>;
+import type { EmployeeContractRaw, EmployeeRaw } from "./drizzle";
 
 type ContractCount = { contractCount: number };
 
 export type EmployeeSummary = Pick<
-  EmployeeTable,
+  EmployeeRaw,
   | "id"
   | "fullName"
   | "oabNumber"
@@ -18,7 +15,7 @@ export type EmployeeSummary = Pick<
   ContractCount;
 
 export type Employee = Pick<
-  EmployeeTable,
+  EmployeeRaw,
   | "id"
   | "fullName"
   | "oabNumber"
@@ -30,6 +27,7 @@ export type Employee = Pick<
 > &
   ContractCount;
 
-export type EmployeeType = EmployeeSummary["type"];
-export type EmployeeRole = EmployeeSummary["role"];
+export type EmployeeType = EmployeeRaw["type"];
+export type EmployeeRole = EmployeeRaw["role"];
+export type EmployeeAssignment = EmployeeContractRaw["assignment"];
 export type EmployeeSortColumn = keyof EmployeeSummary;
