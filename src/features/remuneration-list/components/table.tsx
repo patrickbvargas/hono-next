@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import { Chip } from "@heroui/react";
+import { DataTable } from "~/shared/components";
 import { formatter } from "~/shared/lib/formatter";
 import { createColumnHelper } from "@tanstack/react-table";
-import { ButtonEntityRow, DataTable } from "~/shared/components";
 import type { RemunerationSummary } from "~/shared/types/remuneration";
 import { REMUNERATION_SORT_COLUMNS } from "~/shared/constants/remuneration";
 
@@ -16,13 +16,13 @@ const isSortable = (column: keyof RemunerationSummary) =>
 interface RemunerationTableProps {
   remunerations: RemunerationSummary[];
   totalCount: number;
-  onSelectRemuneration: (remuneration: RemunerationSummary) => void;
+  onRowAction: (rowIndex: React.Key) => void;
 }
 
 export const RemunerationTable = ({
   remunerations,
   totalCount,
-  onSelectRemuneration,
+  onRowAction,
 }: RemunerationTableProps) => {
   const columns = React.useMemo(() => {
     const columnHelper = createColumnHelper<RemunerationSummary>();
@@ -30,13 +30,6 @@ export const RemunerationTable = ({
     return [
       columnHelper.accessor("contract", {
         header: "Processo",
-        cell: ({ row }) => (
-          <ButtonEntityRow
-            onSelectItem={() => onSelectRemuneration(row.original)}
-          >
-            {row.original.contract}
-          </ButtonEntityRow>
-        ),
         enableSorting: isSortable("contract"),
       }),
       columnHelper.accessor("employee", {
@@ -76,6 +69,11 @@ export const RemunerationTable = ({
   }, []);
 
   return (
-    <DataTable totalCount={totalCount} columns={columns} data={remunerations} />
+    <DataTable
+      totalCount={totalCount}
+      columns={columns}
+      data={remunerations}
+      onRowAction={onRowAction}
+    />
   );
 };

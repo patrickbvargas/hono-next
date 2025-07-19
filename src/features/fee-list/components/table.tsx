@@ -2,11 +2,11 @@
 
 import * as React from "react";
 import { Chip } from "@heroui/react";
+import { DataTable } from "~/shared/components";
 import { formatter } from "~/shared/lib/formatter";
 import type { FeeSummary } from "~/shared/types/fee";
 import { createColumnHelper } from "@tanstack/react-table";
 import { FEE_SORT_COLUMNS } from "~/shared/constants/fee";
-import { ButtonEntityRow, DataTable } from "~/shared/components";
 
 const isSortable = (column: keyof FeeSummary) =>
   FEE_SORT_COLUMNS.includes(column as (typeof FEE_SORT_COLUMNS)[number]);
@@ -14,21 +14,16 @@ const isSortable = (column: keyof FeeSummary) =>
 interface FeeTableProps {
   fees: FeeSummary[];
   totalCount: number;
-  onSelectFee: (fee: FeeSummary) => void;
+  onRowAction: (rowIndex: React.Key) => void;
 }
 
-export const FeeTable = ({ fees, totalCount, onSelectFee }: FeeTableProps) => {
+export const FeeTable = ({ fees, totalCount, onRowAction }: FeeTableProps) => {
   const columns = React.useMemo(() => {
     const columnHelper = createColumnHelper<FeeSummary>();
 
     return [
       columnHelper.accessor("contract", {
         header: "Processo",
-        cell: ({ row }) => (
-          <ButtonEntityRow onSelectItem={() => onSelectFee(row.original)}>
-            {row.original.contract}
-          </ButtonEntityRow>
-        ),
         enableSorting: isSortable("contract"),
       }),
       columnHelper.accessor("client", {
@@ -62,5 +57,12 @@ export const FeeTable = ({ fees, totalCount, onSelectFee }: FeeTableProps) => {
     ];
   }, []);
 
-  return <DataTable totalCount={totalCount} columns={columns} data={fees} />;
+  return (
+    <DataTable
+      totalCount={totalCount}
+      columns={columns}
+      data={fees}
+      onRowAction={onRowAction}
+    />
+  );
 };

@@ -5,8 +5,8 @@ import { Chip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
 import type { ClientSummary } from "~/shared/types/client";
 import { createColumnHelper } from "@tanstack/react-table";
+import { ChipStatus, DataTable } from "~/shared/components";
 import { CLIENT_SORT_COLUMNS } from "~/shared/constants/client";
-import { ButtonEntityRow, ChipStatus, DataTable } from "~/shared/components";
 
 const isSortable = (column: keyof ClientSummary) =>
   CLIENT_SORT_COLUMNS.includes(column as (typeof CLIENT_SORT_COLUMNS)[number]);
@@ -14,13 +14,13 @@ const isSortable = (column: keyof ClientSummary) =>
 interface ClientTableProps {
   clients: ClientSummary[];
   totalCount: number;
-  onSelectClient: (client: ClientSummary) => void;
+  onRowAction: (rowIndex: React.Key) => void;
 }
 
 export const ClientTable = ({
   clients,
   totalCount,
-  onSelectClient,
+  onRowAction,
 }: ClientTableProps) => {
   const columns = React.useMemo(() => {
     const columnHelper = createColumnHelper<ClientSummary>();
@@ -28,11 +28,6 @@ export const ClientTable = ({
     return [
       columnHelper.accessor("fullName", {
         header: "Nome",
-        cell: ({ row }) => (
-          <ButtonEntityRow onSelectItem={() => onSelectClient(row.original)}>
-            {row.original.fullName}
-          </ButtonEntityRow>
-        ),
         enableSorting: isSortable("fullName"),
       }),
       columnHelper.accessor("cnpjf", {
@@ -63,5 +58,12 @@ export const ClientTable = ({
     ];
   }, []);
 
-  return <DataTable totalCount={totalCount} columns={columns} data={clients} />;
+  return (
+    <DataTable
+      totalCount={totalCount}
+      columns={columns}
+      data={clients}
+      onRowAction={onRowAction}
+    />
+  );
 };

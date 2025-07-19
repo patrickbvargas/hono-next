@@ -91,7 +91,7 @@ export const DataTable = <TData, TValue>({
         emptyContent={"Nenhum registro encontrado."}
       >
         {table.getRowModel().rows.map((row) => (
-          <TableRow key={row.id}>
+          <TableRow key={row.id} className="h-12 cursor-pointer">
             {row.getVisibleCells().map((cell) => (
               <TableCell key={cell.id}>
                 <span>

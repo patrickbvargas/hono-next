@@ -23,8 +23,8 @@ export const RemunerationList = ({
   remunerations,
   count,
 }: RemunerationListProps) => {
-  const { isOpen, onOpenChange, selectedItem, handleSelectItem } =
-    useEntityDetails<RemunerationSummary>();
+  const { isOpen, onOpenChange, selectedItem, onRowAction } =
+    useEntityDetails<RemunerationSummary>(remunerations);
 
   return (
     <Wrapper title={ROUTES.remuneration.label}>
@@ -36,7 +36,7 @@ export const RemunerationList = ({
         <RemunerationTable
           remunerations={remunerations}
           totalCount={count}
-          onSelectRemuneration={handleSelectItem}
+          onRowAction={onRowAction}
         />
         <RemunerationDetails
           remuneration={selectedItem}

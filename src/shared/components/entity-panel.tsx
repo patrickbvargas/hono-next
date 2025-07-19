@@ -15,6 +15,7 @@ import {
 } from "@heroui/accordion";
 import { cn } from "@heroui/react";
 import { Button } from "@heroui/button";
+import { Tooltip } from "@heroui/tooltip";
 import { DefinitionList } from "./definition-item";
 import { PenLineIcon, TrashIcon } from "lucide-react";
 import type { EntityPanelData } from "~/shared/types/entity-data";
@@ -94,12 +95,16 @@ export const EntityPanelActions = ({
 }: EntityPanelActionsProps) => {
   return (
     <React.Fragment>
-      <Button isIconOnly onPress={onEdit}>
-        <PenLineIcon size={16} className="opacity-60" />
-      </Button>
-      <Button isIconOnly color="danger" onPress={onDelete}>
-        <TrashIcon size={16} className="opacity-60" />
-      </Button>
+      <Tooltip content="Editar" placement="left">
+        <Button variant="flat" isIconOnly onPress={onEdit}>
+          <PenLineIcon size={16} className="opacity-60" />
+        </Button>
+      </Tooltip>
+      <Tooltip content="Excluir" placement="left">
+        <Button variant="flat" isIconOnly color="danger" onPress={onDelete}>
+          <TrashIcon size={16} className="opacity-60" />
+        </Button>
+      </Tooltip>
     </React.Fragment>
   );
 };

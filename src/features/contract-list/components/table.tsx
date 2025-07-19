@@ -4,9 +4,9 @@ import * as React from "react";
 import { Chip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
 import { createColumnHelper } from "@tanstack/react-table";
+import { ChipStatus, DataTable } from "~/shared/components";
 import type { ContractSummary } from "~/shared/types/contract";
 import { CONTRACT_SORT_COLUMNS } from "~/shared/constants/contract";
-import { ButtonEntityRow, ChipStatus, DataTable } from "~/shared/components";
 
 const isSortable = (column: keyof ContractSummary) =>
   CONTRACT_SORT_COLUMNS.includes(
@@ -16,13 +16,13 @@ const isSortable = (column: keyof ContractSummary) =>
 interface ContractTableProps {
   contracts: ContractSummary[];
   totalCount: number;
-  onSelectContract: (contract: ContractSummary) => void;
+  onRowAction: (rowIndex: React.Key) => void;
 }
 
 export const ContractTable = ({
   contracts,
   totalCount,
-  onSelectContract,
+  onRowAction,
 }: ContractTableProps) => {
   const columns = React.useMemo(() => {
     const columnHelper = createColumnHelper<ContractSummary>();
@@ -30,11 +30,6 @@ export const ContractTable = ({
     return [
       columnHelper.accessor("identification", {
         header: "Processo",
-        cell: ({ row }) => (
-          <ButtonEntityRow onSelectItem={() => onSelectContract(row.original)}>
-            {row.original.identification}
-          </ButtonEntityRow>
-        ),
         enableSorting: isSortable("identification"),
       }),
       columnHelper.accessor("client", {
@@ -68,6 +63,11 @@ export const ContractTable = ({
   }, []);
 
   return (
-    <DataTable totalCount={totalCount} columns={columns} data={contracts} />
+    <DataTable
+      totalCount={totalCount}
+      columns={columns}
+      data={contracts}
+      onRowAction={onRowAction}
+    />
   );
 };

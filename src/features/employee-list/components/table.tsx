@@ -4,8 +4,8 @@ import * as React from "react";
 import { Chip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
 import { createColumnHelper } from "@tanstack/react-table";
+import { ChipStatus, DataTable } from "~/shared/components";
 import type { EmployeeSummary } from "~/shared/types/employee";
-import { ButtonEntityRow, ChipStatus, DataTable } from "~/shared/components";
 import { EMPLOYEE_SORT_COLUMNS } from "~/shared/constants/employee";
 
 const isSortable = (column: keyof EmployeeSummary) =>
@@ -16,13 +16,13 @@ const isSortable = (column: keyof EmployeeSummary) =>
 interface EmployeeTableProps {
   employees: EmployeeSummary[];
   totalCount: number;
-  onSelectEmployee: (employee: EmployeeSummary) => void;
+  onRowAction: (rowIndex: React.Key) => void;
 }
 
 export const EmployeeTable = ({
   employees,
   totalCount,
-  onSelectEmployee,
+  onRowAction,
 }: EmployeeTableProps) => {
   const columns = React.useMemo(() => {
     const columnHelper = createColumnHelper<EmployeeSummary>();
@@ -30,11 +30,6 @@ export const EmployeeTable = ({
     return [
       columnHelper.accessor("fullName", {
         header: "Nome",
-        cell: ({ row }) => (
-          <ButtonEntityRow onSelectItem={() => onSelectEmployee(row.original)}>
-            {row.original.fullName}
-          </ButtonEntityRow>
-        ),
         enableSorting: isSortable("fullName"),
       }),
       columnHelper.accessor("oabNumber", {
@@ -72,6 +67,11 @@ export const EmployeeTable = ({
   }, []);
 
   return (
-    <DataTable totalCount={totalCount} columns={columns} data={employees} />
+    <DataTable
+      totalCount={totalCount}
+      columns={columns}
+      data={employees}
+      onRowAction={onRowAction}
+    />
   );
 };

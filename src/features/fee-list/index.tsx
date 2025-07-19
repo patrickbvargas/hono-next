@@ -20,8 +20,8 @@ interface FeeListProps {
 }
 
 export const FeeList = ({ fees, count }: FeeListProps) => {
-  const { isOpen, onOpenChange, selectedItem, handleSelectItem } =
-    useEntityDetails<FeeSummary>();
+  const { isOpen, onOpenChange, selectedItem, onRowAction } =
+    useEntityDetails<FeeSummary>(fees);
 
   return (
     <Wrapper title={ROUTES.fee.label}>
@@ -30,11 +30,7 @@ export const FeeList = ({ fees, count }: FeeListProps) => {
         <FeeFilter />
       </WrapperHeader>
       <WrapperBody>
-        <FeeTable
-          fees={fees}
-          totalCount={count}
-          onSelectFee={handleSelectItem}
-        />
+        <FeeTable fees={fees} totalCount={count} onRowAction={onRowAction} />
         <FeeDetails
           fee={selectedItem}
           isOpen={isOpen}

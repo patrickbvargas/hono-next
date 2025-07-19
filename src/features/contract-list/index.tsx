@@ -20,8 +20,8 @@ interface ContractListProps {
 }
 
 export const ContractList = ({ contracts, count }: ContractListProps) => {
-  const { isOpen, onOpenChange, selectedItem, handleSelectItem } =
-    useEntityDetails<ContractSummary>();
+  const { isOpen, onOpenChange, selectedItem, onRowAction } =
+    useEntityDetails<ContractSummary>(contracts);
 
   return (
     <Wrapper title={ROUTES.contract.label}>
@@ -33,7 +33,7 @@ export const ContractList = ({ contracts, count }: ContractListProps) => {
         <ContractTable
           contracts={contracts}
           totalCount={count}
-          onSelectContract={handleSelectItem}
+          onRowAction={onRowAction}
         />
         <ContractDetails
           contract={selectedItem}

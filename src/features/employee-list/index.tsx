@@ -20,8 +20,8 @@ interface EmployeeListProps {
 }
 
 export const EmployeeList = ({ employees, count }: EmployeeListProps) => {
-  const { isOpen, onOpenChange, selectedItem, handleSelectItem } =
-    useEntityDetails<EmployeeSummary>();
+  const { isOpen, onOpenChange, selectedItem, onRowAction } =
+    useEntityDetails<EmployeeSummary>(employees);
 
   return (
     <Wrapper title={ROUTES.employee.label}>
@@ -33,7 +33,7 @@ export const EmployeeList = ({ employees, count }: EmployeeListProps) => {
         <EmployeeTable
           employees={employees}
           totalCount={count}
-          onSelectEmployee={handleSelectItem}
+          onRowAction={onRowAction}
         />
         <EmployeeDetails
           employee={selectedItem}

@@ -20,8 +20,8 @@ interface ClientListProps {
 }
 
 export const ClientList = ({ clients, count }: ClientListProps) => {
-  const { isOpen, onOpenChange, selectedItem, handleSelectItem } =
-    useEntityDetails<ClientSummary>();
+  const { isOpen, onOpenChange, selectedItem, onRowAction } =
+    useEntityDetails<ClientSummary>(clients);
 
   return (
     <Wrapper title={ROUTES.client.label}>
@@ -33,7 +33,7 @@ export const ClientList = ({ clients, count }: ClientListProps) => {
         <ClientTable
           clients={clients}
           totalCount={count}
-          onSelectClient={handleSelectItem}
+          onRowAction={onRowAction}
         />
         <ClientDetails
           client={selectedItem}
