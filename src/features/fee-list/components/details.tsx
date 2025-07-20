@@ -1,43 +1,70 @@
 import * as React from "react";
 import {
+  AnchorLink,
   EntityPanel,
   EntityPanelAccordion,
   EntityPanelActions,
   EntityPanelBody,
   EntityPanelFooter,
   EntityPanelHeader,
+  type EntityPanelProps,
 } from "~/shared/components";
+import { api } from "~/trpc/client";
+import { Spinner } from "@heroui/react";
+import { ROUTES } from "~/shared/constants/route";
 import { formatter } from "~/shared/lib/formatter";
-import type { FeeSummary } from "~/shared/types/fee";
+import { searchSerializer } from "~/shared/lib/nuqs";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
-interface FeeDetailsProps
-  extends Omit<React.ComponentProps<typeof EntityPanel>, "children"> {
-  fee: FeeSummary | null;
+interface FeeDetailsProps extends EntityPanelProps {
+  id: string;
 }
 
-export const FeeDetails = ({ fee, ...props }: FeeDetailsProps) => {
-  if (!fee) return null;
+export const FeeDetails = ({ id, ...props }: FeeDetailsProps) => {
+  return (
+    <EntityPanel {...props}>
+      <React.Suspense fallback={<Spinner />}>
+        <FeeDetailsContent id={id} />
+      </React.Suspense>
+    </EntityPanel>
+  );
+};
 
-  const feeData: EntityPanelData[] = [
-    {
-      title: "Identificação",
+interface FeeDetailsContentProps {
+  id: string;
+}
+
+const FeeDetailsContent = ({ id }: FeeDetailsContentProps) => {
+  const [fee] = api.fees.getOne.useSuspenseQuery({ id });
+
+  const feeData: EntityPanelData[] = React.useMemo(() => {
+    const generalSection: EntityPanelData = {
+      title: "Informações Gerais",
       data: [
         {
           term: "Processo",
-          definition: fee.contract,
+          definition: fee.contract.identification,
         },
         {
           term: "Área",
-          definition: formatter.contractLegalArea(fee.legalArea),
+          definition: formatter.contractLegalArea(fee.contract.legalArea),
         },
         {
           term: "Cliente",
-          definition: fee.client,
+          definition: (
+            <AnchorLink
+              href={`${ROUTES.client.url}${searchSerializer({
+                query: fee.contract.client.fullName,
+              })}`}
+            >
+              {fee.contract.client.fullName}
+            </AnchorLink>
+          ),
         },
       ],
-    },
-    {
+    };
+
+    const financialSection: EntityPanelData = {
       title: "Financeiro",
       data: [
         {
@@ -50,15 +77,54 @@ export const FeeDetails = ({ fee, ...props }: FeeDetailsProps) => {
         },
         {
           term: "Tipo Receita",
-          definition: formatter.revenueType(fee.revenueType),
+          definition: formatter.revenueType(fee.revenue.type),
         },
       ],
-    },
-  ];
+    };
+
+    const remunerationsSections: EntityPanelData[] = fee.remunerations.map(
+      (r) => ({
+        title: `Remuneração - ${r.contractEmployee.employee.fullName}`,
+        data: [
+          {
+            term: "Posição",
+            definition: formatter.employeeAssignment(
+              r.contractEmployee.assignment,
+            ),
+          },
+          {
+            term: "Valor",
+            definition: formatter.currency(r.value),
+          },
+          {
+            term: "Percentual",
+            definition: formatter.percent(r.remunerationPercent),
+          },
+        ],
+      }),
+    );
+
+    const registerSection: EntityPanelData = {
+      title: "Registro",
+      data: [
+        {
+          term: "Criado em",
+          definition: formatter.timestamp(fee.createdAt),
+        },
+      ],
+    };
+
+    return [
+      generalSection,
+      financialSection,
+      ...remunerationsSections,
+      registerSection,
+    ];
+  }, [fee]);
 
   return (
-    <EntityPanel {...props}>
-      <EntityPanelHeader>{fee.contract}</EntityPanelHeader>
+    <React.Fragment>
+      <EntityPanelHeader>{fee.contract.identification}</EntityPanelHeader>
       <EntityPanelBody>
         <EntityPanelAccordion data={feeData} />
       </EntityPanelBody>
@@ -68,6 +134,6 @@ export const FeeDetails = ({ fee, ...props }: FeeDetailsProps) => {
           onDelete={() => console.log("delete")}
         />
       </EntityPanelFooter>
-    </EntityPanel>
+    </React.Fragment>
   );
 };

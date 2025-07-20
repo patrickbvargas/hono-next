@@ -3,14 +3,19 @@ import {
   zSearchParser,
 } from "~/shared/schemas/query-parser";
 import { z } from "zod/v4";
-import type { FeeSummary } from "~/shared/types/fee";
+import type {
+  QueryFields,
+  QueryManyReturnType,
+  QueryOneReturnType,
+} from "../types/query";
+import { TRPCError } from "@trpc/server";
+import type { Fee, FeeSummary } from "~/shared/types/fee";
 import { SORT_DIRECTIONS } from "~/shared/constants/sort";
 import { FEE_SORT_COLUMNS } from "~/shared/constants/fee";
 import { REVENUE_TYPES } from "~/shared/constants/revenue";
 import { CONTRACT_LEGAL_AREAS } from "~/shared/constants/contract";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { clients, contracts, fees, revenues } from "~/server/db/schemas";
-import type { QueryFields, QueryManyReturnType } from "../types/query";
 import { and, eq, inArray, count, ilike, or, desc, SQL } from "drizzle-orm";
 
 const zQueryOneParams = z.object({
@@ -26,8 +31,8 @@ const zQueryManyParams = z.object({
   revenueType: z.enum(REVENUE_TYPES).array(),
 });
 
-export type QueryManyParams = z.infer<typeof zQueryManyParams>;
 export type QueryOneParams = z.infer<typeof zQueryOneParams>;
+export type QueryManyParams = z.infer<typeof zQueryManyParams>;
 
 function getFilters({
   query,
@@ -57,8 +62,8 @@ function getSort({
   direction,
 }: Pick<QueryManyParams, "column" | "direction">) {
   return direction === "descending"
-    ? desc(selectFields[column])
-    : selectFields[column];
+    ? desc(queryManyFields[column])
+    : queryManyFields[column];
 }
 
 function getJoinRules() {
@@ -69,7 +74,7 @@ function getJoinRules() {
   };
 }
 
-const selectFields = {
+const queryManyFields = {
   id: fees.id,
   paymentDate: fees.paymentDate,
   value: fees.value,
@@ -80,6 +85,75 @@ const selectFields = {
 } satisfies QueryFields<FeeSummary>;
 
 export const feeRouter = createTRPCRouter({
+  getOne: publicProcedure
+    .input(zQueryOneParams)
+    .query(
+      async ({
+        ctx: { db },
+        input: { id },
+      }): Promise<QueryOneReturnType<Fee>> => {
+        const data = await db.query.fees.findFirst({
+          columns: {
+            id: true,
+            value: true,
+            installmentNumber: true,
+            paymentDate: true,
+            createdAt: true,
+          },
+          with: {
+            contract: {
+              columns: {
+                identification: true,
+                legalArea: true,
+              },
+              with: {
+                client: {
+                  columns: {
+                    fullName: true,
+                  },
+                },
+              },
+            },
+            revenue: {
+              columns: {
+                type: true,
+              },
+            },
+            remunerations: {
+              columns: {
+                remunerationPercent: true,
+                value: true,
+              },
+              with: {
+                contractEmployee: {
+                  columns: {
+                    assignment: true,
+                  },
+                  with: {
+                    employee: {
+                      columns: {
+                        fullName: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          where: eq(fees.id, id),
+        });
+
+        if (!data) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Fee not found",
+          });
+        }
+
+        return data;
+      },
+    ),
+
   getMany: publicProcedure
     .input(zQueryManyParams)
     .query(
@@ -109,7 +183,7 @@ export const feeRouter = createTRPCRouter({
             .innerJoin(clients, joinRules.clients)
             .where(filters),
           db
-            .select(selectFields)
+            .select(queryManyFields)
             .from(fees)
             .innerJoin(revenues, joinRules.revenues)
             .innerJoin(contracts, joinRules.contracts)

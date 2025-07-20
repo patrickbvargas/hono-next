@@ -107,7 +107,7 @@ const ContractDetailsContent = ({ id }: ContractDetailsContentProps) => {
       ],
     }));
 
-    const detailsSection: EntityPanelData = {
+    const registerSection: EntityPanelData = {
       title: "Registro",
       data: [
         {
@@ -125,7 +125,7 @@ const ContractDetailsContent = ({ id }: ContractDetailsContentProps) => {
       generalSection,
       employeesSection,
       ...revenuesSections,
-      detailsSection,
+      registerSection,
     ];
   }, [contract]);
 

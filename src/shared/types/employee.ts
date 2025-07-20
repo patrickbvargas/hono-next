@@ -1,4 +1,4 @@
-import type { EmployeeContractRaw, EmployeeRaw } from "./drizzle";
+import type { ContractEmployeeRaw, EmployeeRaw } from "./drizzle";
 
 type ContractCount = { contractCount: number };
 
@@ -29,5 +29,5 @@ export type Employee = Pick<
 
 export type EmployeeType = EmployeeRaw["type"];
 export type EmployeeRole = EmployeeRaw["role"];
-export type EmployeeAssignment = EmployeeContractRaw["assignment"];
+export type EmployeeAssignment = ContractEmployeeRaw["assignment"];
 export type EmployeeSortColumn = keyof EmployeeSummary;
