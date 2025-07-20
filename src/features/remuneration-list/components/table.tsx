@@ -39,6 +39,11 @@ export const RemunerationTable = ({
         header: "Funcionário",
         enableSorting: isSortable("employee"),
       }),
+      c.accessor("remunerationPercent", {
+        header: "%",
+        cell: ({ row }) => formatter.percent(row.original.remunerationPercent),
+        enableSorting: isSortable("remunerationPercent"),
+      }),
       c.accessor("revenueType", {
         header: "Tipo Receita",
         cell: ({ row }) => formatter.revenueType(row.original.revenueType),
@@ -52,11 +57,6 @@ export const RemunerationTable = ({
           </Chip>
         ),
         enableSorting: isSortable("legalArea"),
-      }),
-      c.accessor("remunerationPercent", {
-        header: "%",
-        cell: ({ row }) => formatter.percent(row.original.remunerationPercent),
-        enableSorting: isSortable("remunerationPercent"),
       }),
       c.accessor("paymentDate", {
         header: "Data",

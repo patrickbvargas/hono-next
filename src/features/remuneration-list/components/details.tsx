@@ -47,7 +47,7 @@ const RemunerationDetailsContent = ({
       title: "Informações Gerais",
       data: [
         {
-          term: "Contrato",
+          term: "Processo",
           definition: (
             <AnchorLink
               href={`${ROUTES.contract.url}${searchSerializer({
@@ -62,6 +62,18 @@ const RemunerationDetailsContent = ({
           term: "Área",
           definition: formatter.contractLegalArea(
             remuneration.contract.legalArea,
+          ),
+        },
+        {
+          term: "Cliente",
+          definition: (
+            <AnchorLink
+              href={`${ROUTES.client.url}${searchSerializer({
+                query: remuneration.contract.client.fullName,
+              })}`}
+            >
+              {remuneration.contract.client.fullName}
+            </AnchorLink>
           ),
         },
         {

@@ -38,36 +38,18 @@ interface ClientDetailsContentProps {
 const ClientDetailsContent = ({ id }: ClientDetailsContentProps) => {
   const [client] = api.clients.getOne.useSuspenseQuery({ id });
 
-  const clientData: EntityPanelData[] = [
-    {
-      title: "Identificação",
+  const clientData: EntityPanelData[] = React.useMemo(() => {
+    const generalSection: EntityPanelData = {
+      title: "Informações Gerais",
       data: [
         {
           term: "Tipo",
           definition: formatter.clientType(client.type),
         },
         {
-          term: "CNPJF",
+          term: client.type === "pf" ? "CPF" : "CNPJ",
           definition: formatter.cnpjf(client.cnpjf),
         },
-      ],
-    },
-    {
-      title: "Contato",
-      data: [
-        {
-          term: "Email",
-          definition: client.email,
-        },
-        {
-          term: "Celular",
-          definition: client.mobilePhone,
-        },
-      ],
-    },
-    {
-      title: "Detalhes",
-      data: [
         {
           term: "Contratos",
           definition: (
@@ -80,6 +62,26 @@ const ClientDetailsContent = ({ id }: ClientDetailsContentProps) => {
             </AnchorLink>
           ),
         },
+      ],
+    };
+
+    const contactSection: EntityPanelData = {
+      title: "Contato",
+      data: [
+        {
+          term: "Email",
+          definition: client.email,
+        },
+        {
+          term: "Celular",
+          definition: client.mobilePhone,
+        },
+      ],
+    };
+
+    const registerSection: EntityPanelData = {
+      title: "Registro",
+      data: [
         {
           term: "Status",
           definition: <ChipStatus status={client.status} />,
@@ -89,8 +91,10 @@ const ClientDetailsContent = ({ id }: ClientDetailsContentProps) => {
           definition: formatter.timestamp(client.createdAt),
         },
       ],
-    },
-  ];
+    };
+
+    return [generalSection, contactSection, registerSection];
+  }, [client]);
 
   return (
     <React.Fragment>

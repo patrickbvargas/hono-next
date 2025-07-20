@@ -122,6 +122,13 @@ export const remunerationRouter = createTRPCRouter({
                 identification: true,
                 legalArea: true,
               },
+              with: {
+                client: {
+                  columns: {
+                    fullName: true,
+                  },
+                },
+              },
             },
             contractEmployee: {
               columns: {

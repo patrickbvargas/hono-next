@@ -42,7 +42,7 @@ const FeeDetailsContent = ({ id }: FeeDetailsContentProps) => {
       title: "Informações Gerais",
       data: [
         {
-          term: "Contrato",
+          term: "Processo",
           definition: (
             <AnchorLink
               href={`${ROUTES.contract.url}${searchSerializer({

@@ -59,18 +59,24 @@ const ContractDetailsContent = ({ id }: ContractDetailsContentProps) => {
           definition: formatter.contractLegalArea(contract.legalArea),
         },
         {
-          term: "Honorários",
-          definition: formatter.percent(contract.feePercent),
-        },
-        {
           term: "Observações",
           definition: contract.observation ?? "-",
         },
       ],
     };
 
+    const financialSection: EntityPanelData = {
+      title: "Financeiro",
+      data: [
+        {
+          term: "Honorários",
+          definition: formatter.percent(contract.feePercent),
+        },
+      ],
+    };
+
     const employeesSection: EntityPanelData = {
-      title: "Responsáveis",
+      title: "Designações",
       data: contract.employees.map((e) => ({
         term: formatter.employeeAssignment(e.assignment),
         definition: (
@@ -123,6 +129,7 @@ const ContractDetailsContent = ({ id }: ContractDetailsContentProps) => {
 
     return [
       generalSection,
+      financialSection,
       employeesSection,
       ...revenuesSections,
       registerSection,

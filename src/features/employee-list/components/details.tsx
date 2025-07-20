@@ -38,9 +38,9 @@ interface EmployeeDetailsContentProps {
 const EmployeeDetailsContent = ({ id }: EmployeeDetailsContentProps) => {
   const [employee] = api.employees.getOne.useSuspenseQuery({ id });
 
-  const employeeData: EntityPanelData[] = [
-    {
-      title: "Identificação",
+  const employeeData: EntityPanelData[] = React.useMemo(() => {
+    const generalSection: EntityPanelData = {
+      title: "Informações Gerais",
       data: [
         {
           term: "OAB",
@@ -54,20 +54,6 @@ const EmployeeDetailsContent = ({ id }: EmployeeDetailsContentProps) => {
           term: "Perfil",
           definition: formatter.employeeRole(employee.role),
         },
-      ],
-    },
-    {
-      title: "Financeiro",
-      data: [
-        {
-          term: "Remuneração",
-          definition: formatter.percent(employee.remunerationPercent),
-        },
-      ],
-    },
-    {
-      title: "Detalhes",
-      data: [
         {
           term: "Contratos",
           definition: (
@@ -80,6 +66,22 @@ const EmployeeDetailsContent = ({ id }: EmployeeDetailsContentProps) => {
             </AnchorLink>
           ),
         },
+      ],
+    };
+
+    const financialSection: EntityPanelData = {
+      title: "Financeiro",
+      data: [
+        {
+          term: "Remuneração",
+          definition: formatter.percent(employee.remunerationPercent),
+        },
+      ],
+    };
+
+    const registerSection: EntityPanelData = {
+      title: "Registro",
+      data: [
         {
           term: "Status",
           definition: <ChipStatus status={employee.status} />,
@@ -89,8 +91,10 @@ const EmployeeDetailsContent = ({ id }: EmployeeDetailsContentProps) => {
           definition: formatter.timestamp(employee.createdAt),
         },
       ],
-    },
-  ];
+    };
+
+    return [generalSection, financialSection, registerSection];
+  }, [employee]);
 
   return (
     <React.Fragment>

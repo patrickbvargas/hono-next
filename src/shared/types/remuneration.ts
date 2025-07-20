@@ -1,4 +1,5 @@
 import type {
+  ClientRaw,
   ContractEmployeeRaw,
   ContractRaw,
   EmployeeRaw,
@@ -11,7 +12,9 @@ import type { ContractLegalArea } from "./contract";
 type RemunerationContractInfo = Pick<
   ContractRaw,
   "identification" | "legalArea"
->;
+> & {
+  client: Pick<ClientRaw, "fullName">;
+};
 
 type RemunerationEmployeeInfo = Pick<ContractEmployeeRaw, "assignment"> & {
   employee: Pick<EmployeeRaw, "fullName">;
