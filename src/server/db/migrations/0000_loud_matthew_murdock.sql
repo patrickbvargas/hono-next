@@ -1,9 +1,9 @@
 CREATE SCHEMA "hono";
 --> statement-breakpoint
 CREATE TYPE "hono"."client_type" AS ENUM('pf', 'pj');--> statement-breakpoint
-CREATE TYPE "hono"."employee_assignment" AS ENUM('responsible', 'recommended', 'recommending', 'aditional', 'admin_assistant');--> statement-breakpoint
-CREATE TYPE "hono"."contract_legal_area" AS ENUM('social_security', 'civil', 'family', 'labor', 'other');--> statement-breakpoint
-CREATE TYPE "hono"."employee_role" AS ENUM('user', 'admin');--> statement-breakpoint
+CREATE TYPE "hono"."employee_assignment" AS ENUM('aditional', 'admin_assistant', 'recommending', 'recommended', 'responsible');--> statement-breakpoint
+CREATE TYPE "hono"."contract_legal_area" AS ENUM('civil', 'family', 'other', 'social_security', 'labor');--> statement-breakpoint
+CREATE TYPE "hono"."employee_role" AS ENUM('admin', 'user');--> statement-breakpoint
 CREATE TYPE "hono"."employee_type" AS ENUM('lawyer', 'admin_assistant');--> statement-breakpoint
 CREATE TYPE "hono"."entity_status" AS ENUM('active', 'inactive');--> statement-breakpoint
 CREATE TYPE "hono"."revenue_type" AS ENUM('administrative', 'judicial', 'compliance');--> statement-breakpoint
@@ -14,12 +14,11 @@ CREATE TABLE "hono"."clients" (
 	"email" text NOT NULL,
 	"mobile_phone" text NOT NULL,
 	"type" "hono"."client_type" NOT NULL,
-	"slug" text NOT NULL,
+	"contract_count" integer NOT NULL,
 	"status" "hono"."entity_status" DEFAULT 'active' NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp,
-	CONSTRAINT "clients_cnpjf_unique" UNIQUE("cnpjf"),
-	CONSTRAINT "clients_slug_unique" UNIQUE("slug")
+	CONSTRAINT "clients_cnpjf_unique" UNIQUE("cnpjf")
 );
 --> statement-breakpoint
 CREATE TABLE "hono"."contract_employee" (
@@ -38,12 +37,10 @@ CREATE TABLE "hono"."contracts" (
 	"fee_percent" real NOT NULL,
 	"observation" text,
 	"legal_area" "hono"."contract_legal_area" NOT NULL,
-	"slug" text NOT NULL,
 	"status" "hono"."entity_status" DEFAULT 'active' NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp,
-	CONSTRAINT "contracts_identification_unique" UNIQUE("identification"),
-	CONSTRAINT "contracts_slug_unique" UNIQUE("slug")
+	CONSTRAINT "contracts_identification_unique" UNIQUE("identification")
 );
 --> statement-breakpoint
 CREATE TABLE "hono"."employees" (
@@ -53,12 +50,11 @@ CREATE TABLE "hono"."employees" (
 	"remuneration_percent" real NOT NULL,
 	"type" "hono"."employee_type" NOT NULL,
 	"role" "hono"."employee_role" DEFAULT 'user' NOT NULL,
-	"slug" text NOT NULL,
+	"contract_count" integer NOT NULL,
 	"status" "hono"."entity_status" DEFAULT 'active' NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp,
-	CONSTRAINT "employees_oab_number_unique" UNIQUE("oab_number"),
-	CONSTRAINT "employees_slug_unique" UNIQUE("slug")
+	CONSTRAINT "employees_oab_number_unique" UNIQUE("oab_number")
 );
 --> statement-breakpoint
 CREATE TABLE "hono"."fees" (

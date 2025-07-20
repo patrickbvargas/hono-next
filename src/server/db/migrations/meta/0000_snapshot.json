@@ -1,5 +1,5 @@
 {
-  "id": "546673b1-af19-45f1-8465-412facf85389",
+  "id": "1a28a5a3-278b-4447-8dee-bfcb887bdd9f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -45,9 +45,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "slug": {
-          "name": "slug",
-          "type": "text",
+        "contract_count": {
+          "name": "contract_count",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -82,13 +82,6 @@
           "nullsNotDistinct": false,
           "columns": [
             "cnpjf"
-          ]
-        },
-        "clients_slug_unique": {
-          "name": "clients_slug_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "slug"
           ]
         }
       },
@@ -188,12 +181,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "slug": {
-          "name": "slug",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "status": {
           "name": "status",
           "type": "entity_status",
@@ -225,13 +212,6 @@
           "nullsNotDistinct": false,
           "columns": [
             "identification"
-          ]
-        },
-        "contracts_slug_unique": {
-          "name": "contracts_slug_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "slug"
           ]
         }
       },
@@ -282,9 +262,9 @@
           "notNull": true,
           "default": "'user'"
         },
-        "slug": {
-          "name": "slug",
-          "type": "text",
+        "contract_count": {
+          "name": "contract_count",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -319,13 +299,6 @@
           "nullsNotDistinct": false,
           "columns": [
             "oab_number"
-          ]
-        },
-        "employees_slug_unique": {
-          "name": "employees_slug_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "slug"
           ]
         }
       },
@@ -552,30 +525,30 @@
       "name": "employee_assignment",
       "schema": "hono",
       "values": [
-        "responsible",
-        "recommended",
-        "recommending",
         "aditional",
-        "admin_assistant"
+        "admin_assistant",
+        "recommending",
+        "recommended",
+        "responsible"
       ]
     },
     "hono.contract_legal_area": {
       "name": "contract_legal_area",
       "schema": "hono",
       "values": [
-        "social_security",
         "civil",
         "family",
-        "labor",
-        "other"
+        "other",
+        "social_security",
+        "labor"
       ]
     },
     "hono.employee_role": {
       "name": "employee_role",
       "schema": "hono",
       "values": [
-        "user",
-        "admin"
+        "admin",
+        "user"
       ]
     },
     "hono.employee_type": {

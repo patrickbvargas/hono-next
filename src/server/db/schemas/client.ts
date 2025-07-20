@@ -3,7 +3,7 @@ import { mainSchema } from "./schema";
 import { contracts } from "./contract";
 import { relations } from "drizzle-orm";
 import { timestamps } from "./timestamp";
-import { text } from "drizzle-orm/pg-core";
+import { text, integer } from "drizzle-orm/pg-core";
 
 export const clientTypeEnum = mainSchema.enum("client_type", ["pf", "pj"]);
 
@@ -14,7 +14,7 @@ export const clients = mainSchema.table("clients", {
   email: text("email").notNull(),
   mobilePhone: text("mobile_phone").notNull(),
   type: clientTypeEnum("type").notNull(),
-  slug: text("slug").unique().notNull(),
+  contractCount: integer("contract_count").notNull(),
   ...status,
   ...timestamps,
 });

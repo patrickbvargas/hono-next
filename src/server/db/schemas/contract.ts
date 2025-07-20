@@ -10,11 +10,11 @@ import { text, real } from "drizzle-orm/pg-core";
 import { contractEmployees } from "./contract_employee";
 
 export const contractLegalAreaEnum = mainSchema.enum("contract_legal_area", [
-  "social_security",
   "civil",
   "family",
-  "labor",
   "other",
+  "social_security",
+  "labor",
 ]);
 
 export const contracts = mainSchema.table("contracts", {
@@ -24,7 +24,6 @@ export const contracts = mainSchema.table("contracts", {
   feePercent: real("fee_percent").notNull(),
   observation: text("observation"),
   legalArea: contractLegalAreaEnum("legal_area").notNull(),
-  slug: text("slug").unique().notNull(),
   ...status,
   ...timestamps,
 });

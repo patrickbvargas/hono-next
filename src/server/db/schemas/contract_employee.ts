@@ -7,11 +7,11 @@ import { text } from "drizzle-orm/pg-core";
 import { remunerations } from "./remuneration";
 
 export const employeeAssignmentEnum = mainSchema.enum("employee_assignment", [
-  "responsible",
-  "recommended",
-  "recommending",
   "aditional",
   "admin_assistant",
+  "recommending",
+  "recommended",
+  "responsible",
 ]);
 
 export const contractEmployees = mainSchema.table("contract_employee", {

@@ -2,8 +2,8 @@ import { status } from "./status";
 import { mainSchema } from "./schema";
 import { relations } from "drizzle-orm";
 import { timestamps } from "./timestamp";
-import { text, real } from "drizzle-orm/pg-core";
 import { contractEmployees } from "./contract_employee";
+import { text, real, integer } from "drizzle-orm/pg-core";
 
 export const employeeTypeEnum = mainSchema.enum("employee_type", [
   "lawyer",
@@ -11,8 +11,8 @@ export const employeeTypeEnum = mainSchema.enum("employee_type", [
 ]);
 
 export const employeeRoleEnum = mainSchema.enum("employee_role", [
-  "user",
   "admin",
+  "user",
 ]);
 
 export const employees = mainSchema.table("employees", {
@@ -22,7 +22,7 @@ export const employees = mainSchema.table("employees", {
   remunerationPercent: real("remuneration_percent").notNull(),
   type: employeeTypeEnum("type").notNull(),
   role: employeeRoleEnum("role").default("user").notNull(),
-  slug: text("slug").unique().notNull(),
+  contractCount: integer("contract_count").notNull(),
   ...status,
   ...timestamps,
 });
