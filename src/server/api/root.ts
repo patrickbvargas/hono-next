@@ -1,3 +1,4 @@
+import { devRouter } from "./routers/dev";
 import { feeRouter } from "./routers/fee";
 import { contractRouter } from "./routers/contract";
 import { clientRouter } from "~/server/api/routers/client";
@@ -11,6 +12,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  dev: devRouter,
   employees: employeeRouter,
   clients: clientRouter,
   contracts: contractRouter,
