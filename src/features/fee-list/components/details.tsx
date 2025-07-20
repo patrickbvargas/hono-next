@@ -42,8 +42,16 @@ const FeeDetailsContent = ({ id }: FeeDetailsContentProps) => {
       title: "Informações Gerais",
       data: [
         {
-          term: "Processo",
-          definition: fee.contract.identification,
+          term: "Contrato",
+          definition: (
+            <AnchorLink
+              href={`${ROUTES.contract.url}${searchSerializer({
+                query: fee.contract.identification,
+              })}`}
+            >
+              {fee.contract.identification}
+            </AnchorLink>
+          ),
         },
         {
           term: "Área",
@@ -87,7 +95,7 @@ const FeeDetailsContent = ({ id }: FeeDetailsContentProps) => {
         title: `Remuneração - ${r.contractEmployee.employee.fullName}`,
         data: [
           {
-            term: "Posição",
+            term: "Designação",
             definition: formatter.employeeAssignment(
               r.contractEmployee.assignment,
             ),

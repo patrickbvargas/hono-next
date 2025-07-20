@@ -2,7 +2,9 @@
 
 import * as React from "react";
 import { Chip } from "@heroui/react";
+import { useEntityPanel } from "~/shared/hooks";
 import { DataTable } from "~/shared/components";
+import { RemunerationDetails } from "./details";
 import { formatter } from "~/shared/lib/formatter";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { RemunerationSummary } from "~/shared/types/remuneration";
@@ -16,32 +18,33 @@ const isSortable = (column: keyof RemunerationSummary) =>
 interface RemunerationTableProps {
   remunerations: RemunerationSummary[];
   totalCount: number;
-  onRowAction: (rowIndex: React.Key) => void;
 }
 
 export const RemunerationTable = ({
   remunerations,
   totalCount,
-  onRowAction,
 }: RemunerationTableProps) => {
+  const { isOpen, onOpenChange, selectedItem, selectItem } =
+    useEntityPanel<RemunerationSummary>();
+
   const columns = React.useMemo(() => {
-    const columnHelper = createColumnHelper<RemunerationSummary>();
+    const c = createColumnHelper<RemunerationSummary>();
 
     return [
-      columnHelper.accessor("contract", {
+      c.accessor("contract", {
         header: "Processo",
         enableSorting: isSortable("contract"),
       }),
-      columnHelper.accessor("employee", {
+      c.accessor("employee", {
         header: "Funcionário",
         enableSorting: isSortable("employee"),
       }),
-      columnHelper.accessor("revenueType", {
+      c.accessor("revenueType", {
         header: "Tipo Receita",
         cell: ({ row }) => formatter.revenueType(row.original.revenueType),
         enableSorting: isSortable("revenueType"),
       }),
-      columnHelper.accessor("legalArea", {
+      c.accessor("legalArea", {
         header: "Área",
         cell: ({ row }) => (
           <Chip size="sm">
@@ -50,17 +53,17 @@ export const RemunerationTable = ({
         ),
         enableSorting: isSortable("legalArea"),
       }),
-      columnHelper.accessor("remunerationPercent", {
+      c.accessor("remunerationPercent", {
         header: "%",
         cell: ({ row }) => formatter.percent(row.original.remunerationPercent),
         enableSorting: isSortable("remunerationPercent"),
       }),
-      columnHelper.accessor("paymentDate", {
+      c.accessor("paymentDate", {
         header: "Data",
         cell: ({ row }) => formatter.date(row.original.paymentDate),
         enableSorting: isSortable("paymentDate"),
       }),
-      columnHelper.accessor("value", {
+      c.accessor("value", {
         header: "Valor",
         cell: ({ row }) => formatter.currency(row.original.value),
         enableSorting: isSortable("value"),
@@ -69,11 +72,20 @@ export const RemunerationTable = ({
   }, []);
 
   return (
-    <DataTable
-      totalCount={totalCount}
-      columns={columns}
-      data={remunerations}
-      onRowAction={onRowAction}
-    />
+    <React.Fragment>
+      <DataTable
+        totalCount={totalCount}
+        columns={columns}
+        data={remunerations}
+        onRowAction={(index) => selectItem(remunerations[Number(index)])}
+      />
+      {selectedItem && (
+        <RemunerationDetails
+          id={selectedItem.id}
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+        />
+      )}
+    </React.Fragment>
   );
 };

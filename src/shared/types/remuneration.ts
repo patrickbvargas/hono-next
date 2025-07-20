@@ -1,6 +1,25 @@
+import type {
+  ContractEmployeeRaw,
+  ContractRaw,
+  EmployeeRaw,
+  RemunerationRaw,
+  RevenueRaw,
+} from "./drizzle";
 import type { RevenueType } from "./revenue";
-import type { RemunerationRaw } from "./drizzle";
 import type { ContractLegalArea } from "./contract";
+
+type RemunerationContractInfo = Pick<
+  ContractRaw,
+  "identification" | "legalArea"
+>;
+
+type RemunerationEmployeeInfo = Pick<ContractEmployeeRaw, "assignment"> & {
+  employee: Pick<EmployeeRaw, "fullName">;
+};
+
+type RemunerationFeeInfo = {
+  revenue: Pick<RevenueRaw, "type">;
+};
 
 export type RemunerationSummary = Pick<
   RemunerationRaw,
@@ -10,6 +29,15 @@ export type RemunerationSummary = Pick<
   legalArea: ContractLegalArea;
   revenueType: RevenueType;
   employee: string;
+};
+
+export type Remuneration = Pick<
+  RemunerationRaw,
+  "id" | "value" | "paymentDate" | "remunerationPercent" | "createdAt"
+> & {
+  contract: RemunerationContractInfo;
+  contractEmployee: RemunerationEmployeeInfo;
+  fee: RemunerationFeeInfo;
 };
 
 export type RemunerationSortColumn = keyof RemunerationSummary;
