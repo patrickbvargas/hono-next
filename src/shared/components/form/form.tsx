@@ -8,14 +8,15 @@ import {
   type UseFormReturn,
 } from "react-hook-form";
 import { cn } from "@heroui/react";
-import { Form } from "@heroui/form";
 import { RHFDebug } from "./aux/debug";
+import { Form, type FormProps } from "@heroui/form";
 
-interface RHFFormProps<T extends FieldValues> extends UseFormReturn<T> {
+interface RHFFormProps<T extends FieldValues>
+  extends UseFormReturn<T>,
+    FormProps {
   submitCallback: SubmitHandler<T>;
-  children: React.ReactNode;
-  className?: string;
   showDebug?: boolean;
+  disableFormContext?: boolean;
 }
 
 export const RHFForm = <T extends FieldValues>({
@@ -24,18 +25,29 @@ export const RHFForm = <T extends FieldValues>({
   submitCallback,
   handleSubmit,
   showDebug = false,
+  disableFormContext = false,
+  validationBehavior = "aria",
   ...props
 }: RHFFormProps<T>) => {
-  return (
-    <FormProvider handleSubmit={handleSubmit} {...props}>
+  const formContent = (
+    <React.Fragment>
       <Form
         id="rhf-form"
-        className={cn("flex flex-col gap-2", className)}
+        validationBehavior={validationBehavior}
         onSubmit={handleSubmit(submitCallback)}
+        className={cn("grid grid-cols-1 gap-2", className)}
       >
         {children}
       </Form>
-      {showDebug && <RHFDebug />}
+      {showDebug && <RHFDebug {...props} />}
+    </React.Fragment>
+  );
+
+  return disableFormContext ? (
+    formContent
+  ) : (
+    <FormProvider handleSubmit={handleSubmit} {...props}>
+      {formContent}
     </FormProvider>
   );
 };

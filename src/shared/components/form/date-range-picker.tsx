@@ -3,6 +3,7 @@
 import {
   Controller,
   useFormContext,
+  type Control,
   type FieldValues,
   type UseControllerProps,
 } from "react-hook-form";
@@ -13,28 +14,33 @@ import {
 
 interface RHFDateRangePickerProps<T extends FieldValues>
   extends UseControllerProps<T>,
-    Omit<DateRangePickerProps, "name" | "defaultValue"> {}
+    Omit<DateRangePickerProps, "name" | "defaultValue"> {
+  control?: Control<T>;
+}
 
 export const RHFDateRangePicker = <T extends FieldValues>({
   name,
-  validationBehavior = "aria",
+  control: providedControl,
   ...props
 }: RHFDateRangePickerProps<T>) => {
-  const { control } = useFormContext<T>();
+  const formContext = useFormContext<T>();
+  const control = providedControl ?? formContext.control;
 
   return (
     <Controller
       control={control}
       name={name}
-      render={({ field, fieldState }) => (
+      render={({
+        field: { ref, value, onChange, onBlur },
+        fieldState: { invalid, error },
+      }) => (
         <DateRangePicker
-          ref={field.ref}
-          value={field.value}
-          onChange={field.onChange}
-          onBlur={field.onBlur}
-          isInvalid={fieldState.invalid}
-          errorMessage={fieldState.error?.message}
-          validationBehavior={validationBehavior}
+          ref={ref}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          isInvalid={invalid}
+          errorMessage={error?.message}
           {...props}
         />
       )}

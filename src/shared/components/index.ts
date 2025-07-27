@@ -1,5 +1,5 @@
 export * from "./ui";
-export * from "./rhf";
+export * from "./form";
 export * from "./data-table";
 export * from "./search";
 export * from "./wrapper";

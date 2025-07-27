@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import {
   FormProvider,
@@ -20,7 +18,7 @@ export const RHFProvider = <T extends FieldValues>({
   return (
     <FormProvider {...props}>
       {children}
-      {showDebug && <RHFDebug />}
+      {showDebug && <RHFDebug {...props} />}
     </FormProvider>
   );
 };

@@ -8,32 +8,40 @@ import {
 } from "@heroui/autocomplete";
 import {
   useController,
+  useFormContext,
+  type Control,
   type FieldValues,
   type UseControllerProps,
 } from "react-hook-form";
 
 interface RHFRootProps<T extends FieldValues>
   extends UseControllerProps<T>,
-    Omit<AutocompleteProps, "name"> {}
+    Omit<AutocompleteProps, "name"> {
+  control?: Control<T>;
+}
 
 const Root = <T extends FieldValues>({
   name,
+  control: providedControl,
   children,
-  validationBehavior = "aria",
   ...props
 }: RHFRootProps<T>) => {
-  const { field, fieldState } = useController<T>({ name });
+  const formContext = useFormContext<T>();
+  const control = providedControl ?? formContext.control;
+  const {
+    field: { ref, value, onChange, onBlur },
+    fieldState: { invalid, error },
+  } = useController<T>({ name, control });
 
   return (
     <Autocomplete
-      ref={field.ref}
-      name={field.name}
-      selectedKey={field.value}
-      onSelectionChange={field.onChange}
-      onBlur={field.onBlur}
-      isInvalid={fieldState.invalid}
-      errorMessage={fieldState.error?.message}
-      validationBehavior={validationBehavior}
+      ref={ref}
+      name={name}
+      selectedKey={value?.toString()}
+      onSelectionChange={onChange}
+      onBlur={onBlur}
+      isInvalid={invalid}
+      errorMessage={error?.message}
       {...props}
     >
       {children}

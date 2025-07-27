@@ -8,6 +8,8 @@ import {
 } from "@heroui/checkbox";
 import {
   useController,
+  useFormContext,
+  type Control,
   type FieldValues,
   type UseControllerProps,
 } from "react-hook-form";
@@ -15,29 +17,40 @@ import { cn } from "@heroui/react";
 
 interface RHFRootProps<T extends FieldValues>
   extends UseControllerProps<T>,
-    Omit<CheckboxGroupProps, "name" | "defaultValue"> {}
+    Omit<CheckboxGroupProps, "name" | "defaultValue"> {
+  control?: Control<T>;
+}
 
 const Root = <T extends FieldValues>({
   name,
+  control: providedControl,
+  size = "sm",
   classNames,
-  validationBehavior = "aria",
   ...props
 }: RHFRootProps<T>) => {
-  const { field, fieldState } = useController<T>({ name });
+  const formContext = useFormContext<T>();
+  const control = providedControl ?? formContext.control;
+  const {
+    field: { ref, value, onChange, onBlur },
+    fieldState: { invalid, error },
+  } = useController<T>({ name, control });
 
   return (
     <CheckboxGroup
-      ref={field.ref}
-      name={field.name}
-      value={field.value}
-      onValueChange={field.onChange}
-      onBlur={field.onBlur}
-      isInvalid={fieldState.invalid}
-      errorMessage={fieldState.error?.message}
-      validationBehavior={validationBehavior}
+      ref={ref}
+      name={name}
+      value={Array.from(value).map(String)}
+      onValueChange={onChange}
+      onBlur={onBlur}
+      isInvalid={invalid}
+      errorMessage={error?.message}
+      size={size}
       classNames={{
         ...classNames,
-        label: cn("text-sm", classNames?.label),
+        label: cn(
+          size === "sm" && "text-sm text-foreground",
+          classNames?.label,
+        ),
       }}
       {...props}
     />
