@@ -1,14 +1,8 @@
-import {
-  and,
-  eq,
-  sql,
-  inArray,
-  count,
-  ilike,
-  or,
-  desc,
-  SQL,
-} from "drizzle-orm";
+import type {
+  QueryFields,
+  QueryManyReturnType,
+  QueryOneReturnType,
+} from "../types/query";
 import {
   EMPLOYEE_ROLES,
   EMPLOYEE_SORT_COLUMNS,
@@ -18,18 +12,14 @@ import {
   zPaginationParser,
   zSearchParser,
 } from "~/shared/schemas/query-parser";
-import type {
-  QueryFields,
-  QueryManyReturnType,
-  QueryOneReturnType,
-} from "../types/query";
 import { z } from "zod/v4";
 import { TRPCError } from "@trpc/server";
+import { employees } from "~/server/db/schemas";
 import { ENTITY_STATUS } from "~/shared/constants/entity";
 import { SORT_DIRECTIONS } from "~/shared/constants/sort";
-import { contractEmployees, employees } from "~/server/db/schemas";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import type { Employee, EmployeeSummary } from "~/shared/types/employee";
+import { and, eq, inArray, count, ilike, or, desc, SQL } from "drizzle-orm";
 
 const zQueryOneParams = z.object({
   id: z.string(),
@@ -82,31 +72,6 @@ function getSort({
     : queryManyFields[column];
 }
 
-function getJoinRules() {
-  return {
-    contractEmployees: and(
-      eq(contractEmployees.employeeId, employees.id),
-      inArray(contractEmployees.assignment, [
-        "responsible",
-        "recommended",
-        "admin_assistant",
-      ]),
-    ),
-  };
-}
-
-const queryOneFields = {
-  id: employees.id,
-  fullName: employees.fullName,
-  oabNumber: employees.oabNumber,
-  remunerationPercent: employees.remunerationPercent,
-  type: employees.type,
-  role: employees.role,
-  status: employees.status,
-  createdAt: employees.createdAt,
-  contractCount: sql<number>`count(${contractEmployees.id})`,
-} satisfies QueryFields<Employee>;
-
 const queryManyFields = {
   id: employees.id,
   fullName: employees.fullName,
@@ -115,7 +80,7 @@ const queryManyFields = {
   type: employees.type,
   role: employees.role,
   status: employees.status,
-  contractCount: sql<number>`count(${contractEmployees.id})`,
+  contractCount: employees.contractCount,
 } satisfies QueryFields<EmployeeSummary>;
 
 export const employeeRouter = createTRPCRouter({
@@ -126,23 +91,29 @@ export const employeeRouter = createTRPCRouter({
         ctx: { db },
         input: { id },
       }): Promise<QueryOneReturnType<Employee>> => {
-        const joinRules = getJoinRules();
+        const data = await db.query.employees.findFirst({
+          columns: {
+            id: true,
+            fullName: true,
+            oabNumber: true,
+            remunerationPercent: true,
+            type: true,
+            role: true,
+            status: true,
+            createdAt: true,
+            contractCount: true,
+          },
+          where: eq(employees.id, id),
+        });
 
-        const data = await db
-          .select(queryOneFields)
-          .from(employees)
-          .leftJoin(contractEmployees, joinRules.contractEmployees)
-          .where(eq(employees.id, id))
-          .groupBy(employees.id);
-
-        if (!data[0]) {
+        if (!data) {
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Employee not found",
           });
         }
 
-        return data[0];
+        return data;
       },
     ),
 
@@ -154,22 +125,15 @@ export const employeeRouter = createTRPCRouter({
         input: { query, page, limit, column, direction, type, role, status },
       }): Promise<QueryManyReturnType<EmployeeSummary>> => {
         const offset = (page - 1) * limit;
-        const joinRules = getJoinRules();
         const sortBy = getSort({ column, direction });
         const filters = getFilters({ query, type, role, status });
 
         const [rawCount, rawData] = await Promise.all([
-          db
-            .select({ count: count() })
-            .from(employees)
-            .leftJoin(contractEmployees, joinRules.contractEmployees)
-            .where(filters),
+          db.select({ count: count() }).from(employees).where(filters),
           db
             .select(queryManyFields)
             .from(employees)
-            .leftJoin(contractEmployees, joinRules.contractEmployees)
             .where(filters)
-            .groupBy(employees.id)
             .orderBy(sortBy)
             .limit(limit)
             .offset(offset),

@@ -1,3 +1,8 @@
+import type {
+  QueryFields,
+  QueryManyReturnType,
+  QueryOneReturnType,
+} from "../types/query";
 import {
   clients,
   contracts,
@@ -12,11 +17,6 @@ import {
   zPaginationParser,
   zSearchParser,
 } from "~/shared/schemas/query-parser";
-import type {
-  QueryFields,
-  QueryManyReturnType,
-  QueryOneReturnType,
-} from "../types/query";
 import { z } from "zod/v4";
 import { TRPCError } from "@trpc/server";
 import { ENTITY_STATUS } from "~/shared/constants/entity";

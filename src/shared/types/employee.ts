@@ -1,7 +1,5 @@
 import type { ContractEmployeeRaw, EmployeeRaw } from "./drizzle";
 
-type ContractCount = { contractCount: number };
-
 export type EmployeeSummary = Pick<
   EmployeeRaw,
   | "id"
@@ -11,8 +9,8 @@ export type EmployeeSummary = Pick<
   | "type"
   | "role"
   | "status"
-> &
-  ContractCount;
+  | "contractCount"
+>;
 
 export type Employee = Pick<
   EmployeeRaw,
@@ -24,8 +22,8 @@ export type Employee = Pick<
   | "role"
   | "status"
   | "createdAt"
-> &
-  ContractCount;
+  | "contractCount"
+>;
 
 export type EmployeeType = EmployeeRaw["type"];
 export type EmployeeRole = EmployeeRaw["role"];

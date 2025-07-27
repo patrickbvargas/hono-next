@@ -1,3 +1,8 @@
+import type {
+  QueryFields,
+  QueryManyReturnType,
+  QueryOneReturnType,
+} from "../types/query";
 import {
   contractEmployees,
   contracts,
@@ -14,11 +19,6 @@ import type {
   Remuneration,
   RemunerationSummary,
 } from "~/shared/types/remuneration";
-import type {
-  QueryFields,
-  QueryManyReturnType,
-  QueryOneReturnType,
-} from "../types/query";
 import { z } from "zod/v4";
 import { TRPCError } from "@trpc/server";
 import { SORT_DIRECTIONS } from "~/shared/constants/sort";

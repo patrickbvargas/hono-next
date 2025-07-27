@@ -1,12 +1,9 @@
 import type { ClientRaw } from "./drizzle";
 
-type ContractCount = { contractCount: number };
-
 export type ClientSummary = Pick<
   ClientRaw,
-  "id" | "fullName" | "cnpjf" | "email" | "type" | "status"
-> &
-  ContractCount;
+  "id" | "fullName" | "cnpjf" | "email" | "type" | "status" | "contractCount"
+>;
 
 export type Client = Pick<
   ClientRaw,
@@ -18,8 +15,8 @@ export type Client = Pick<
   | "type"
   | "status"
   | "createdAt"
-> &
-  ContractCount;
+  | "contractCount"
+>;
 
 export type ClientType = ClientRaw["type"];
 export type ClientSortColumn = keyof ClientSummary;
