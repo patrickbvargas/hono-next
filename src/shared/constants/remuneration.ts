@@ -6,6 +6,6 @@ export const REMUNERATION_SORT_COLUMNS = [
   "legalArea",
   "employee",
   "paymentDate",
-  "value",
-  "remunerationPercent",
+  "amount",
+  "percentage",
 ] as const satisfies readonly RemunerationSortColumn[];

@@ -1,0 +1,1534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hono-legal-prd version="2.0">
+  <metadata>
+    <title>Hono - Legal Fee Management System</title>
+    <subtitle>Product Requirements Document (PRD)</subtitle>
+    <version>2.0</version>
+  </metadata>
+
+  <project-overview>
+    <system-purpose>
+      <primary-goal>Automate legal fee management and lawyer remuneration calculations for a single law firm</primary-goal>
+      <target-users>Law firm specializing in Social Security Law (Direito Previdenciário)</target-users>
+      <current-problem>Manual calculations prone to human error, lack of indexed records, privacy risks</current-problem>
+      <language>UI in Portuguese (pt-BR), codebase in English</language>
+    </system-purpose>
+
+    <success-metrics>
+      <metric>Eliminate manual calculation errors</metric>
+      <metric>Reduce processing time by X%</metric>
+      <metric>Improve data security and privacy</metric>
+      <metric>Enable financial analysis and reporting</metric>
+      <metric>Provide audit trail for all changes</metric>
+    </success-metrics>
+
+    <tech-stack>
+      <frontend>
+        <framework>Next.js 15 (App Router)</framework>
+        <language>TypeScript</language>
+        <styling>Tailwind CSS</styling>
+      </frontend>
+      
+      <backend>
+        <api>tRPC (with TanStack Query for server/client procedures)</api>
+        <database>PostgreSQL with Drizzle ORM</database>
+        <authentication>BetterAuth</authentication>
+      </backend>
+      
+      <state-management>TanStack Query (following T3 Stack pattern)</state-management>
+      
+      <forms>React Hook Form + Zod validation</forms>
+      
+      <ui-components>shadcn/ui</ui-components>
+      
+      <notifications>Sonner (shadcn/ui component)</notifications>
+      
+      <charts>Recharts</charts>
+      
+      <file-handling>For PDF exports</file-handling>
+      
+      <testing>Vitest</testing>
+      
+      <import-alias>@/ for src folder</import-alias>
+    </tech-stack>
+
+    <project-structure>
+      <directory name="src">
+        <subdirectory name="app" description="Next.js app router">
+          <subdirectory name="(auth)" description="Auth layout group" />
+          <subdirectory name="(dashboard)" description="Dashboard layout with sidebar" />
+          <subdirectory name="api" description="API routes (tRPC)" />
+        </subdirectory>
+        
+        <subdirectory name="features" description="Feature-based modules">
+          <subdirectory name="auth" />
+          <subdirectory name="clients" />
+          <subdirectory name="contracts" />
+          <subdirectory name="fees" />
+          <subdirectory name="remunerations" />
+          <subdirectory name="dashboard" />
+        </subdirectory>
+        
+        <subdirectory name="shared" description="Shared resources">
+          <subdirectory name="components" />
+          <subdirectory name="hooks" />
+          <subdirectory name="types" />
+          <subdirectory name="utils" />
+          <subdirectory name="lib" />
+        </subdirectory>
+        
+        <subdirectory name="server" description="Server-side code">
+          <subdirectory name="api" description="tRPC routers" />
+          <subdirectory name="db" description="Database schema &amp; config" />
+          <subdirectory name="auth" description="BetterAuth config" />
+        </subdirectory>
+        
+        <subdirectory name="styles" description="Global styles" />
+      </directory>
+    </project-structure>
+  </project-overview>
+
+  <user-roles-permissions>
+    <user-types>
+      <role name="Admin">
+        <permissions>Full CRUD, remuneration management, reports, audit logs</permissions>
+        <access-level>All data</access-level>
+      </role>
+      
+      <role name="User">
+        <permissions>View own data, basic CRUD operations</permissions>
+        <access-level>Own remuneration data only</access-level>
+      </role>
+    </user-types>
+
+    <authentication-requirements>
+      <requirement>Login with email or OAB number and password (BetterAuth)</requirement>
+      <requirement>Password reset functionality</requirement>
+      <requirement>Session management with BetterAuth</requirement>
+      <requirement>Role-based route protection</requirement>
+      <requirement>Remember me functionality</requirement>
+      <requirement>Rate limiting: 5 login attempts per minute</requirement>
+      <requirement>OAB number validation (RS000000 format) for lawyers only</requirement>
+    </authentication-requirements>
+  </user-roles-permissions>
+
+  <database-schema>
+    <main-schema name="hono_claude">
+      <common-patterns>
+        <pattern name="entity_status">
+          <values>
+            <value>active</value>
+            <value>inactive</value>
+          </values>
+        </pattern>
+        
+        <pattern name="timestamps">
+          <field name="createdAt" type="timestamp" default="now()" />
+          <field name="updatedAt" type="timestamp" />
+          <field name="deletedAt" type="timestamp" description="Soft delete" />
+        </pattern>
+        
+        <pattern name="auditFields">
+          <field name="createdBy" type="text" />
+          <field name="updatedBy" type="text" />
+          <field name="deletedBy" type="text" />
+        </pattern>
+      </common-patterns>
+    </main-schema>
+
+    <tables>
+      <table name="employees">
+        <fields>
+          <field name="id" type="text" primary-key="true" />
+          <field name="fullName" type="text" not-null="true" />
+          <field name="email" type="text" not-null="true" unique="true" description="Used for login and BetterAuth compatibility" />
+          <field name="oabNumber" type="text" unique="true" description="Optional, only for lawyers (display purposes)" />
+          <field name="remunerationPercent" type="real" not-null="true" />
+          <field name="referrerPercent" type="real" not-null="true" />
+          <field name="contractCount" type="integer" not-null="true" />
+          <field name="type" type="employee_type_enum" not-null="true" />
+          <field name="role" type="employee_role_enum" default="user" not-null="true" />
+          <field name="password" type="text" not-null="true" description="BetterAuth field" />
+          <field name="image" type="text" description="BetterAuth field" />
+        </fields>
+        
+        <enums>
+          <enum name="employee_type">
+            <value>lawyer</value>
+            <value>admin_assistant</value>
+          </enum>
+          
+          <enum name="employee_role">
+            <value>admin</value>
+            <value>user</value>
+          </enum>
+        </enums>
+        
+        <relationships>
+          <relationship type="one-to-many" target="contractEmployees" />
+          <relationship type="one-to-many" target="sessions" />
+          <relationship type="one-to-many" target="accounts" />
+          <relationship type="one-to-many" target="remunerations" />
+        </relationships>
+      </table>
+
+      <table name="contractEmployees">
+        <description>Contract Employees Junction Table</description>
+        <fields>
+          <field name="id" type="text" primary-key="true" />
+          <field name="contractId" type="text" not-null="true" />
+          <field name="employeeId" type="text" not-null="true" />
+          <field name="assignment" type="contract_employee_type_enum" not-null="true" />
+        </fields>
+        
+        <enums>
+          <enum name="contract_employee_type">
+            <value>responsible</value>
+            <value>recommending</value>
+            <value>recommended</value>
+            <value>additional</value>
+            <value>admin_assistant</value>
+          </enum>
+        </enums>
+        
+        <relationships>
+          <relationship type="many-to-one" target="contracts" />
+          <relationship type="many-to-one" target="employees" />
+        </relationships>
+      </table>
+
+      <table name="sessions">
+        <description>BetterAuth Sessions</description>
+        <fields>
+          <field name="id" type="text" primary-key="true" />
+          <field name="userId" type="text" not-null="true" />
+          <field name="expiresAt" type="timestamp" not-null="true" />
+          <field name="ipAddress" type="text" />
+          <field name="userAgent" type="text" />
+        </fields>
+      </table>
+
+      <table name="accounts">
+        <description>BetterAuth Accounts</description>
+        <fields>
+          <field name="id" type="text" primary-key="true" />
+          <field name="userId" type="text" not-null="true" />
+          <field name="accountId" type="text" not-null="true" />
+          <field name="providerId" type="text" not-null="true" />
+          <field name="accessToken" type="text" />
+          <field name="refreshToken" type="text" />
+          <field name="idToken" type="text" />
+          <field name="expiresAt" type="timestamp" />
+          <field name="password" type="text" />
+        </fields>
+      </table>
+
+      <table name="verifications">
+        <description>BetterAuth Verifications</description>
+        <fields>
+          <field name="id" type="text" primary-key="true" />
+          <field name="identifier" type="text" not-null="true" />
+          <field name="value" type="text" not-null="true" />
+          <field name="expiresAt" type="timestamp" not-null="true" />
+        </fields>
+      </table>
+
+      <table name="clients">
+        <fields>
+          <field name="id" type="text" primary-key="true" />
+          <field name="fullName" type="text" not-null="true" />
+          <field name="cnpjf" type="text" not-null="true" unique="true" description="CPF for PF, CNPJ for PJ" />
+          <field name="email" type="text" />
+          <field name="mobilePhone" type="text" />
+          <field name="type" type="client_type_enum" not-null="true" />
+          <field name="contractCount" type="integer" />
+        </fields>
+        
+        <enums>
+          <enum name="client_type">
+            <value>pf</value>
+            <value>pj</value>
+          </enum>
+        </enums>
+        
+        <relationships>
+          <relationship type="one-to-many" target="contracts" />
+        </relationships>
+      </table>
+
+      <table name="contracts">
+        <fields>
+          <field name="id" type="text" primary-key="true" />
+          <field name="clientId" type="text" not-null="true" />
+          <field name="identification" type="text" unique="true" not-null="true" description="Process number" />
+          <field name="feePercent" type="real" not-null="true" />
+          <field name="observation" type="text" />
+          <field name="legalArea" type="contract_legal_area_enum" not-null="true" />
+          <field name="contractStatus" type="contract_status_enum" default="active" not-null="true" />
+          <field name="allowStatusChange" type="boolean" default="true" />
+        </fields>
+        
+        <enums>
+          <enum name="contract_legal_area">
+            <value>civil</value>
+            <value>family</value>
+            <value>other</value>
+            <value>social_security</value>
+            <value>labor</value>
+          </enum>
+          
+          <enum name="contract_status">
+            <value>active</value>
+            <value>completed</value>
+            <value>cancelled</value>
+          </enum>
+        </enums>
+        
+        <relationships>
+          <relationship type="many-to-one" target="clients" />
+          <relationship type="one-to-many" target="contractEmployees" description="employees" />
+          <relationship type="one-to-many" target="revenues" />
+        </relationships>
+      </table>
+
+      <table name="revenues">
+        <fields>
+          <field name="id" type="text" primary-key="true" />
+          <field name="contractId" type="text" not-null="true" />
+          <field name="type" type="revenue_type_enum" not-null="true" />
+          <field name="totalValue" type="real" not-null="true" />
+          <field name="downPayment" type="real" default="0" not-null="true" />
+          <field name="paymentStartDate" type="date" not-null="true" />
+          <field name="installmentsTotal" type="integer" not-null="true" />
+          <field name="installmentsPaid" type="integer" default="0" not-null="true" />
+        </fields>
+        
+        <enums>
+          <enum name="revenue_type">
+            <value>administrative</value>
+            <value>judicial</value>
+            <value>succumbency</value>
+          </enum>
+        </enums>
+        
+        <relationships>
+          <relationship type="many-to-one" target="contracts" />
+          <relationship type="one-to-many" target="fees" />
+        </relationships>
+      </table>
+
+      <table name="fees">
+        <fields>
+          <field name="id" type="text" primary-key="true" />
+          <field name="revenueId" type="text" not-null="true" />
+          <field name="contractId" type="text" not-null="true" />
+          <field name="amount" type="real" not-null="true" />
+          <field name="installmentNumber" type="integer" not-null="true" />
+          <field name="paymentDate" type="date" not-null="true" />
+          <field name="generateRemuneration" type="boolean" default="true" not-null="true" />
+        </fields>
+        
+        <relationships>
+          <relationship type="many-to-one" target="revenues" />
+          <relationship type="one-to-many" target="remunerations" />
+        </relationships>
+      </table>
+
+      <table name="remunerations">
+        <fields>
+          <field name="id" type="text" primary-key="true" />
+          <field name="feeId" type="text" not-null="true" />
+          <field name="contractId" type="text" not-null="true" />
+          <field name="contractEmployeeId" type="text" not-null="true" />
+          <field name="percentage" type="real" not-null="true" />
+          <field name="amount" type="real" not-null="true" />
+          <field name="paymentDate" type="date" not-null="true" />
+        </fields>
+        
+        <relationships>
+          <relationship type="many-to-one" target="fees" />
+          <relationship type="many-to-one" target="contracts" />
+          <relationship type="many-to-one" target="contractEmployees" />
+        </relationships>
+      </table>
+
+      <table name="auditLogs">
+        <fields>
+          <field name="id" type="text" primary-key="true" />
+          <field name="tableName" type="text" not-null="true" />
+          <field name="recordId" type="text" not-null="true" />
+          <field name="action" type="audit_action_enum" not-null="true" />
+          <field name="userId" type="text" not-null="true" />
+          <field name="oldValues" type="jsonb" />
+          <field name="newValues" type="jsonb" />
+          <field name="ipAddress" type="text" />
+          <field name="userAgent" type="text" />
+          <field name="createdAt" type="timestamp" default="now()" not-null="true" />
+        </fields>
+        
+        <enums>
+          <enum name="audit_action">
+            <value>create</value>
+            <value>update</value>
+            <value>delete</value>
+            <value>soft_delete</value>
+            <value>restore</value>
+          </enum>
+        </enums>
+      </table>
+    </tables>
+
+    <database-relationships>
+      <relationship>Contracts (1) → Revenues (many)</relationship>
+      <relationship>Revenues (1) → Fees (many)</relationship>
+      <relationship>Fees (1) → Remunerations (many)</relationship>
+      <relationship>Contracts (1) → ContractEmployees (many)</relationship>
+      <relationship>Employees (1) → ContractEmployees (many)</relationship>
+      <relationship>ContractEmployees (1) → Remunerations (many)</relationship>
+      <relationship>Clients (1) → Contracts (many)</relationship>
+      <relationship>Employees (1) → Sessions (many) - BetterAuth</relationship>
+      <relationship>Employees (1) → Accounts (many) - BetterAuth</relationship>
+    </database-relationships>
+
+    <business-rules-constraints>
+      <validation>
+        <rule>OAB format validation: "RS000000"</rule>
+        <rule>CPF/CNPJ validation with proper algorithms</rule>
+        <rule>Email format validation</rule>
+        <rule>At least one contact method required for clients (email or phone)</rule>
+        <rule>Contract percentages must be between 0-100</rule>
+        <rule>Fee amounts must be positive</rule>
+        <rule>Down payment cannot exceed total value</rule>
+      </validation>
+      
+      <data-integrity>
+        <rule>Soft delete implementation (deletedAt timestamp)</rule>
+        <rule>Audit log for all CRUD operations</rule>
+        <rule>Cannot hard delete clients with contracts</rule>
+        <rule>Cannot hard delete contracts with fees</rule>
+        <rule>Revenue installment tracking (installmentsPaid ≤ installmentsTotal)</rule>
+        <rule>Contract status changes based on payment completion</rule>
+      </data-integrity>
+    </business-rules-constraints>
+  </database-schema>
+
+  <business-logic>
+    <contract-employee-relationships>
+      <employee-types>
+        <type name="Responsible">
+          <description>Lawyer with full responsibility for the contract</description>
+        </type>
+        
+        <type name="Recommending">
+          <description>Lawyer who referred the case (receives referrer percentage)</description>
+        </type>
+        
+        <type name="Recommended">
+          <description>Lawyer assigned to handle a referred case (receives reduced percentage)</description>
+        </type>
+        
+        <type name="Additional">
+          <description>Employee receiving fixed 10% remuneration (only for social_security contracts)</description>
+        </type>
+        
+        <type name="Admin Assistant">
+          <description>Administrative assistant helping with the contract</description>
+        </type>
+      </employee-types>
+
+      <relationship-rules>
+        <rule>One contract can have multiple employees</rule>
+        
+        <scenarios>
+          <scenario name="Solo">1 responsible lawyer only</scenario>
+          <scenario name="Referral">1 recommending + 1 recommended lawyer</scenario>
+          <scenario name="Team">1 responsible + 1 admin assistant</scenario>
+          <scenario name="Additional">1 responsible + 1 additional (social_security only)</scenario>
+          <scenario name="Complex">1 recommending + 1 recommended + 1 admin assistant + 1 additional</scenario>
+        </scenarios>
+      </relationship-rules>
+    </contract-employee-relationships>
+
+    <revenue-fee-hierarchy>
+      <structure>
+        Contract (Main Entity)
+          └── Revenue (Payment Configuration)
+               └── Fee (Actual Payment)
+                    └── Remuneration (Employee Payment)
+      </structure>
+      
+      <definitions>
+        <definition name="Contract">The main legal case/process</definition>
+        <definition name="Revenue">Payment structure (administrative, judicial, or succumbency)</definition>
+        <definition name="Fee">Individual payment installments from client</definition>
+        <definition name="Remuneration">Calculated employee payments from fees</definition>
+      </definitions>
+    </revenue-fee-hierarchy>
+
+    <remuneration-calculation-rules>
+      <attribution-types>
+        <type name="Responsible">Full individual percentage</type>
+        <type name="Recommended">Individual percentage minus referrer percentage</type>
+        <type name="Recommending">Referrer percentage only</type>
+        <type name="Additional">Contract relationship - fixed 10% (only for social_security contracts)</type>
+        <type name="Admin Assistant">Full individual percentage</type>
+      </attribution-types>
+
+      <calculation-formulas>
+        <formula type="responsible">
+          <code>remuneration = (fee_amount * employee.remunerationPercent) / 100;</code>
+        </formula>
+        
+        <formula type="recommended">
+          <code>remuneration = (fee_amount * (employee.remunerationPercent - referrer.referrerPercent)) / 100;</code>
+        </formula>
+        
+        <formula type="recommending">
+          <code>remuneration = (fee_amount * employee.referrerPercent) / 100;</code>
+        </formula>
+        
+        <formula type="additional">
+          <condition>contract.legalArea === 'social_security'</condition>
+          <code>remuneration = fee_amount * 0.1;</code>
+        </formula>
+        
+        <formula type="admin_assistant">
+          <code>remuneration = (fee_amount * employee.remunerationPercent) / 100;</code>
+        </formula>
+      </calculation-formulas>
+    </remuneration-calculation-rules>
+
+    <automatic-remuneration-generation>
+      <trigger>Triggered when fee is created with generateRemuneration: true</trigger>
+      <process>
+        <step>Creates remuneration records based on contract-employee relationships</step>
+        <step>Updates existing remunerations when fee is modified</step>
+        <step>Soft deletes remunerations when fee is soft deleted</step>
+        <step>Additional relationship type only valid for social_security contracts</step>
+        <step>Updates revenue installmentsPaid counter</step>
+        <step>Checks for contract completion when all revenues are paid</step>
+      </process>
+    </automatic-remuneration-generation>
+  </business-logic>
+
+  <api-endpoints>
+    <authentication-routes source="BetterAuth">
+      <endpoint name="signIn">
+        <input>SignInSchema</input>
+        <output>AuthSession</output>
+      </endpoint>
+      
+      <endpoint name="signUp">
+        <input>SignUpSchema</input>
+        <output>AuthSession</output>
+      </endpoint>
+      
+      <endpoint name="signOut">
+        <input>void</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="resetPassword">
+        <input>ResetPasswordSchema</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="changePassword">
+        <input>ChangePasswordSchema</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="verifyEmail">
+        <input>VerifyEmailSchema</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="getSession">
+        <input>void</input>
+        <output>AuthSession | null</output>
+      </endpoint>
+    </authentication-routes>
+
+    <employee-management-routes>
+      <endpoint name="getProfile">
+        <input>void</input>
+        <output>Employee</output>
+      </endpoint>
+      
+      <endpoint name="updateProfile">
+        <input>UpdateEmployeeSchema</input>
+        <output>Employee</output>
+      </endpoint>
+      
+      <endpoint name="list" access="admin-only">
+        <input>EmployeeFiltersSchema</input>
+        <output>PaginatedEmployees</output>
+      </endpoint>
+      
+      <endpoint name="updateRemuneration" access="admin-only">
+        <input>UpdateRemunerationSchema</input>
+        <output>Employee</output>
+      </endpoint>
+      
+      <endpoint name="create" access="admin-only">
+        <input>CreateEmployeeSchema</input>
+        <output>Employee</output>
+      </endpoint>
+      
+      <endpoint name="softDelete" access="admin-only">
+        <input>DeleteEmployeeSchema</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="restore" access="admin-only">
+        <input>RestoreEmployeeSchema</input>
+        <output>Success</output>
+      </endpoint>
+    </employee-management-routes>
+
+    <client-management-routes>
+      <endpoint name="create">
+        <input>CreateClientSchema</input>
+        <output>Client</output>
+      </endpoint>
+      
+      <endpoint name="update">
+        <input>UpdateClientSchema</input>
+        <output>Client</output>
+      </endpoint>
+      
+      <endpoint name="softDelete">
+        <input>DeleteClientSchema</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="restore">
+        <input>RestoreClientSchema</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="getById">
+        <input>GetByIdSchema</input>
+        <output>ClientWithRelations</output>
+      </endpoint>
+      
+      <endpoint name="list">
+        <input>ClientFiltersSchema</input>
+        <output>PaginatedClients</output>
+      </endpoint>
+    </client-management-routes>
+
+    <contract-management-routes>
+      <endpoint name="create">
+        <input>CreateContractSchema</input>
+        <output>Contract</output>
+      </endpoint>
+      
+      <endpoint name="update">
+        <input>UpdateContractSchema</input>
+        <output>Contract</output>
+      </endpoint>
+      
+      <endpoint name="softDelete">
+        <input>DeleteContractSchema</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="restore">
+        <input>RestoreContractSchema</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="getById">
+        <input>GetByIdSchema</input>
+        <output>ContractWithRelations</output>
+      </endpoint>
+      
+      <endpoint name="list">
+        <input>ContractFiltersSchema</input>
+        <output>PaginatedContracts</output>
+      </endpoint>
+      
+      <endpoint name="updateStatus">
+        <input>UpdateStatusSchema</input>
+        <output>Contract</output>
+      </endpoint>
+      
+      <endpoint name="assignEmployee">
+        <input>AssignEmployeeSchema</input>
+        <output>ContractEmployee</output>
+      </endpoint>
+      
+      <endpoint name="removeEmployee">
+        <input>RemoveEmployeeSchema</input>
+        <output>Success</output>
+      </endpoint>
+    </contract-management-routes>
+
+    <revenue-management-routes>
+      <endpoint name="create">
+        <input>CreateRevenueSchema</input>
+        <output>Revenue</output>
+      </endpoint>
+      
+      <endpoint name="update">
+        <input>UpdateRevenueSchema</input>
+        <output>Revenue</output>
+      </endpoint>
+      
+      <endpoint name="delete">
+        <input>DeleteRevenueSchema</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="getById">
+        <input>GetByIdSchema</input>
+        <output>RevenueWithRelations</output>
+      </endpoint>
+      
+      <endpoint name="list">
+        <input>RevenueFiltersSchema</input>
+        <output>PaginatedRevenues</output>
+      </endpoint>
+      
+      <endpoint name="getByContract">
+        <input>GetByContractSchema</input>
+        <output>Revenue[]</output>
+      </endpoint>
+    </revenue-management-routes>
+
+    <fee-management-routes>
+      <endpoint name="create">
+        <input>CreateFeeSchema</input>
+        <output>Fee</output>
+      </endpoint>
+      
+      <endpoint name="update">
+        <input>UpdateFeeSchema</input>
+        <output>Fee</output>
+      </endpoint>
+      
+      <endpoint name="softDelete">
+        <input>DeleteFeeSchema</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="restore">
+        <input>RestoreFeeSchema</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="getById">
+        <input>GetByIdSchema</input>
+        <output>FeeWithRelations</output>
+      </endpoint>
+      
+      <endpoint name="list">
+        <input>FeeFiltersSchema</input>
+        <output>PaginatedFees</output>
+      </endpoint>
+      
+      <endpoint name="bulkCreate">
+        <input>BulkCreateFeeSchema</input>
+        <output>Fee[]</output>
+      </endpoint>
+    </fee-management-routes>
+
+    <remuneration-routes>
+      <endpoint name="update" access="admin-only">
+        <input>UpdateRemunerationSchema</input>
+        <output>Remuneration</output>
+      </endpoint>
+      
+      <endpoint name="softDelete" access="admin-only">
+        <input>DeleteRemunerationSchema</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="restore" access="admin-only">
+        <input>RestoreRemunerationSchema</input>
+        <output>Success</output>
+      </endpoint>
+      
+      <endpoint name="getById">
+        <input>GetByIdSchema</input>
+        <output>Remuneration</output>
+      </endpoint>
+      
+      <endpoint name="list">
+        <input>RemunerationFiltersSchema</input>
+        <output>PaginatedRemunerations</output>
+      </endpoint>
+      
+      <endpoint name="getSummary">
+        <input>RemunerationSummarySchema</input>
+        <output>RemunerationSummary</output>
+      </endpoint>
+      
+      <endpoint name="getByEmployee">
+        <input>GetByEmployeeSchema</input>
+        <output>RemunerationsByEmployee</output>
+      </endpoint>
+    </remuneration-routes>
+
+    <dashboard-analytics-routes>
+      <endpoint name="getDashboard">
+        <input>DashboardFiltersSchema</input>
+        <output>DashboardData</output>
+      </endpoint>
+      
+      <endpoint name="getRemunerationSummary">
+        <input>SummaryFiltersSchema</input>
+        <output>RemunerationSummary</output>
+      </endpoint>
+      
+      <endpoint name="getRevenueSummary">
+        <input>SummaryFiltersSchema</input>
+        <output>RevenueSummary</output>
+      </endpoint>
+      
+      <endpoint name="exportReport">
+        <input>ExportSchema</input>
+        <output>FileDownload</output>
+      </endpoint>
+      
+      <endpoint name="getAuditLog" access="admin-only">
+        <input>AuditLogFiltersSchema</input>
+        <output>PaginatedAuditLogs</output>
+      </endpoint>
+    </dashboard-analytics-routes>
+
+    <rate-limiting>
+      <limit scope="auth">5 requests per minute</limit>
+      <limit scope="api">100 requests per minute</limit>
+      <limit scope="export">10 requests per hour</limit>
+      <limit scope="bulkOperations">20 requests per hour</limit>
+    </rate-limiting>
+  </api-endpoints>
+
+  <screen-specifications>
+    <layout-structure>
+      <dashboard-layout>
+        <component name="Collapsible Sidebar">Navigation menu with icons and labels</component>
+        <component name="Header">User profile dropdown, notifications, logout</component>
+        <component name="Main Content Area">Dynamic content based on route</component>
+        <component name="Drawer Component">For entity details (replaces dedicated pages)</component>
+        <component name="Modal Component">For create/edit forms</component>
+        <component name="Sonner Notifications">Top of page for success/error messages</component>
+      </dashboard-layout>
+    </layout-structure>
+
+    <authentication-screens>
+      <screen name="Login" route="/login">
+        <field name="identifier">Email or OAB input field</field>
+        <field name="password">Password input field</field>
+        <control name="remember">"Lembrar-me" checkbox</control>
+        <link name="forgot-password">"Esqueci minha senha" link</link>
+        <button name="login">"Entrar" button</button>
+        <validation>Form validation with Portuguese error messages</validation>
+        <loading>Loading states with spinner</loading>
+      </screen>
+      
+      <screen name="Password Reset" route="/reset-password">
+        <field name="identifier">Email or OAB input field</field>
+        <button name="send-reset">"Enviar link de recuperação" button</button>
+        <messages>Success/error messages in Portuguese</messages>
+        <link name="back-to-login">"Voltar ao login" link</link>
+      </screen>
+    </authentication-screens>
+
+    <dashboard-screen route="/dashboard">
+      <cards>
+        <card name="Resumo de Receitas">
+          <metric>Valor total</metric>
+          <comparison>Comparação mensal</comparison>
+        </card>
+        
+        <card name="Resumo de Remunerações">
+          <metric>Valor total</metric>
+          <comparison>Comparação mensal</comparison>
+        </card>
+        
+        <card name="Gráfico de Receitas Mensais">
+          <chart-type>Line chart with monthly data</chart-type>
+          <filter>Date range filter</filter>
+        </card>
+        
+        <card name="Receitas por Área">
+          <chart-type>Pie Chart</chart-type>
+          <data>Administrativa, Judicial, Sucumbência</data>
+        </card>
+        
+        <card name="Receitas por Tipo">
+          <chart-type>Bar Chart</chart-type>
+          <data>Comparison between types</data>
+        </card>
+        
+        <card name="Atividades Recentes">
+          <content>Latest fees and remunerations</content>
+          <navigation>Pagination</navigation>
+        </card>
+      </cards>
+    </dashboard-screen>
+
+    <client-management>
+      <client-list route="/clients">
+        <data-table>
+          <column>Nome</column>
+          <column>Tipo (PF/PJ)</column>
+          <column>CPF/CNPJ</column>
+          <column>Email</column>
+          <column>Telefone</column>
+          <column>Nº de Contratos</column>
+          <column>Ações (Visualizar, Editar, Excluir)</column>
+        </data-table>
+        
+        <filters>
+          <filter>Search by name/CPF/CNPJ</filter>
+          <filter>Type filter</filter>
+          <filter>Status filter (Ativo/Inativo)</filter>
+        </filters>
+        
+        <actions>
+          <button name="new-client">"Novo Cliente" button opens modal</button>
+        </actions>
+      </client-list>
+
+      <client-form-modal>
+        <field name="client-type">Tipo de Cliente radio buttons (Pessoa Física/Jurídica)</field>
+        <dynamic-fields>Dynamic fields based on type</dynamic-fields>
+        <validation>Validation with Portuguese messages</validation>
+        <actions>
+          <button name="save">"Salvar" button</button>
+          <button name="cancel">"Cancelar" button</button>
+        </actions>
+      </client-form-modal>
+
+      <client-details-drawer>
+        <section name="client-info">Client information display</section>
+        <section name="related-contracts">Related contracts table</section>
+        <section name="actions">Edit and Delete actions</section>
+      </client-details-drawer>
+    </client-management>
+
+    <contract-management>
+      <contract-list route="/contracts">
+        <data-table>
+          <column>Número do Processo</column>
+          <column>Cliente</column>
+          <column>Advogado Responsável</column>
+          <column>Área</column>
+          <column>Status</column>
+          <column>Ações</column>
+        </data-table>
+        
+        <filters>
+          <filter>Search by process number/client</filter>
+          <filter>Area filter</filter>
+          <filter>Status filter</filter>
+          <filter>Lawyer filter</filter>
+        </filters>
+      </contract-list>
+
+      <contract-form-modal>
+        <field name="client">Cliente searchable select</field>
+        <field name="process-number">Número do Processo input</field>
+        <field name="legal-area">Área Jurídica select</field>
+        <field name="fee-percent">Percentual de Honorários input</field>
+        
+        <section name="team">
+          <field name="responsible">Advogado Responsável select</field>
+          <field name="recommending">Indicador checkbox and select</field>
+          <field name="assistant">Assistente Administrativo select</field>
+        </section>
+        
+        <section name="revenues">Receitas tabs (Administrativa/Judicial/Sucumbência)</section>
+        
+        <field name="observations">Observações textarea</field>
+      </contract-form-modal>
+
+      <contract-details-drawer>
+        <section name="contract-info">Contract information cards</section>
+        <section name="team-members">Team members list</section>
+        <section name="revenues-summary">Revenues summary</section>
+        <section name="related-fees">Related fees table</section>
+      </contract-details-drawer>
+    </contract-management>
+
+    <fee-management>
+      <fee-list route="/fees">
+        <data-table>
+          <column>Processo</column>
+          <column>Cliente</column>
+          <column>Tipo de Receita</column>
+          <column>Data de Pagamento</column>
+          <column>Valor</column>
+          <column>Parcela</column>
+          <column>Ações</column>
+        </data-table>
+      </fee-list>
+
+      <fee-form-modal>
+        <field name="contract">Contrato selection (loads client automatically)</field>
+        <field name="revenue">Receita selection</field>
+        <field name="payment-date">Data de Pagamento date picker</field>
+        <field name="amount">Valor currency input</field>
+        <field name="installment-number">Número da Parcela input</field>
+        <field name="generate-remuneration">Gerar Remuneração checkbox</field>
+      </fee-form-modal>
+    </fee-management>
+
+    <remuneration-management>
+      <remuneration-list route="/remunerations">
+        <data-table>
+          <column>Processo</column>
+          <column>Advogado/Assistente</column>
+          <column>Atribuição</column>
+          <column>Percentual</column>
+          <column>Valor</column>
+          <column>Data</column>
+        </data-table>
+        
+        <summary-card>Total remunerations by employee</summary-card>
+      </remuneration-list>
+
+      <remuneration-edit-modal access="admin-only">
+        <section name="fee-info">Read-only fee information</section>
+        <field name="percentage">Editable percentage input</field>
+        <field name="amount">Auto-calculated amount display</field>
+      </remuneration-edit-modal>
+    </remuneration-management>
+
+    <settings>
+      <user-management route="/settings/users" access="admin-only">
+        <data-table name="users-table">
+          <column>Nome</column>
+          <column>Email</column>
+          <column>OAB (lawyers only)</column>
+          <column>% Individual</column>
+          <column>% Indicação</column>
+          <column>Perfil</column>
+          <column>Ações</column>
+        </data-table>
+      </user-management>
+
+      <audit-log route="/settings/audit" access="admin-only">
+        <data-table name="audit-table">
+          <column>Data/Hora</column>
+          <column>Usuário</column>
+          <column>Ação</column>
+          <column>Tabela</column>
+          <column>Registro</column>
+          <column>Valores Anteriores/Novos</column>
+        </data-table>
+      </audit-log>
+    </settings>
+  </screen-specifications>
+
+  <ui-ux-requirements>
+    <design-system>
+      <component-library>shadcn/ui</component-library>
+      <color-palette>Professional legal theme</color-palette>
+      <typography>Inter font family</typography>
+      <language>All UI text in Portuguese (pt-BR)</language>
+      <currency-format>R$ 1.234,56</currency-format>
+      <date-format>DD/MM/YYYY</date-format>
+    </design-system>
+
+    <component-usage>
+      <rule>Entity Details: Display in Drawer component (not separate pages)</rule>
+      <rule>Forms: Display in Modal component (not separate pages)</rule>
+      <rule>Notifications: Sonner toast at top of page</rule>
+      <rule>Data Tables: With sorting and filtering capabilities</rule>
+      <rule>Dashboard Layout: Collapsible sidebar navigation</rule>
+    </component-usage>
+
+    <responsive-design>
+      <principle>Mobile First: Optimized for mobile devices</principle>
+      <tablet-support>Proper tablet layouts</tablet-support>
+      <desktop>Full feature desktop experience</desktop>
+      <sidebar>Auto-collapse on mobile</sidebar>
+    </responsive-design>
+
+    <accessibility>
+      <wcag-compliance>Meet accessibility standards</wcag-compliance>
+      <keyboard-navigation>Full keyboard support</keyboard-navigation>
+      <screen-reader>Proper ARIA labels in Portuguese</screen-reader>
+      <color-contrast>Sufficient contrast ratios</color-contrast>
+    </accessibility>
+
+    <loading-error-states>
+      <skeleton-loading>For tables and cards</skeleton-loading>
+      <button-loading>Spinner with disabled state</button-loading>
+      <error-messages>User-friendly Portuguese messages</error-messages>
+      <empty-states>Helpful messages when no data</empty-states>
+    </loading-error-states>
+  </ui-ux-requirements>
+
+  <validation-schemas>
+    <authentication-schemas>
+      <schema name="SignInSchema">
+        <field name="identifier" validation="string().min(1, 'Email ou OAB obrigatório')" />
+        <field name="password" validation="string().min(1, 'Senha obrigatória')" />
+        <field name="remember" validation="boolean().optional()" />
+      </schema>
+      
+      <schema name="CreateEmployeeSchema">
+        <field name="fullName" validation="string().min(1, 'Nome obrigatório')" />
+        <field name="email" validation="string().email('Email inválido')" />
+        <field name="oabNumber" validation="string().regex(/^RS\d{6}$/, 'Formato OAB inválido').optional()" />
+        <field name="password" validation="string().min(6, 'Senha deve ter no mínimo 6 caracteres')" />
+        <field name="role" validation="enum(['admin', 'user'])" />
+        <field name="type" validation="enum(['lawyer', 'admin_assistant'])" />
+        <field name="remunerationPercent" validation="number().min(0).max(100)" />
+        <field name="referrerPercent" validation="number().min(0).max(100).optional()" />
+      </schema>
+    </authentication-schemas>
+
+    <client-schemas>
+      <schema name="CreateClientSchema">
+        <discriminated-union field="type">
+          <variant name="pf">
+            <field name="type" validation="literal('pf')" />
+            <field name="fullName" validation="string().min(1, 'Nome obrigatório')" />
+            <field name="cnpjf" validation="string().length(11, 'CPF inválido')" />
+            <field name="email" validation="string().email('Email inválido').optional()" />
+            <field name="mobilePhone" validation="string().optional()" />
+          </variant>
+          
+          <variant name="pj">
+            <field name="type" validation="literal('pj')" />
+            <field name="fullName" validation="string().min(1, 'Razão social obrigatória')" />
+            <field name="cnpjf" validation="string().length(14, 'CNPJ inválido')" />
+            <field name="email" validation="string().email('Email inválido').optional()" />
+            <field name="mobilePhone" validation="string().optional()" />
+          </variant>
+        </discriminated-union>
+        
+        <refine message="Pelo menos um contato é obrigatório">
+          data.email || data.mobilePhone
+        </refine>
+      </schema>
+    </client-schemas>
+
+    <contract-schemas>
+      <schema name="CreateContractSchema">
+        <field name="clientId" validation="string().uuid()" />
+        <field name="identification" validation="string().min(1, 'Número do processo obrigatório')" />
+        <field name="feePercent" validation="number().min(0).max(100)" />
+        <field name="legalArea" validation="enum(['social_security', 'civil', 'family', 'labor', 'other'])" />
+        <field name="observation" validation="string().optional()" />
+        <field name="employees" validation="array(object({employeeId: string().uuid(), type: enum(['responsible', 'recommending', 'recommended', 'admin_assistant'])})).min(1, 'Pelo menos um responsável é obrigatório')" />
+      </schema>
+    </contract-schemas>
+
+    <revenue-schemas>
+      <schema name="CreateRevenueSchema">
+        <field name="contractId" validation="string().uuid()" />
+        <field name="type" validation="enum(['administrative', 'judicial', 'succumbency'])" />
+        <field name="totalValue" validation="number().positive('Valor deve ser positivo')" />
+        <field name="downPayment" validation="number().min(0).default(0)" />
+        <field name="paymentStartDate" validation="string()" />
+        <field name="installmentsTotal" validation="number().int().positive('Número de parcelas deve ser positivo')" />
+        
+        <refine message="Entrada não pode exceder o valor total">
+          data.downPayment &lt;= data.totalValue
+        </refine>
+      </schema>
+    </revenue-schemas>
+
+    <fee-schemas>
+      <schema name="CreateFeeSchema">
+        <field name="revenueId" validation="string().uuid()" />
+        <field name="paymentDate" validation="string()" />
+        <field name="amount" validation="number().positive('Valor deve ser positivo')" />
+        <field name="installmentNumber" validation="number().int().positive('Número da parcela deve ser positivo')" />
+        <field name="generateRemuneration" validation="boolean().default(true)" />
+      </schema>
+    </fee-schemas>
+  </validation-schemas>
+
+  <error-handling>
+    <error-response-format>
+      <field name="code" type="string" description="Error code for identification" />
+      <field name="message" type="string" description="User-friendly message in Portuguese" />
+      <field name="field" type="string" description="Field name for validation errors" optional="true" />
+      <field name="details" type="unknown" description="Additional error details" optional="true" />
+    </error-response-format>
+
+    <error-codes>
+      <category name="Auth Errors">
+        <code name="INVALID_CREDENTIALS" value="AUTH_001" />
+        <code name="SESSION_EXPIRED" value="AUTH_002" />
+        <code name="UNAUTHORIZED" value="AUTH_003" />
+      </category>
+      
+      <category name="Validation Errors">
+        <code name="VALIDATION_ERROR" value="VAL_001" />
+        <code name="DUPLICATE_ENTRY" value="VAL_002" />
+      </category>
+      
+      <category name="Business Logic Errors">
+        <code name="INSUFFICIENT_PERMISSIONS" value="BUS_001" />
+        <code name="INVALID_OPERATION" value="BUS_002" />
+      </category>
+      
+      <category name="System Errors">
+        <code name="DATABASE_ERROR" value="SYS_001" />
+        <code name="INTERNAL_ERROR" value="SYS_002" />
+      </category>
+    </error-codes>
+
+    <error-messages-portuguese>
+      <message code="AUTH_001">Credenciais inválidas</message>
+      <message code="AUTH_002">Sessão expirada, faça login novamente</message>
+      <message code="AUTH_003">Acesso não autorizado</message>
+      <message code="VAL_001">Dados inválidos</message>
+      <message code="VAL_002">Registro já existe</message>
+      <message code="BUS_001">Permissões insuficientes</message>
+      <message code="BUS_002">Operação inválida</message>
+      <message code="SYS_001">Erro ao acessar banco de dados</message>
+      <message code="SYS_002">Erro interno do servidor</message>
+    </error-messages-portuguese>
+  </error-handling>
+
+  <environment-variables>
+    <database>
+      <variable name="DATABASE_URL">postgresql://user:password@localhost:5432/hono_db</variable>
+    </database>
+    
+    <better-auth>
+      <variable name="BETTER_AUTH_SECRET">your-secret-key-here</variable>
+      <variable name="BETTER_AUTH_URL">http://localhost:3000</variable>
+      <variable name="BETTER_AUTH_TRUST_HOST">true</variable>
+    </better-auth>
+    
+    <email>
+      <variable name="EMAIL_HOST">smtp.gmail.com</variable>
+      <variable name="EMAIL_PORT">587</variable>
+      <variable name="EMAIL_USER">your-email@gmail.com</variable>
+      <variable name="EMAIL_PASSWORD">your-app-password</variable>
+    </email>
+    
+    <application>
+      <variable name="NEXT_PUBLIC_APP_URL">http://localhost:3000</variable>
+      <variable name="NODE_ENV">development</variable>
+    </application>
+    
+    <optional>
+      <variable name="ENABLE_AUDIT_LOG">true</variable>
+      <variable name="ENABLE_EMAIL_VERIFICATION">false</variable>
+    </optional>
+  </environment-variables>
+
+  <setup-instructions>
+    <initial-setup>
+      <command>npx create-next-app@latest hono-legal --typescript --tailwind --app --src-dir --import-alias "@/*"</command>
+      <command>cd hono-legal</command>
+      <command>npm install drizzle-orm postgres better-auth</command>
+      <command>npm install @tanstack/react-query @trpc/server @trpc/client @trpc/react-query @trpc/next</command>
+      <command>npm install react-hook-form @hookform/resolvers zod</command>
+      <command>npm install recharts lucide-react sonner</command>
+      <command>npm install -D drizzle-kit @types/node</command>
+      <command>npx shadcn-ui@latest init</command>
+      <command>npx shadcn-ui@latest add button card dialog drawer form input label select table toast sonner</command>
+      <command>npx drizzle-kit generate:pg</command>
+      <command>npx drizzle-kit push:pg</command>
+      <command>npm run dev</command>
+    </initial-setup>
+
+    <database-migrations>
+      <command name="generate">npx drizzle-kit generate:pg</command>
+      <command name="push">npx drizzle-kit push:pg</command>
+      <command name="drop">npx drizzle-kit drop</command>
+      <command name="studio">npx drizzle-kit studio</command>
+    </database-migrations>
+  </setup-instructions>
+
+  <testing-requirements>
+    <test-configuration framework="Vitest">
+      <config-file>vitest.config.ts</config-file>
+      <plugins>react</plugins>
+      <environment>jsdom</environment>
+      <globals>true</globals>
+      <setup-files>./src/test/setup.ts</setup-files>
+    </test-configuration>
+
+    <test-coverage>
+      <category name="Unit Tests">Business logic, utilities, hooks</category>
+      <category name="Integration Tests">API routes, database operations</category>
+      <category name="Component Tests">Critical UI components</category>
+      <category name="E2E Tests">Main user workflows</category>
+    </test-coverage>
+
+    <critical-test-cases>
+      <test-suite name="Remuneration Calculations">
+        <test>Responsible lawyer receives full percentage</test>
+        <test>Recommended lawyer receives reduced percentage</test>
+        <test>Recommending lawyer receives referrer percentage</test>
+        <test>Additional remuneration for social_security contracts</test>
+        <test>Admin assistant receives full percentage</test>
+      </test-suite>
+      
+      <test-suite name="Contract Status">
+        <test>Contract status updates when fully paid</test>
+        <test>Contract remains active when partially paid</test>
+        <test>Soft delete preserves data integrity</test>
+      </test-suite>
+    </critical-test-cases>
+  </testing-requirements>
+
+  <performance-requirements>
+    <database-optimization>
+      <indexes>
+        <index>CREATE INDEX idx_contracts_client_id ON contracts(client_id);</index>
+        <index>CREATE INDEX idx_contracts_status ON contracts(contract_status);</index>
+        <index>CREATE INDEX idx_fees_revenue_id ON fees(revenue_id);</index>
+        <index>CREATE INDEX idx_fees_payment_date ON fees(payment_date);</index>
+        <index>CREATE INDEX idx_remunerations_employee_id ON remunerations(employee_id);</index>
+        <index>CREATE INDEX idx_remunerations_payment_date ON remunerations(payment_date);</index>
+        <index>CREATE INDEX idx_audit_logs_user_id ON audit_logs(user_id);</index>
+        <index>CREATE INDEX idx_audit_logs_table_record ON audit_logs(table_name, record_id);</index>
+      </indexes>
+      
+      <composite-indexes>
+        <index>CREATE INDEX idx_contracts_area_status ON contracts(legal_area, contract_status);</index>
+        <index>CREATE INDEX idx_remunerations_employee_date ON remunerations(employee_id, payment_date);</index>
+      </composite-indexes>
+    </database-optimization>
+
+    <frontend-optimization>
+      <react-query-caching>
+        <stale-time unit="minutes">5</stale-time>
+        <cache-time unit="minutes">10</cache-time>
+        <refetch-on-window-focus>false</refetch-on-window-focus>
+      </react-query-caching>
+      
+      <pagination>
+        <default-items-per-page>20</default-items-per-page>
+      </pagination>
+      
+      <lazy-loading>Modals and drawers load on demand</lazy-loading>
+      
+      <image-optimization>Next.js Image component for avatars</image-optimization>
+    </frontend-optimization>
+
+    <api-performance>
+      <response-time-goals>
+        <target operation="list-queries" time="500ms" />
+        <target operation="single-entity" time="200ms" />
+        <target operation="mutations" time="300ms" />
+      </response-time-goals>
+      
+      <batch-operations>Bulk fee creation support</batch-operations>
+      
+      <query-optimization>Use select to limit fields</query-optimization>
+    </api-performance>
+  </performance-requirements>
+
+  <security-requirements>
+    <authentication-authorization>
+      <password-policy>Minimum 6 characters</password-policy>
+      <session-duration>
+        <with-remember-me unit="days">7</with-remember-me>
+        <without-remember-me unit="hours">24</without-remember-me>
+      </session-duration>
+      <role-verification>Server-side role checking on all routes</role-verification>
+      <api-protection>All routes require authentication except login</api-protection>
+    </authentication-authorization>
+
+    <data-protection>
+      <input-sanitization>All inputs validated with Zod</input-sanitization>
+      <sql-injection-prevention>Parameterized queries via Drizzle ORM</sql-injection-prevention>
+      <xss-protection>React default escaping</xss-protection>
+      <csrf-protection>BetterAuth built-in protection</csrf-protection>
+      <audit-trail>All CRUD operations logged</audit-trail>
+    </data-protection>
+
+    <privacy-compliance>
+      <soft-deletes>Data preservation for legal requirements</soft-deletes>
+      <data-isolation>Users see only their remuneration data</data-isolation>
+      <audit-logs>Track all data modifications</audit-logs>
+      <secure-headers>Next.js security headers configuration</secure-headers>
+    </privacy-compliance>
+  </security-requirements>
+
+  <localization>
+    <language>pt-BR</language>
+    
+    <common-terms>
+      <translation key="client">Cliente</translation>
+      <translation key="contract">Contrato</translation>
+      <translation key="fee">Honorário</translation>
+      <translation key="remuneration">Remuneração</translation>
+      <translation key="revenue">Receita</translation>
+      <translation key="employee">Colaborador</translation>
+      <translation key="create">Criar</translation>
+      <translation key="edit">Editar</translation>
+      <translation key="delete">Excluir</translation>
+      <translation key="save">Salvar</translation>
+      <translation key="cancel">Cancelar</translation>
+      <translation key="search">Buscar</translation>
+      <translation key="filter">Filtrar</translation>
+      <translation key="export">Exportar</translation>
+      <translation key="active">Ativo</translation>
+      <translation key="inactive">Inativo</translation>
+      <translation key="completed">Concluído</translation>
+      <translation key="cancelled">Cancelado</translation>
+      <translation key="loading">Carregando...</translation>
+      <translation key="saving">Salvando...</translation>
+      <translation key="success">Operação realizada com sucesso</translation>
+      <translation key="error">Ocorreu um erro</translation>
+      <translation key="confirmDelete">Tem certeza que deseja excluir?</translation>
+      <translation key="noData">Nenhum registro encontrado</translation>
+    </common-terms>
+
+    <formatting>
+      <dates>DD/MM/YYYY</dates>
+      <currency>R$ 1.234,56</currency>
+      <percentage>12,34%</percentage>
+    </formatting>
+  </localization>
+
+  <sample-data>
+    <development-seeds>
+      <admin-user>
+        <id>admin-id</id>
+        <fullName>Administrador</fullName>
+        <email>admin@hono-legal.com</email>
+        <oabNumber>RS123456</oabNumber>
+        <role>admin</role>
+        <type>lawyer</type>
+        <remunerationPercent>30</remunerationPercent>
+        <referrerPercent>5</referrerPercent>
+      </admin-user>
+      
+      <sample-lawyer>
+        <id>lawyer1-id</id>
+        <fullName>Dr. João Silva</fullName>
+        <email>joao.silva@hono-legal.com</email>
+        <oabNumber>RS234567</oabNumber>
+        <role>user</role>
+        <type>lawyer</type>
+        <remunerationPercent>25</remunerationPercent>
+        <referrerPercent>5</referrerPercent>
+      </sample-lawyer>
+      
+      <sample-assistant>
+        <id>assistant1-id</id>
+        <fullName>Maria Santos</fullName>
+        <email>maria.santos@hono-legal.com</email>
+        <role>user</role>
+        <type>admin_assistant</type>
+        <remunerationPercent>10</remunerationPercent>
+      </sample-assistant>
+    </development-seeds>
+  </sample-data>
+
+  <deployment-checklist>
+    <pre-deployment>
+      <item>Environment variables configured</item>
+      <item>Database migrations applied</item>
+      <item>All tests passing</item>
+      <item>Build successful (npm run build)</item>
+      <item>Security headers configured</item>
+      <item>Error tracking setup (Sentry or similar)</item>
+    </pre-deployment>
+
+    <deployment-platforms>
+      <platform name="vercel">vercel --prod</platform>
+      <platform name="docker">docker build -t hono-legal . &amp;&amp; docker run -p 3000:3000 hono-legal</platform>
+      <platform name="railway">railway up</platform>
+    </deployment-platforms>
+
+    <post-deployment>
+      <item>Verify authentication flow</item>
+      <item>Test critical user paths</item>
+      <item>Monitor error logs</item>
+      <item>Verify email functionality</item>
+      <item>Check performance metrics</item>
+      <item>Backup database</item>
+    </post-deployment>
+  </deployment-checklist>
+
+  <monitoring-maintenance>
+    <monitoring>
+      <error-tracking>Sentry or LogRocket integration</error-tracking>
+      <performance-monitoring>Web Vitals tracking</performance-monitoring>
+      <uptime-monitoring>Status page</uptime-monitoring>
+      <database-monitoring>Query performance tracking</database-monitoring>
+    </monitoring>
+
+    <backup-strategy>
+      <database-backups frequency="daily">Daily automated backups</database-backups>
+      <backup-retention unit="days">30</backup-retention>
+      <backup-testing frequency="monthly">Monthly restore tests</backup-testing>
+      <disaster-recovery>Document recovery procedures</disaster-recovery>
+    </backup-strategy>
+
+    <maintenance-tasks>
+      <weekly>Review error logs</weekly>
+      <monthly>Performance analysis</monthly>
+      <quarterly>Security updates</quarterly>
+      <yearly>Dependency upgrades</yearly>
+    </maintenance-tasks>
+  </monitoring-maintenance>
+
+  <future-enhancements>
+    <phase number="2">
+      <feature>Email Notifications: Payment reminders, deadline alerts</feature>
+      <feature>Document Management: Contract PDF storage</feature>
+      <feature>Advanced Reports: Custom report builder</feature>
+      <feature>Bulk Operations: Mass updates, bulk imports</feature>
+      <feature>Calendar Integration: Deadline tracking</feature>
+    </phase>
+
+    <phase number="3">
+      <feature>Mobile App: React Native application</feature>
+      <feature>API Public: REST API for integrations</feature>
+      <feature>Advanced Analytics: BI dashboard</feature>
+      <feature>Workflow Automation: Automated processes</feature>
+      <feature>Multi-firm Support: SaaS transformation</feature>
+    </phase>
+  </future-enhancements>
+
+  <appendix>
+    <business-glossary>
+      <term name="OAB">Ordem dos Advogados do Brasil (Bar Association)</term>
+      <term name="Honorários">Legal fees</term>
+      <term name="Remuneração">Remuneration/Payment to lawyers</term>
+      <term name="Indicação">Referral</term>
+      <term name="Processo">Legal case/process</term>
+      <term name="Receita">Revenue/Income structure</term>
+    </business-glossary>
+
+    <technical-decisions>
+      <decision date="2024">
+        <choice>BetterAuth over NextAuth</choice>
+        <rationale>More flexible, better TypeScript support</rationale>
+      </decision>
+      
+      <decision date="2024">
+        <choice>Drizzle over Prisma</choice>
+        <rationale>Better performance, SQL-first</rationale>
+      </decision>
+      
+      <decision date="2024">
+        <choice>shadcn/ui over MUI</choice>
+        <rationale>Lighter, more customizable</rationale>
+      </decision>
+      
+      <decision date="2024">
+        <choice>Decimal over Integer for money</choice>
+        <rationale>Simpler calculations, matches business domain</rationale>
+      </decision>
+    </technical-decisions>
+
+    <contact-information>
+      <role name="Product Owner">[Name]</role>
+      <role name="Technical Lead">[Name]</role>
+      <role name="Design Lead">[Name]</role>
+      <role name="QA Lead">[Name]</role>
+    </contact-information>
+  </appendix>
+</hono-legal-prd>

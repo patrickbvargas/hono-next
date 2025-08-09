@@ -77,7 +77,7 @@ const FeeDetailsContent = ({ id }: FeeDetailsContentProps) => {
       data: [
         {
           term: "Valor",
-          definition: formatter.currency(fee.value),
+          definition: formatter.currency(fee.amount),
         },
         {
           term: "Pagamento",
@@ -102,11 +102,11 @@ const FeeDetailsContent = ({ id }: FeeDetailsContentProps) => {
           },
           {
             term: "Valor",
-            definition: formatter.currency(r.value),
+            definition: formatter.currency(r.amount),
           },
           {
             term: "Percentual",
-            definition: formatter.percent(r.remunerationPercent),
+            definition: formatter.percent(r.percentage),
           },
         ],
       }),

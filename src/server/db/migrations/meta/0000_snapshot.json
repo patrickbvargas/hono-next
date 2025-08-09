@@ -1,12 +1,154 @@
 {
-  "id": "1a28a5a3-278b-4447-8dee-bfcb887bdd9f",
+  "id": "88c7bce2-1854-44ac-952e-18e2f4ef8d9c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "hono.clients": {
+    "hono_claude.accounts": {
+      "name": "accounts",
+      "schema": "hono_claude",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "access_token": {
+          "name": "access_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_token": {
+          "name": "id_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "hono_claude.audit_logs": {
+      "name": "audit_logs",
+      "schema": "hono_claude",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "table_name": {
+          "name": "table_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "record_id": {
+          "name": "record_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action": {
+          "name": "action",
+          "type": "audit_action",
+          "typeSchema": "hono_claude",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "old_values": {
+          "name": "old_values",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "new_values": {
+          "name": "new_values",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ip_address": {
+          "name": "ip_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "hono_claude.clients": {
       "name": "clients",
-      "schema": "hono",
+      "schema": "hono_claude",
       "columns": {
         "id": {
           "name": "id",
@@ -30,18 +172,18 @@
           "name": "email",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "mobile_phone": {
           "name": "mobile_phone",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "type": {
           "name": "type",
           "type": "client_type",
-          "typeSchema": "hono",
+          "typeSchema": "hono_claude",
           "primaryKey": false,
           "notNull": true
         },
@@ -49,12 +191,12 @@
           "name": "contract_count",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "status": {
           "name": "status",
           "type": "entity_status",
-          "typeSchema": "hono",
+          "typeSchema": "hono_claude",
           "primaryKey": false,
           "notNull": true,
           "default": "'active'"
@@ -69,6 +211,30 @@
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         }
@@ -89,9 +255,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "hono.contract_employee": {
+    "hono_claude.contract_employee": {
       "name": "contract_employee",
-      "schema": "hono",
+      "schema": "hono_claude",
       "columns": {
         "id": {
           "name": "id",
@@ -113,8 +279,8 @@
         },
         "assignment": {
           "name": "assignment",
-          "type": "employee_assignment",
-          "typeSchema": "hono",
+          "type": "contract_employee_type",
+          "typeSchema": "hono_claude",
           "primaryKey": false,
           "notNull": true
         },
@@ -130,6 +296,12 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -140,9 +312,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "hono.contracts": {
+    "hono_claude.contracts": {
       "name": "contracts",
-      "schema": "hono",
+      "schema": "hono_claude",
       "columns": {
         "id": {
           "name": "id",
@@ -177,14 +349,29 @@
         "legal_area": {
           "name": "legal_area",
           "type": "contract_legal_area",
-          "typeSchema": "hono",
+          "typeSchema": "hono_claude",
           "primaryKey": false,
           "notNull": true
+        },
+        "contract_status": {
+          "name": "contract_status",
+          "type": "contract_status",
+          "typeSchema": "hono_claude",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'active'"
+        },
+        "allow_status_change": {
+          "name": "allow_status_change",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
         },
         "status": {
           "name": "status",
           "type": "entity_status",
-          "typeSchema": "hono",
+          "typeSchema": "hono_claude",
           "primaryKey": false,
           "notNull": true,
           "default": "'active'"
@@ -199,6 +386,30 @@
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         }
@@ -219,9 +430,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "hono.employees": {
+    "hono_claude.employees": {
       "name": "employees",
-      "schema": "hono",
+      "schema": "hono_claude",
       "columns": {
         "id": {
           "name": "id",
@@ -231,6 +442,12 @@
         },
         "full_name": {
           "name": "full_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -247,20 +464,38 @@
           "primaryKey": false,
           "notNull": true
         },
+        "referrer_percent": {
+          "name": "referrer_percent",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true
+        },
         "type": {
           "name": "type",
           "type": "employee_type",
-          "typeSchema": "hono",
+          "typeSchema": "hono_claude",
           "primaryKey": false,
           "notNull": true
         },
         "role": {
           "name": "role",
           "type": "employee_role",
-          "typeSchema": "hono",
+          "typeSchema": "hono_claude",
           "primaryKey": false,
           "notNull": true,
           "default": "'user'"
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "contract_count": {
           "name": "contract_count",
@@ -271,7 +506,7 @@
         "status": {
           "name": "status",
           "type": "entity_status",
-          "typeSchema": "hono",
+          "typeSchema": "hono_claude",
           "primaryKey": false,
           "notNull": true,
           "default": "'active'"
@@ -288,12 +523,43 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
+        "employees_email_unique": {
+          "name": "employees_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        },
         "employees_oab_number_unique": {
           "name": "employees_oab_number_unique",
           "nullsNotDistinct": false,
@@ -306,9 +572,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "hono.fees": {
+    "hono_claude.fees": {
       "name": "fees",
-      "schema": "hono",
+      "schema": "hono_claude",
       "columns": {
         "id": {
           "name": "id",
@@ -328,8 +594,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "value": {
-          "name": "value",
+        "amount": {
+          "name": "amount",
           "type": "real",
           "primaryKey": false,
           "notNull": true
@@ -346,6 +612,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "generate_remuneration": {
+          "name": "generate_remuneration",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -358,6 +631,30 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -368,9 +665,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "hono.revenues": {
+    "hono_claude.revenues": {
       "name": "revenues",
-      "schema": "hono",
+      "schema": "hono_claude",
       "columns": {
         "id": {
           "name": "id",
@@ -384,17 +681,18 @@
           "primaryKey": false,
           "notNull": true
         },
-        "amount": {
-          "name": "amount",
+        "total_value": {
+          "name": "total_value",
           "type": "real",
           "primaryKey": false,
           "notNull": true
         },
-        "entry_value": {
-          "name": "entry_value",
+        "down_payment": {
+          "name": "down_payment",
           "type": "real",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": 0
         },
         "installments_total": {
           "name": "installments_total",
@@ -406,7 +704,8 @@
           "name": "installments_paid",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": 0
         },
         "payment_start_date": {
           "name": "payment_start_date",
@@ -417,7 +716,7 @@
         "type": {
           "name": "type",
           "type": "revenue_type",
-          "typeSchema": "hono",
+          "typeSchema": "hono_claude",
           "primaryKey": false,
           "notNull": true
         },
@@ -433,6 +732,30 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -443,9 +766,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "hono.remunerations": {
+    "hono_claude.remunerations": {
       "name": "remunerations",
-      "schema": "hono",
+      "schema": "hono_claude",
       "columns": {
         "id": {
           "name": "id",
@@ -471,14 +794,14 @@
           "primaryKey": false,
           "notNull": true
         },
-        "remuneration_percentage": {
-          "name": "remuneration_percentage",
+        "percentage": {
+          "name": "percentage",
           "type": "real",
           "primaryKey": false,
           "notNull": true
         },
-        "value": {
-          "name": "value",
+        "amount": {
+          "name": "amount",
           "type": "real",
           "primaryKey": false,
           "notNull": true
@@ -501,6 +824,92 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "hono_claude.sessions": {
+      "name": "sessions",
+      "schema": "hono_claude",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ip_address": {
+          "name": "ip_address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "hono_claude.verifications": {
+      "name": "verifications",
+      "schema": "hono_claude",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "identifier": {
+          "name": "identifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
@@ -513,28 +922,39 @@
     }
   },
   "enums": {
-    "hono.client_type": {
+    "hono_claude.audit_action": {
+      "name": "audit_action",
+      "schema": "hono_claude",
+      "values": [
+        "create",
+        "update",
+        "delete",
+        "soft_delete",
+        "restore"
+      ]
+    },
+    "hono_claude.client_type": {
       "name": "client_type",
-      "schema": "hono",
+      "schema": "hono_claude",
       "values": [
         "pf",
         "pj"
       ]
     },
-    "hono.employee_assignment": {
-      "name": "employee_assignment",
-      "schema": "hono",
+    "hono_claude.contract_employee_type": {
+      "name": "contract_employee_type",
+      "schema": "hono_claude",
       "values": [
-        "aditional",
+        "additional",
         "admin_assistant",
         "recommending",
         "recommended",
         "responsible"
       ]
     },
-    "hono.contract_legal_area": {
+    "hono_claude.contract_legal_area": {
       "name": "contract_legal_area",
-      "schema": "hono",
+      "schema": "hono_claude",
       "values": [
         "civil",
         "family",
@@ -543,42 +963,51 @@
         "labor"
       ]
     },
-    "hono.employee_role": {
+    "hono_claude.contract_status": {
+      "name": "contract_status",
+      "schema": "hono_claude",
+      "values": [
+        "active",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "hono_claude.employee_role": {
       "name": "employee_role",
-      "schema": "hono",
+      "schema": "hono_claude",
       "values": [
         "admin",
         "user"
       ]
     },
-    "hono.employee_type": {
+    "hono_claude.employee_type": {
       "name": "employee_type",
-      "schema": "hono",
+      "schema": "hono_claude",
       "values": [
         "lawyer",
         "admin_assistant"
       ]
     },
-    "hono.entity_status": {
+    "hono_claude.entity_status": {
       "name": "entity_status",
-      "schema": "hono",
+      "schema": "hono_claude",
       "values": [
         "active",
         "inactive"
       ]
     },
-    "hono.revenue_type": {
+    "hono_claude.revenue_type": {
       "name": "revenue_type",
-      "schema": "hono",
+      "schema": "hono_claude",
       "values": [
         "administrative",
         "judicial",
-        "compliance"
+        "succumbency"
       ]
     }
   },
   "schemas": {
-    "hono": "hono"
+    "hono_claude": "hono_claude"
   },
   "sequences": {},
   "roles": {},

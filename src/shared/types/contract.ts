@@ -15,8 +15,8 @@ type ContractEmployeeInfo = {
 
 type ContractRevenueInfo = Pick<
   RevenueRaw,
-  | "amount"
-  | "entryValue"
+  | "totalValue"
+  | "downPayment"
   | "installmentsTotal"
   | "installmentsPaid"
   | "paymentStartDate"

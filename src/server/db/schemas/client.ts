@@ -1,5 +1,6 @@
 import { status } from "./status";
 import { mainSchema } from "./schema";
+import { auditFields } from "./audit";
 import { contracts } from "./contract";
 import { relations } from "drizzle-orm";
 import { timestamps } from "./timestamp";
@@ -11,12 +12,13 @@ export const clients = mainSchema.table("clients", {
   id: text("id").primaryKey(),
   fullName: text("full_name").notNull(),
   cnpjf: text("cnpjf").notNull().unique(),
-  email: text("email").notNull(),
-  mobilePhone: text("mobile_phone").notNull(),
+  email: text("email"),
+  mobilePhone: text("mobile_phone"),
   type: clientTypeEnum("type").notNull(),
-  contractCount: integer("contract_count").notNull(),
+  contractCount: integer("contract_count"),
   ...status,
   ...timestamps,
+  ...auditFields,
 });
 
 export const clientsRelations = relations(clients, ({ many }) => ({

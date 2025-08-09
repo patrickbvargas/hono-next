@@ -1,3 +1,3 @@
 import { pgSchema } from "drizzle-orm/pg-core";
 
-export const mainSchema = pgSchema("hono");
+export const mainSchema = pgSchema("hono_claude");

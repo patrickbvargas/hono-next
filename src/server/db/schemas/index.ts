@@ -7,3 +7,8 @@ export * from "./employee";
 export * from "./timestamp";
 export * from "./remuneration";
 export * from "./contract_employee";
+export * from "./session";
+export * from "./account";
+export * from "./verification";
+export * from "./audit_log";
+export * from "./audit";

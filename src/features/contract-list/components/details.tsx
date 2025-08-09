@@ -96,11 +96,11 @@ const ContractDetailsContent = ({ id }: ContractDetailsContentProps) => {
       data: [
         {
           term: "Total",
-          definition: formatter.currency(r.amount),
+          definition: formatter.currency(r.totalValue),
         },
         {
           term: "Entrada",
-          definition: formatter.currency(r.entryValue),
+          definition: formatter.currency(r.downPayment),
         },
         {
           term: "Pago",

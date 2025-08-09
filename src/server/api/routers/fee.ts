@@ -77,7 +77,7 @@ function getJoinRules() {
 const queryManyFields = {
   id: fees.id,
   paymentDate: fees.paymentDate,
-  value: fees.value,
+  amount: fees.amount,
   contract: contracts.identification,
   legalArea: contracts.legalArea,
   client: clients.fullName,
@@ -95,7 +95,7 @@ export const feeRouter = createTRPCRouter({
         const data = await db.query.fees.findFirst({
           columns: {
             id: true,
-            value: true,
+            amount: true,
             installmentNumber: true,
             paymentDate: true,
             createdAt: true,
@@ -121,8 +121,8 @@ export const feeRouter = createTRPCRouter({
             },
             remunerations: {
               columns: {
-                remunerationPercent: true,
-                value: true,
+                percentage: true,
+                amount: true,
               },
               with: {
                 contractEmployee: {

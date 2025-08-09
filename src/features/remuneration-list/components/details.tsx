@@ -90,11 +90,11 @@ const RemunerationDetailsContent = ({
       data: [
         {
           term: "Valor",
-          definition: formatter.currency(remuneration.value),
+          definition: formatter.currency(remuneration.amount),
         },
         {
           term: "Percentual",
-          definition: formatter.percent(remuneration.remunerationPercent),
+          definition: formatter.percent(remuneration.percentage),
         },
         {
           term: "Pagamento",

@@ -6,5 +6,5 @@ export const FEE_SORT_COLUMNS = [
   "revenueType",
   "legalArea",
   "paymentDate",
-  "value",
+  "amount",
 ] as const satisfies readonly FeeSortColumn[];

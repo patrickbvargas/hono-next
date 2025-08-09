@@ -1,0 +1,840 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hono-legal-todo version="1.0">
+  <metadata>
+    <title>Hono Legal - Implementation TODO</title>
+    <description>Comprehensive task list for completing the legal fee management system</description>
+    <last_updated>2025-01-09</last_updated>
+    <status>Active Development</status>
+  </metadata>
+
+  <!-- PHASE 1: CRITICAL FOUNDATION -->
+  <phase id="1" name="Critical Foundation" priority="CRITICAL">
+    <description>Essential systems that must be completed before any other features</description>
+
+    <!-- AUTHENTICATION SYSTEM -->
+    <category id="auth" name="Authentication & Authorization">
+      <task id="auth-001" priority="CRITICAL" complexity="HIGH">
+        <title>Setup BetterAuth Configuration</title>
+        <description>
+          Configure BetterAuth with email/OAB login, password reset, and session management.
+          Must support OAB number format validation (RS000000).
+        </description>
+        <acceptance_criteria>
+          - BetterAuth configured in src/server/auth/
+          - Email and OAB number login support
+          - Password reset functionality
+          - Session management with proper timeout
+          - Role-based authentication (admin/user)
+          - Rate limiting (5 attempts per minute)
+        </acceptance_criteria>
+        <files_to_create>
+          - src/server/auth/config.ts
+          - src/server/auth/schemas.ts
+          - src/lib/auth.ts
+        </files_to_create>
+        <dependencies>
+          - Install better-auth package
+          - Environment variables setup
+        </dependencies>
+        <estimated_hours>16-24</estimated_hours>
+      </task>
+
+      <task id="auth-002" priority="CRITICAL" complexity="MEDIUM">
+        <title>Create Authentication Pages</title>
+        <description>
+          Build login, signup, and password reset pages with proper validation and Portuguese UI.
+        </description>
+        <acceptance_criteria>
+          - Login page with email/OAB and password fields
+          - "Lembrar-me" checkbox functionality
+          - Password reset page with email/OAB input
+          - Form validation with Portuguese error messages
+          - Loading states and error handling
+          - Responsive design
+        </acceptance_criteria>
+        <files_to_create>
+          - src/app/(auth)/login/page.tsx
+          - src/app/(auth)/signup/page.tsx
+          - src/app/(auth)/reset-password/page.tsx
+          - src/app/(auth)/layout.tsx
+          - src/features/auth/components/login-form.tsx
+          - src/features/auth/components/signup-form.tsx
+          - src/features/auth/components/reset-password-form.tsx
+        </files_to_create>
+        <dependencies>auth-001</dependencies>
+        <estimated_hours>12-16</estimated_hours>
+      </task>
+
+      <task id="auth-003" priority="CRITICAL" complexity="MEDIUM">
+        <title>Implement Route Protection</title>
+        <description>
+          Add authentication middleware and role-based access control throughout the application.
+        </description>
+        <acceptance_criteria>
+          - Middleware for protected routes
+          - Admin-only route protection
+          - Redirect to login for unauthenticated users
+          - Session validation on all API calls
+          - Proper error handling for unauthorized access
+        </acceptance_criteria>
+        <files_to_modify>
+          - src/middleware.ts
+          - src/server/api/trpc.ts
+          - All API routers for authentication checks
+        </files_to_modify>
+        <dependencies>auth-001, auth-002</dependencies>
+        <estimated_hours>8-12</estimated_hours>
+      </task>
+    </category>
+
+    <!-- API COMPLETION -->
+    <category id="api" name="API Layer Completion">
+      <task id="api-001" priority="CRITICAL" complexity="HIGH">
+        <title>Complete CRUD Operations - Employee Router</title>
+        <description>
+          Add create, update, delete, and restore operations for employees with proper validation.
+        </description>
+        <acceptance_criteria>
+          - Create employee with email uniqueness check
+          - Update employee profile and remuneration percentages
+          - Soft delete with deletedAt timestamp
+          - Restore soft-deleted employees
+          - Admin-only restrictions for sensitive operations
+          - Audit logging for all changes
+        </acceptance_criteria>
+        <files_to_modify>
+          - src/server/api/routers/employee.ts
+        </files_to_modify>
+        <files_to_create>
+          - src/shared/schemas/employee.ts (Zod validation)
+        </files_to_create>
+        <dependencies>auth-003</dependencies>
+        <estimated_hours>12-16</estimated_hours>
+      </task>
+
+      <task id="api-002" priority="CRITICAL" complexity="HIGH">
+        <title>Complete CRUD Operations - Client Router</title>
+        <description>
+          Add create, update, delete, and restore operations for clients with CPF/CNPJ validation.
+        </description>
+        <acceptance_criteria>
+          - Create client with type-specific validation (PF/PJ)
+          - CPF/CNPJ format validation and uniqueness
+          - Update client information
+          - Soft delete with cascade checks (no delete if has active contracts)
+          - Contact method validation (email or phone required)
+        </acceptance_criteria>
+        <files_to_modify>
+          - src/server/api/routers/client.ts
+        </files_to_modify>
+        <files_to_create>
+          - src/shared/schemas/client.ts
+          - src/shared/utils/cpf-cnpj-validator.ts
+        </files_to_create>
+        <dependencies>auth-003</dependencies>
+        <estimated_hours>12-16</estimated_hours>
+      </task>
+
+      <task id="api-003" priority="CRITICAL" complexity="HIGH">
+        <title>Complete CRUD Operations - Contract Router</title>
+        <description>
+          Add create, update, delete operations for contracts with employee assignment logic.
+        </description>
+        <acceptance_criteria>
+          - Create contract with client and employee assignments
+          - Support for different employee types (responsible, recommending, etc.)
+          - Update contract status and assignments
+          - Soft delete with revenue/fee cascade checks
+          - Business rule validation (at least one responsible employee)
+        </acceptance_criteria>
+        <files_to_modify>
+          - src/server/api/routers/contract.ts
+        </files_to_modify>
+        <files_to_create>
+          - src/shared/schemas/contract.ts
+        </files_to_create>
+        <dependencies>auth-003, api-001, api-002</dependencies>
+        <estimated_hours>16-24</estimated_hours>
+      </task>
+
+      <task id="api-004" priority="CRITICAL" complexity="MEDIUM">
+        <title>Create Revenue Router</title>
+        <description>
+          Build complete revenue management router with all CRUD operations.
+        </description>
+        <acceptance_criteria>
+          - Create revenue with payment structure
+          - Update revenue details and installment tracking
+          - Delete revenue (check for existing fees)
+          - List revenues with contract filtering
+          - Validation for down payment ≤ total value
+        </acceptance_criteria>
+        <files_to_create>
+          - src/server/api/routers/revenue.ts
+          - src/shared/schemas/revenue.ts
+        </files_to_create>
+        <dependencies>auth-003, api-003</dependencies>
+        <estimated_hours>12-16</estimated_hours>
+      </task>
+
+      <task id="api-005" priority="CRITICAL" complexity="HIGH">
+        <title>Complete Fee Router with Remuneration Logic</title>
+        <description>
+          Add create, update, delete operations with automatic remuneration generation.
+        </description>
+        <acceptance_criteria>
+          - Create fee with automatic remuneration calculation
+          - Update fee with remuneration recalculation
+          - Soft delete fee with remuneration cascade
+          - Business logic for different employee attribution types
+          - Update revenue installmentsPaid counter
+          - Bulk fee creation support
+        </acceptance_criteria>
+        <files_to_modify>
+          - src/server/api/routers/fee.ts
+        </files_to_modify>
+        <files_to_create>
+          - src/shared/schemas/fee.ts
+          - src/server/services/remuneration-calculator.ts
+        </files_to_create>
+        <dependencies>auth-003, api-003, api-004</dependencies>
+        <estimated_hours>20-28</estimated_hours>
+      </task>
+
+      <task id="api-006" priority="CRITICAL" complexity="MEDIUM">
+        <title>Complete Remuneration Router</title>
+        <description>
+          Add update and delete operations for remunerations with admin restrictions.
+        </description>
+        <acceptance_criteria>
+          - Update remuneration amount/percentage (admin only)
+          - Soft delete remuneration (admin only)
+          - Get remuneration summary by employee
+          - Get remuneration summary by date range
+          - Recalculation when percentage changes
+        </acceptance_criteria>
+        <files_to_modify>
+          - src/server/api/routers/remuneration.ts
+        </files_to_modify>
+        <files_to_create>
+          - src/shared/schemas/remuneration.ts
+        </files_to_create>
+        <dependencies>auth-003, api-005</dependencies>
+        <estimated_hours>10-14</estimated_hours>
+      </task>
+    </category>
+  </phase>
+
+  <!-- PHASE 2: USER INTERFACE -->
+  <phase id="2" name="User Interface Implementation" priority="HIGH">
+    <description>Complete frontend implementation with forms, tables, and dashboard</description>
+
+    <!-- DASHBOARD -->
+    <category id="dashboard" name="Dashboard & Analytics">
+      <task id="dash-001" priority="HIGH" complexity="HIGH">
+        <title>Build Main Dashboard</title>
+        <description>
+          Create comprehensive dashboard with metrics, charts, and recent activities.
+        </description>
+        <acceptance_criteria>
+          - Revenue summary cards with monthly comparison
+          - Remuneration summary cards
+          - Monthly revenue line chart (Recharts)
+          - Revenue by type pie chart
+          - Revenue by legal area bar chart
+          - Recent activities table with pagination
+          - Date range filters
+          - Responsive design
+        </acceptance_criteria>
+        <files_to_create>
+          - src/app/(dashboard)/dashboard/page.tsx
+          - src/features/dashboard/components/revenue-summary.tsx
+          - src/features/dashboard/components/remuneration-summary.tsx
+          - src/features/dashboard/components/revenue-charts.tsx
+          - src/features/dashboard/components/recent-activities.tsx
+          - src/server/api/routers/dashboard.ts
+        </files_to_create>
+        <dependencies>api-001, api-002, api-003, api-004, api-005</dependencies>
+        <estimated_hours>20-28</estimated_hours>
+      </task>
+    </category>
+
+    <!-- CRUD FORMS -->
+    <category id="forms" name="CRUD Forms & Modals">
+      <task id="form-001" priority="HIGH" complexity="MEDIUM">
+        <title>Employee Management Forms</title>
+        <description>
+          Create/edit employee forms with validation and role management.
+        </description>
+        <acceptance_criteria>
+          - Create employee modal with all fields
+          - Edit employee modal with permission checks
+          - Form validation with Portuguese messages
+          - OAB number format validation
+          - Role and type selection
+          - Remuneration percentage inputs
+          - Success/error notifications
+        </acceptance_criteria>
+        <files_to_create>
+          - src/features/employee-list/components/create-form.tsx
+          - src/features/employee-list/components/edit-form.tsx
+          - src/features/employee-list/components/employee-modal.tsx
+        </files_to_create>
+        <dependencies>api-001, auth-003</dependencies>
+        <estimated_hours>12-16</estimated_hours>
+      </task>
+
+      <task id="form-002" priority="HIGH" complexity="MEDIUM">
+        <title>Client Management Forms</title>
+        <description>
+          Create/edit client forms with dynamic fields based on client type.
+        </description>
+        <acceptance_criteria>
+          - Create client modal with PF/PJ type selection
+          - Dynamic fields based on client type
+          - CPF/CNPJ validation and formatting
+          - Contact method requirement validation
+          - Edit client modal with data pre-filling
+          - Portuguese validation messages
+        </acceptance_criteria>
+        <files_to_create>
+          - src/features/client-list/components/create-form.tsx
+          - src/features/client-list/components/edit-form.tsx
+          - src/features/client-list/components/client-modal.tsx
+        </files_to_create>
+        <dependencies>api-002, auth-003</dependencies>
+        <estimated_hours>12-16</estimated_hours>
+      </task>
+
+      <task id="form-003" priority="HIGH" complexity="HIGH">
+        <title>Contract Management Forms</title>
+        <description>
+          Complex contract creation/editing with employee assignments and revenue setup.
+        </description>
+        <acceptance_criteria>
+          - Create contract modal with client selection
+          - Employee assignment section with different roles
+          - Revenue configuration tabs (Administrative/Judicial/Succumbency)
+          - Process number input with validation
+          - Legal area selection
+          - Fee percentage configuration
+          - Multi-step form or tabbed interface
+          - Employee role validation rules
+        </acceptance_criteria>
+        <files_to_create>
+          - src/features/contract-list/components/create-form.tsx
+          - src/features/contract-list/components/edit-form.tsx
+          - src/features/contract-list/components/contract-modal.tsx
+          - src/features/contract-list/components/employee-assignment.tsx
+          - src/features/contract-list/components/revenue-setup.tsx
+        </files_to_create>
+        <dependencies>api-003, api-004, form-001, form-002</dependencies>
+        <estimated_hours>20-28</estimated_hours>
+      </task>
+
+      <task id="form-004" priority="HIGH" complexity="MEDIUM">
+        <title>Fee Management Forms</title>
+        <description>
+          Fee creation/editing forms with remuneration generation options.
+        </description>
+        <acceptance_criteria>
+          - Create fee modal with contract and revenue selection
+          - Payment date picker with Portuguese locale
+          - Currency input formatting (R$ 1.234,56)
+          - Installment number input with validation
+          - Generate remuneration checkbox
+          - Bulk fee creation modal
+          - Edit fee with remuneration impact warning
+        </acceptance_criteria>
+        <files_to_create>
+          - src/features/fee-list/components/create-form.tsx
+          - src/features/fee-list/components/edit-form.tsx
+          - src/features/fee-list/components/fee-modal.tsx
+          - src/features/fee-list/components/bulk-create-form.tsx
+        </files_to_create>
+        <dependencies>api-005, form-003</dependencies>
+        <estimated_hours>16-20</estimated_hours>
+      </task>
+
+      <task id="form-005" priority="HIGH" complexity="LOW">
+        <title>Revenue Management Forms</title>
+        <description>
+          Revenue creation/editing forms with installment configuration.
+        </description>
+        <acceptance_criteria>
+          - Create revenue modal with contract selection
+          - Revenue type selection (Administrative/Judicial/Succumbency)
+          - Total value and down payment inputs
+          - Payment start date picker
+          - Installments total input
+          - Down payment validation (≤ total value)
+          - Edit revenue with impact warnings
+        </acceptance_criteria>
+        <files_to_create>
+          - src/features/revenue-list/components/create-form.tsx
+          - src/features/revenue-list/components/edit-form.tsx
+          - src/features/revenue-list/components/revenue-modal.tsx
+        </files_to_create>
+        <dependencies>api-004, form-003</dependencies>
+        <estimated_hours>10-14</estimated_hours>
+      </task>
+    </category>
+
+    <!-- TABLE IMPROVEMENTS -->
+    <category id="tables" name="Data Tables Enhancement">
+      <task id="table-001" priority="HIGH" complexity="MEDIUM">
+        <title>Add Action Columns to All Tables</title>
+        <description>
+          Add edit, delete, and view actions to all existing data tables.
+        </description>
+        <acceptance_criteria>
+          - Edit button that opens respective modal
+          - Delete button with confirmation dialog
+          - View details button that opens drawer
+          - Bulk actions for applicable tables
+          - Role-based action visibility
+          - Loading states for actions
+        </acceptance_criteria>
+        <files_to_modify>
+          - src/features/*/components/table.tsx (all tables)
+        </files_to_modify>
+        <files_to_create>
+          - src/shared/components/table-actions.tsx
+          - src/shared/components/delete-confirmation.tsx
+        </files_to_create>
+        <dependencies>form-001, form-002, form-003, form-004, form-005</dependencies>
+        <estimated_hours>12-16</estimated_hours>
+      </task>
+
+      <task id="table-002" priority="HIGH" complexity="LOW">
+        <title>Create Revenue List Page and Components</title>
+        <description>
+          Build revenue list page, table, filters, and details drawer.
+        </description>
+        <acceptance_criteria>
+          - Revenue list page with filters
+          - Revenue table with contract information
+          - Revenue details drawer
+          - Filter by contract, type, date range
+          - Sorting and pagination
+          - Payment progress indicators
+        </acceptance_criteria>
+        <files_to_create>
+          - src/app/(dashboard)/receitas/page.tsx
+          - src/features/revenue-list/index.tsx
+          - src/features/revenue-list/components/table.tsx
+          - src/features/revenue-list/components/filter.tsx
+          - src/features/revenue-list/components/details.tsx
+        </files_to_create>
+        <dependencies>api-004</dependencies>
+        <estimated_hours>10-14</estimated_hours>
+      </task>
+    </category>
+  </phase>
+
+  <!-- PHASE 3: ADVANCED FEATURES -->
+  <phase id="3" name="Advanced Features" priority="MEDIUM">
+    <description>Enhanced functionality and business logic</description>
+
+    <!-- BUSINESS LOGIC -->
+    <category id="business" name="Business Logic & Automation">
+      <task id="biz-001" priority="MEDIUM" complexity="HIGH">
+        <title>Implement Audit Logging</title>
+        <description>
+          Add automatic audit logging for all CRUD operations across the system.
+        </description>
+        <acceptance_criteria>
+          - Audit log middleware for all mutations
+          - Track old and new values for updates
+          - Capture user, IP, and user agent
+          - Audit log viewer page (admin only)
+          - Audit log API endpoints
+          - Performance optimization for audit writes
+        </acceptance_criteria>
+        <files_to_create>
+          - src/server/middleware/audit-logger.ts
+          - src/app/(dashboard)/settings/audit/page.tsx
+          - src/features/audit-log/components/table.tsx
+          - src/server/api/routers/audit.ts
+        </files_to_create>
+        <dependencies>auth-003, api-001, api-002, api-003, api-005</dependencies>
+        <estimated_hours>16-24</estimated_hours>
+      </task>
+
+      <task id="biz-002" priority="MEDIUM" complexity="MEDIUM">
+        <title>Contract Status Automation</title>
+        <description>
+          Implement automatic contract status updates based on payment completion.
+        </description>
+        <acceptance_criteria>
+          - Auto-update contract status when all revenues paid
+          - Business rules for status changes
+          - Status change notifications
+          - Manual status override capability
+          - Status history tracking
+        </acceptance_criteria>
+        <files_to_modify>
+          - src/server/api/routers/fee.ts
+          - src/server/services/remuneration-calculator.ts
+        </files_to_modify>
+        <files_to_create>
+          - src/server/services/contract-status-updater.ts
+        </files_to_create>
+        <dependencies>api-003, api-005</dependencies>
+        <estimated_hours>12-16</estimated_hours>
+      </task>
+
+      <task id="biz-003" priority="MEDIUM" complexity="LOW">
+        <title>Data Validation & Business Rules</title>
+        <description>
+          Implement comprehensive data validation and business rule enforcement.
+        </description>
+        <acceptance_criteria>
+          - Revenue installment tracking validation
+          - Contract percentage validation (0-100)
+          - Employee assignment rule validation
+          - Soft delete cascade rules
+          - Data integrity constraints
+        </acceptance_criteria>
+        <files_to_modify>
+          - All API routers for enhanced validation
+          - All Zod schemas for business rules
+        </files_to_modify>
+        <dependencies>api-001, api-002, api-003, api-004, api-005</dependencies>
+        <estimated_hours>8-12</estimated_hours>
+      </task>
+    </category>
+
+    <!-- EXPORT & REPORTING -->
+    <category id="export" name="Export & Reporting">
+      <task id="exp-001" priority="MEDIUM" complexity="MEDIUM">
+        <title>PDF Export Functionality</title>
+        <description>
+          Implement PDF export for reports, contracts, and remuneration summaries.
+        </description>
+        <acceptance_criteria>
+          - Export remuneration summaries by employee
+          - Export contract reports
+          - Export revenue reports
+          - Portuguese-formatted PDFs
+          - Proper currency and date formatting
+          - Download progress indicators
+        </acceptance_criteria>
+        <files_to_create>
+          - src/server/services/pdf-generator.ts
+          - src/server/api/routers/export.ts
+          - src/features/export/components/export-buttons.tsx
+        </files_to_create>
+        <dependencies>dash-001, api-006</dependencies>
+        <estimated_hours>16-24</estimated_hours>
+      </task>
+
+      <task id="exp-002" priority="MEDIUM" complexity="LOW">
+        <title>Excel Export Functionality</title>
+        <description>
+          Implement Excel export for data tables and reports.
+        </description>
+        <acceptance_criteria>
+          - Export all data tables to Excel
+          - Filtered data export
+          - Proper Portuguese formatting
+          - Multiple sheets for related data
+          - Download with proper filenames
+        </acceptance_criteria>
+        <files_to_create>
+          - src/server/services/excel-generator.ts
+        </files_to_create>
+        <files_to_modify>
+          - src/server/api/routers/export.ts
+        </files_to_modify>
+        <dependencies>exp-001</dependencies>
+        <estimated_hours>10-14</estimated_hours>
+      </task>
+    </category>
+
+    <!-- ADVANCED UI -->
+    <category id="advanced-ui" name="Advanced UI Features">
+      <task id="ui-001" priority="MEDIUM" complexity="MEDIUM">
+        <title>Advanced Search & Filtering</title>
+        <description>
+          Implement advanced search capabilities across all list pages.
+        </description>
+        <acceptance_criteria>
+          - Global search functionality
+          - Advanced filters with multiple criteria
+          - Saved search preferences
+          - Search suggestions and autocomplete
+          - Search history
+          - Filter combinations
+        </acceptance_criteria>
+        <files_to_modify>
+          - All filter components
+          - All API routers for enhanced search
+        </files_to_modify>
+        <files_to_create>
+          - src/features/search/components/global-search.tsx
+          - src/features/search/components/advanced-filters.tsx
+        </files_to_create>
+        <dependencies>table-001</dependencies>
+        <estimated_hours>16-20</estimated_hours>
+      </task>
+
+      <task id="ui-002" priority="MEDIUM" complexity="LOW">
+        <title>Notification System</title>
+        <description>
+          Implement comprehensive notification system with Sonner.
+        </description>
+        <acceptance_criteria>
+          - Success notifications for all operations
+          - Error notifications with helpful messages
+          - Loading notifications for long operations
+          - Portuguese notification messages
+          - Notification history/center
+          - Notification preferences
+        </acceptance_criteria>
+        <files_to_create>
+          - src/shared/components/notification-provider.tsx
+          - src/shared/hooks/use-notifications.tsx
+          - src/shared/constants/notification-messages.ts
+        </files_to_create>
+        <files_to_modify>
+          - All form components for notifications
+        </files_to_modify>
+        <dependencies>form-001, form-002, form-003, form-004, form-005</dependencies>
+        <estimated_hours>8-12</estimated_hours>
+      </task>
+    </category>
+  </phase>
+
+  <!-- PHASE 4: QUALITY & TESTING -->
+  <phase id="4" name="Quality Assurance" priority="MEDIUM">
+    <description>Testing, performance optimization, and quality improvements</description>
+
+    <!-- TESTING -->
+    <category id="testing" name="Testing Implementation">
+      <task id="test-001" priority="MEDIUM" complexity="HIGH">
+        <title>Business Logic Unit Tests</title>
+        <description>
+          Create comprehensive unit tests for critical business logic.
+        </description>
+        <acceptance_criteria>
+          - Remuneration calculation tests for all scenarios
+          - Contract status update tests
+          - Data validation tests
+          - Employee assignment logic tests
+          - Revenue/fee relationship tests
+          - 90%+ code coverage for business logic
+        </acceptance_criteria>
+        <files_to_create>
+          - src/server/services/__tests__/remuneration-calculator.test.ts
+          - src/server/services/__tests__/contract-status-updater.test.ts
+          - src/shared/utils/__tests__/cpf-cnpj-validator.test.ts
+        </files_to_create>
+        <dependencies>biz-001, biz-002</dependencies>
+        <estimated_hours>20-28</estimated_hours>
+      </task>
+
+      <task id="test-002" priority="MEDIUM" complexity="MEDIUM">
+        <title>API Integration Tests</title>
+        <description>
+          Create integration tests for all API endpoints.
+        </description>
+        <acceptance_criteria>
+          - CRUD operation tests for all entities
+          - Authentication and authorization tests
+          - Error handling tests
+          - Business rule validation tests
+          - Database transaction tests
+        </acceptance_criteria>
+        <files_to_create>
+          - src/server/api/__tests__/employee.test.ts
+          - src/server/api/__tests__/client.test.ts
+          - src/server/api/__tests__/contract.test.ts
+          - src/server/api/__tests__/fee.test.ts
+          - src/server/api/__tests__/remuneration.test.ts
+        </files_to_create>
+        <dependencies>api-001, api-002, api-003, api-005, api-006</dependencies>
+        <estimated_hours>16-24</estimated_hours>
+      </task>
+
+      <task id="test-003" priority="MEDIUM" complexity="MEDIUM">
+        <title>Component Tests</title>
+        <description>
+          Create tests for critical UI components.
+        </description>
+        <acceptance_criteria>
+          - Form component tests with validation
+          - Table component tests
+          - Modal component tests
+          - Dashboard component tests
+          - Authentication component tests
+        </acceptance_criteria>
+        <files_to_create>
+          - src/features/**/__tests__/*.test.tsx
+        </files_to_create>
+        <dependencies>form-001, form-002, form-003, form-004, dash-001</dependencies>
+        <estimated_hours>12-20</estimated_hours>
+      </task>
+    </category>
+
+    <!-- PERFORMANCE -->
+    <category id="performance" name="Performance Optimization">
+      <task id="perf-001" priority="MEDIUM" complexity="MEDIUM">
+        <title>Database Performance Optimization</title>
+        <description>
+          Optimize database queries and add appropriate indexes.
+        </description>
+        <acceptance_criteria>
+          - Database indexes for frequently queried fields
+          - Query optimization for complex joins
+          - Pagination optimization
+          - Connection pooling configuration
+          - Query performance monitoring
+        </acceptance_criteria>
+        <files_to_create>
+          - src/server/db/migrations/add-indexes.sql
+          - src/server/db/performance-monitoring.ts
+        </files_to_create>
+        <files_to_modify>
+          - All API routers for query optimization
+        </files_to_modify>
+        <dependencies>api-001, api-002, api-003, api-004, api-005</dependencies>
+        <estimated_hours>12-16</estimated_hours>
+      </task>
+
+      <task id="perf-002" priority="MEDIUM" complexity="LOW">
+        <title>Frontend Performance Optimization</title>
+        <description>
+          Optimize React components and implement performance best practices.
+        </description>
+        <acceptance_criteria>
+          - Component memoization where appropriate
+          - Lazy loading for modals and heavy components
+          - Image optimization
+          - Bundle size optimization
+          - React Query caching optimization
+        </acceptance_criteria>
+        <files_to_modify>
+          - All React components for optimization
+          - src/app/providers.tsx for cache configuration
+        </files_to_modify>
+        <dependencies>dash-001, form-001, form-002, form-003</dependencies>
+        <estimated_hours>8-12</estimated_hours>
+      </task>
+    </category>
+  </phase>
+
+  <!-- PHASE 5: DEPLOYMENT PREPARATION -->
+  <phase id="5" name="Deployment & DevOps" priority="LOW">
+    <description>Production readiness and deployment setup</description>
+
+    <!-- ENVIRONMENT -->
+    <category id="environment" name="Environment & Configuration">
+      <task id="env-001" priority="LOW" complexity="MEDIUM">
+        <title>Production Environment Setup</title>
+        <description>
+          Configure production environment variables and security settings.
+        </description>
+        <acceptance_criteria>
+          - Environment variable validation
+          - Security headers configuration
+          - Database connection configuration
+          - Email service configuration
+          - Logging configuration
+          - Error monitoring setup (Sentry)
+        </acceptance_criteria>
+        <files_to_create>
+          - .env.production
+          - src/config/production.ts
+          - src/middleware/security.ts
+        </files_to_create>
+        <files_to_modify>
+          - next.config.js for production optimization
+        </files_to_modify>
+        <dependencies>auth-001</dependencies>
+        <estimated_hours>10-14</estimated_hours>
+      </task>
+
+      <task id="env-002" priority="LOW" complexity="LOW">
+        <title>Database Migration System</title>
+        <description>
+          Set up proper database migration and seeding system.
+        </description>
+        <acceptance_criteria>
+          - Production-safe migration scripts
+          - Seed data for development
+          - Migration rollback capability
+          - Database backup procedures
+          - Migration testing procedures
+        </acceptance_criteria>
+        <files_to_create>
+          - src/server/db/migrations/
+          - src/server/db/seeds/production-seed.ts
+          - scripts/migrate.sh
+          - scripts/backup.sh
+        </files_to_create>
+        <dependencies>env-001</dependencies>
+        <estimated_hours>8-12</estimated_hours>
+      </task>
+
+      <task id="env-003" priority="LOW" complexity="LOW">
+        <title>Deployment Documentation</title>
+        <description>
+          Create comprehensive deployment and maintenance documentation.
+        </description>
+        <acceptance_criteria>
+          - Deployment guide for different platforms
+          - Environment setup instructions
+          - Database setup and migration guide
+          - Troubleshooting documentation
+          - User manual in Portuguese
+          - Admin manual for system management
+        </acceptance_criteria>
+        <files_to_create>
+          - docs/deployment.md
+          - docs/database-setup.md
+          - docs/troubleshooting.md
+          - docs/user-manual-pt.md
+          - docs/admin-manual-pt.md
+        </files_to_create>
+        <dependencies>env-001, env-002</dependencies>
+        <estimated_hours>12-16</estimated_hours>
+      </task>
+    </category>
+  </phase>
+
+  <!-- SUMMARY -->
+  <summary>
+    <total_tasks>47</total_tasks>
+    <estimated_total_hours>620-888 hours</estimated_total_hours>
+    
+    <priority_breakdown>
+      <critical>18 tasks (Authentication, Core API)</critical>
+      <high>15 tasks (UI Implementation)</high>
+      <medium>11 tasks (Advanced Features, Testing)</medium>
+      <low>3 tasks (Deployment)</low>
+    </priority_breakdown>
+
+    <complexity_breakdown>
+      <high>11 tasks (Complex business logic, integration)</high>
+      <medium>25 tasks (Standard CRUD, forms, components)</medium>
+      <low>11 tasks (Simple implementations)</low>
+    </complexity_breakdown>
+
+    <recommended_sequence>
+      1. Complete Phase 1 (Authentication + Core API) - Foundation
+      2. Complete Phase 2 (UI Implementation) - User functionality  
+      3. Implement Phase 3 selectively based on business needs
+      4. Add Phase 4 (Testing) in parallel with development
+      5. Phase 5 when ready for production deployment
+    </recommended_sequence>
+
+    <notes>
+      - Estimated hours are ranges accounting for complexity and potential issues
+      - Dependencies should be respected to avoid rework
+      - Testing should be implemented alongside features, not at the end
+      - Regular code reviews recommended for critical tasks
+      - Consider breaking large tasks into smaller subtasks during implementation
+    </notes>
+  </summary>
+</hono-legal-todo>

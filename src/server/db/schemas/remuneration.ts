@@ -11,8 +11,8 @@ export const remunerations = mainSchema.table("remunerations", {
   feeId: text("fee_id").notNull(),
   contractId: text("contract_id").notNull(),
   contractEmployeeId: text("contract_employee_id").notNull(),
-  remunerationPercent: real("remuneration_percentage").notNull(),
-  value: real("value").notNull(),
+  percentage: real("percentage").notNull(),
+  amount: real("amount").notNull(),
   paymentDate: date("payment_date").notNull(),
   ...timestamps,
 });

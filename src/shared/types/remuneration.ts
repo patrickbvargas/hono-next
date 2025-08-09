@@ -26,7 +26,7 @@ type RemunerationFeeInfo = {
 
 export type RemunerationSummary = Pick<
   RemunerationRaw,
-  "id" | "value" | "paymentDate" | "remunerationPercent"
+  "id" | "amount" | "paymentDate" | "percentage"
 > & {
   contract: string;
   legalArea: ContractLegalArea;
@@ -36,7 +36,7 @@ export type RemunerationSummary = Pick<
 
 export type Remuneration = Pick<
   RemunerationRaw,
-  "id" | "value" | "paymentDate" | "remunerationPercent" | "createdAt"
+  "id" | "amount" | "paymentDate" | "percentage" | "createdAt"
 > & {
   contract: RemunerationContractInfo;
   contractEmployee: RemunerationEmployeeInfo;

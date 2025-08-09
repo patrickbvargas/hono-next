@@ -16,16 +16,13 @@ type FeeContractInfo = Pick<ContractRaw, "identification" | "legalArea"> & {
 
 type FeeRevenueInfo = Pick<RevenueRaw, "type">;
 
-type FeeRemunerationInfo = Pick<
-  RemunerationRaw,
-  "remunerationPercent" | "value"
-> & {
+type FeeRemunerationInfo = Pick<RemunerationRaw, "percentage" | "amount"> & {
   contractEmployee: Pick<ContractEmployeeRaw, "assignment"> & {
     employee: Pick<EmployeeRaw, "fullName">;
   };
 };
 
-export type FeeSummary = Pick<FeeRaw, "id" | "value" | "paymentDate"> & {
+export type FeeSummary = Pick<FeeRaw, "id" | "amount" | "paymentDate"> & {
   contract: string;
   legalArea: ContractLegalArea;
   revenueType: RevenueType;
@@ -34,7 +31,7 @@ export type FeeSummary = Pick<FeeRaw, "id" | "value" | "paymentDate"> & {
 
 export type Fee = Pick<
   FeeRaw,
-  "id" | "value" | "installmentNumber" | "paymentDate" | "createdAt"
+  "id" | "amount" | "installmentNumber" | "paymentDate" | "createdAt"
 > & {
   contract: FeeContractInfo;
   revenue: FeeRevenueInfo;

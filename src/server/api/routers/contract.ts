@@ -133,8 +133,8 @@ export const contractRouter = createTRPCRouter({
             },
             revenues: {
               columns: {
-                amount: true,
-                entryValue: true,
+                totalValue: true,
+                downPayment: true,
                 installmentsTotal: true,
                 installmentsPaid: true,
                 paymentStartDate: true,

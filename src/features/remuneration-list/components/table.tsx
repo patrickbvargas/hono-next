@@ -39,10 +39,10 @@ export const RemunerationTable = ({
         header: "Funcionário",
         enableSorting: isSortable("employee"),
       }),
-      c.accessor("remunerationPercent", {
+      c.accessor("percentage", {
         header: "%",
-        cell: ({ row }) => formatter.percent(row.original.remunerationPercent),
-        enableSorting: isSortable("remunerationPercent"),
+        cell: ({ row }) => formatter.percent(row.original.percentage),
+        enableSorting: isSortable("percentage"),
       }),
       c.accessor("revenueType", {
         header: "Tipo Receita",
@@ -63,10 +63,10 @@ export const RemunerationTable = ({
         cell: ({ row }) => formatter.date(row.original.paymentDate),
         enableSorting: isSortable("paymentDate"),
       }),
-      c.accessor("value", {
+      c.accessor("amount", {
         header: "Valor",
-        cell: ({ row }) => formatter.currency(row.original.value),
-        enableSorting: isSortable("value"),
+        cell: ({ row }) => formatter.currency(row.original.amount),
+        enableSorting: isSortable("amount"),
       }),
     ];
   }, []);

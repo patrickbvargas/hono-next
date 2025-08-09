@@ -6,8 +6,8 @@ import { timestamps } from "./timestamp";
 import { text } from "drizzle-orm/pg-core";
 import { remunerations } from "./remuneration";
 
-export const employeeAssignmentEnum = mainSchema.enum("employee_assignment", [
-  "aditional",
+export const contractEmployeeTypeEnum = mainSchema.enum("contract_employee_type", [
+  "additional",
   "admin_assistant",
   "recommending",
   "recommended",
@@ -18,7 +18,7 @@ export const contractEmployees = mainSchema.table("contract_employee", {
   id: text("id").primaryKey(),
   contractId: text("contract_id").notNull(),
   employeeId: text("employee_id").notNull(),
-  assignment: employeeAssignmentEnum("assignment").notNull(),
+  assignment: contractEmployeeTypeEnum("assignment").notNull(),
   ...timestamps,
 });
 

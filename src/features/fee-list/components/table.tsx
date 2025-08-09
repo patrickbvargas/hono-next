@@ -53,10 +53,10 @@ export const FeeTable = ({ fees, totalCount }: FeeTableProps) => {
         cell: ({ row }) => formatter.date(row.original.paymentDate),
         enableSorting: isSortable("paymentDate"),
       }),
-      c.accessor("value", {
+      c.accessor("amount", {
         header: "Valor",
-        cell: ({ row }) => formatter.currency(row.original.value),
-        enableSorting: isSortable("value"),
+        cell: ({ row }) => formatter.currency(row.original.amount),
+        enableSorting: isSortable("amount"),
       }),
     ];
   }, []);

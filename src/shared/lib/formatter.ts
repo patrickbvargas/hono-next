@@ -27,7 +27,7 @@ const EmployeeAssignmentAlias = {
   responsible: "Advogado",
   recommended: "Advogado",
   recommending: "Indicação",
-  aditional: "Adicional",
+  additional: "Adicional",
   admin_assistant: "Aux. Admin.",
 } satisfies Record<EmployeeAssignment, string>;
 
@@ -47,7 +47,7 @@ const ContractLegalAreaAlias = {
 const RevenueTypeAlias = {
   administrative: "Administrativo",
   judicial: "Judicial",
-  compliance: "Sucumbência",
+  succumbency: "Sucumbência",
 } satisfies Record<RevenueType, string>;
 
 function formatEntityStatus(status: EntityStatus) {
