@@ -1,7 +1,7 @@
 import { api } from "~/trpc/server";
 import type { SearchParams } from "nuqs/server";
-import { RemunerationList } from "~/features/remuneration-list";
-import { loadQueryParams } from "~/features/remuneration-list/utils/query";
+import { RemunerationList } from "~/features/remuneration";
+import { loadQueryParams } from "~/features/remuneration/utils/query";
 
 interface Props {
   searchParams: Promise<SearchParams>;

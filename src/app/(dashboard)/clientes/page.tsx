@@ -1,7 +1,7 @@
 import { api } from "~/trpc/server";
 import type { SearchParams } from "nuqs/server";
-import { ClientList } from "~/features/client-list";
-import { loadQueryParams } from "~/features/client-list/utils/query";
+import { ClientList } from "~/features/client";
+import { loadQueryParams } from "~/features/client/utils/query";
 
 interface Props {
   searchParams: Promise<SearchParams>;

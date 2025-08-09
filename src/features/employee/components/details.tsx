@@ -40,7 +40,7 @@ const EmployeeDetailsContent = ({ id }: EmployeeDetailsContentProps) => {
 
   const employeeData: EntityPanelData[] = React.useMemo(() => {
     const generalSection: EntityPanelData = {
-      title: "Informações Gerais",
+      title: "Informações Gerais",
       data: [
         {
           term: "OAB",

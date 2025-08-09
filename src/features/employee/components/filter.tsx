@@ -61,7 +61,7 @@ export const EmployeeFilter = () => {
           </RHFFieldset>
           <RHFDivider />
           <RHFFieldset>
-            <RHFCheckboxGroup.Root<Filter> name="type" label="Função">
+            <RHFCheckboxGroup.Root<Filter> name="type" label="Função">
               {EMPLOYEE_TYPES.map((type) => (
                 <RHFCheckboxGroup.Checkbox key={type} value={type}>
                   {formatter.employeeType(type)}
