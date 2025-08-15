@@ -8,37 +8,22 @@ import {
   RHFForm,
   ButtonFilter,
 } from "~/shared/components";
-import { filterParser } from "../../parsers";
-import { useForm } from "react-hook-form";
+import { useIsMobile } from "~/shared/hooks";
+import { useFilter } from "../../hooks/use-filter";
 import { formatter } from "~/shared/lib/formatter";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useFilter, useIsMobile } from "~/shared/hooks";
 import { ENTITY_STATUS } from "~/shared/constants/entity";
-import { getDefaultFilterValues } from "../../utils/default";
-import { zEmployeeFilter, type EmployeeFilter } from "../../schemas/filter";
+import type { EmployeeFilter } from "../../schemas/filter";
 import { EMPLOYEE_ROLES, EMPLOYEE_TYPES } from "~/shared/constants/employee";
 import { Button, Popover, PopoverContent, PopoverTrigger } from "@heroui/react";
 
 export const Filter = () => {
   const isMobile = useIsMobile();
-  const { filters, handleFilters } = useFilter(filterParser);
-  const methods = useForm<EmployeeFilter>({
-    resolver: zodResolver(zEmployeeFilter),
-    values: filters,
-    defaultValues: getDefaultFilterValues(),
-  });
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  const handleFormSubmit = (data: EmployeeFilter) => {
-    handleFilters(data);
-    setIsOpen(false);
-  };
+  const { methods, isOpen, handleOpenChange, handleFormSubmit } = useFilter();
 
   return (
     <Popover
       isOpen={isOpen}
-      onOpenChange={setIsOpen}
-      onClose={() => methods.reset(filters)}
+      onOpenChange={handleOpenChange}
       placement={isMobile ? "bottom-end" : "bottom-start"}
     >
       <PopoverTrigger>

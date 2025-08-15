@@ -14,14 +14,14 @@ export const getDefaultFormCreateValues = (): EmployeeForm => {
   return {
     mode: "create",
     id: "",
-    fullName: "Patrick Vargas",
-    email: "teste@hono.com",
-    oabNumber: "RS123456",
-    remunerationPercent: 0.05,
-    referrerPercent: 0.05,
-    type: "lawyer",
+    fullName: "",
+    email: "",
+    oabNumber: "",
+    remunerationPercent: 0,
+    referrerPercent: 0,
+    type: "admin_assistant",
     role: "user",
-    password: "123456",
+    password: "",
   };
 };
 

@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-
-export type FormModalMode = "create" | "edit";
+import type { FormModalMode } from "~/shared/types/form-modal";
 
 export function useFormModal<T>() {
   const [isOpen, setIsOpen] = React.useState(false);

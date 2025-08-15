@@ -73,28 +73,53 @@ src/features/{entity}/
 │   ├── detail/
 │   │   └── index.tsx          # Main detail component
 │   ├── filter/
-│   │   └── index.tsx          # Filter component
+│   │   └── index.tsx          # Filter component with useFilter
 │   ├── form/
 │   │   ├── index.tsx          # Main form component  
 │   │   └── skeleton.tsx       # Form loading skeleton
 │   └── table/
-│       ├── index.tsx          # Main table component
-│       └── skeleton.tsx       # Table loading skeleton (when needed)
+│       └── index.tsx          # Main table component with useEntityPanel
+├── constants/
+│   └── form.ts                # Form mode options and constants
 ├── hooks/
-│   ├── use-form-mutation.ts   # Form mutation logic
-│   └── use-form-query.ts      # Form query logic
+│   ├── use-form.ts            # Consolidated form logic (query + mutation)
+│   └── use-filter.ts          # Filter state and submission logic
 ├── schemas/
 ├── utils/
+│   └── default.ts             # Default values for forms and filters
 └── index.tsx
 ```
 
-**Component Naming Conventions:**
-- Component exports: Use generic names like `Form`, `Filter`, `Table` since context is provided by folder structure
-- Interface names: Use descriptive names like `EmployeeForm`, `ClientFilter` to avoid conflicts
-- Hook names: Use generic patterns like `useFormMutation`, `useFormQuery` for consistency across entities
+### Key Patterns and Conventions
+
+**Component Naming:**
+- Component exports: Generic names like `Form`, `Filter`, `Table` (context from folder structure)
+- Props interfaces: Generic names like `TableProps`, `FormProps`, `DetailProps`  
+- Type imports: Use shared types like `FormModalMode` from `~/shared/types/form-modal`
+
+**Hook Patterns:**
+- `useForm`: Consolidated hook handling both form data fetching and submission logic
+- `useFilter`: Manages filter form state, submission, and popover control  
+- Table components: Use `useEntityPanel<EntitySummary>()` directly (no custom hook needed)
+
+**Hook Naming Convention:**
+- Within entity feature context, use concise names: `useForm`, `useFilter`
+- Avoid verbose suffixes like "Mutation" or "Query" when context is clear
+- Consolidate related functionality into single hooks for simplicity
+
+**Constants Organization:**
+- Extract form mode options to `constants/form.ts` with `FORM_MODE_OPTIONS`
+- Use shared `FormModalOptions` type from `~/shared/types/form-modal`
+- Clean default values in `utils/default.ts` (no test data)
+
+**Import Strategy:**
+- Minimize TypeScript barrel exports (index.ts files) to avoid circular dependencies
+- Import hooks directly from specific files rather than through barrels
+- Use shared types from `~/shared/types/` for reusable interfaces
 
 **Benefits:**
-- Clean imports: `import { Form } from "./components/form"`  
-- Related files co-located (component + skeleton)
-- Consistent pattern across all entity features
+- Consistent patterns across all entity features
+- Proper separation of concerns with custom hooks
+- Reusable shared types and patterns
+- Clean component interfaces without entity-specific prefixes
 - Easy to scale and maintain

@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Edit2 } from "lucide-react";
 import { Detail } from "../detail";
+import { Edit2 } from "lucide-react";
 import { Chip, Button } from "@heroui/react";
 import { useEntityPanel } from "~/shared/hooks";
 import { formatter } from "~/shared/lib/formatter";
@@ -16,17 +16,17 @@ const isSortable = (column: keyof EmployeeSummary) =>
     column as (typeof EMPLOYEE_SORT_COLUMNS)[number],
   );
 
-interface EmployeeTableProps {
+interface TableProps {
   employees: EmployeeSummary[];
   totalCount: number;
-  onEditEmployee?: (employee: Employee) => void;
+  onEditEmployee: (employee: Employee) => void;
 }
 
 export const Table = ({
   employees,
   totalCount,
   onEditEmployee,
-}: EmployeeTableProps) => {
+}: TableProps) => {
   const { isOpen, onOpenChange, selectedItem, selectItem } =
     useEntityPanel<EmployeeSummary>();
 

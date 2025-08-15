@@ -17,42 +17,14 @@ import {
   RHFAutocomplete,
   ModalConfirm,
 } from "~/shared/components";
-import {
-  getDefaultFormCreateValues,
-  getDefaultFormEditValues,
-} from "../../utils/default";
-import { useForm } from "react-hook-form";
 import { FormSkeleton } from "./skeleton";
+import { useForm } from "../../hooks/use-form";
 import { formatter } from "~/shared/lib/formatter";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useFormQuery } from "../../hooks/use-form-query";
 import type { Employee } from "~/shared/types/employee";
-import { useFormMutation } from "../../hooks/use-form-mutation";
-import type { FormModalMode } from "~/shared/hooks/use-form-modal";
+import { FORM_MODE_OPTIONS } from "../../constants/form";
+import { type EmployeeForm } from "~/shared/schemas/employee";
+import type { FormModalMode } from "~/shared/types/form-modal";
 import { EMPLOYEE_TYPES, EMPLOYEE_ROLES } from "~/shared/constants/employee";
-import { zEmployeeForm, type EmployeeForm } from "~/shared/schemas/employee";
-
-type FormModeOptions = {
-  isEdition: boolean;
-  title: string;
-  buttonLabel: string;
-  modalDescription: string;
-};
-
-const formModeOptions: Record<FormModalMode, FormModeOptions> = {
-  create: {
-    isEdition: false,
-    title: "Novo Funcionário",
-    buttonLabel: "Criar",
-    modalDescription: "Criar funcionário?",
-  },
-  edit: {
-    isEdition: true,
-    title: "Editar Funcionário",
-    buttonLabel: "Salvar",
-    modalDescription: "Salvar alterações?",
-  },
-};
 
 interface FormProps {
   isOpen: boolean;
@@ -62,7 +34,7 @@ interface FormProps {
 }
 
 export const Form = ({ isOpen, onOpenChange, mode, employee }: FormProps) => {
-  const modeOptions = formModeOptions[mode];
+  const modeOptions = FORM_MODE_OPTIONS[mode];
 
   return (
     <Modal
@@ -105,26 +77,16 @@ const FormContent = ({
   employee,
   onOpenChange,
 }: Omit<FormProps, "isOpen">) => {
-  const modeOptions = formModeOptions[mode];
+  const modeOptions = FORM_MODE_OPTIONS[mode];
 
-  const { fullEmployee, isEdition } = useFormQuery({ mode, employee });
-
-  const methods = useForm<EmployeeForm>({
-    resolver: zodResolver(zEmployeeForm),
-    defaultValues:
-      isEdition && fullEmployee
-        ? getDefaultFormEditValues(fullEmployee)
-        : getDefaultFormCreateValues(),
+  const { methods, handleFormSubmit, isSubmitting } = useForm({
+    mode,
+    employee,
+    onOpenChange,
   });
 
   const modalConfirm = useDisclosure();
   const type = methods.watch("type");
-
-  const { handleFormSubmit, isSubmitting } = useFormMutation({
-    mode,
-    onOpenChange,
-    methods,
-  });
 
   const onConfirmSubmit = async (data: EmployeeForm) => {
     modalConfirm.onClose();
@@ -132,7 +94,11 @@ const FormContent = ({
   };
 
   React.useEffect(() => {
-    if (type === "admin_assistant") methods.setValue("oabNumber", "");
+    if (
+      type === "admin_assistant" &&
+      methods.formState.defaultValues?.type !== type
+    )
+      methods.setValue("oabNumber", "");
   }, [type]);
 
   return (

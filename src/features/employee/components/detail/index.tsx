@@ -18,12 +18,12 @@ import { searchSerializer } from "~/shared/lib/nuqs";
 import type { Employee } from "~/shared/types/employee";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
-interface DetailsProps extends EntityPanelProps {
+interface DetailProps extends EntityPanelProps {
   id: string;
-  onEditEmployee?: (employee: Employee) => void;
+  onEditEmployee: (employee: Employee) => void;
 }
 
-export const Detail = ({ id, onEditEmployee, ...props }: DetailsProps) => {
+export const Detail = ({ id, onEditEmployee, ...props }: DetailProps) => {
   return (
     <EntityPanel {...props}>
       <React.Suspense fallback={<Spinner />}>
@@ -35,7 +35,7 @@ export const Detail = ({ id, onEditEmployee, ...props }: DetailsProps) => {
 
 interface DetailContentProps {
   id: string;
-  onEditEmployee?: (employee: Employee) => void;
+  onEditEmployee: (employee: Employee) => void;
 }
 
 const DetailContent = ({ id, onEditEmployee }: DetailContentProps) => {
@@ -107,7 +107,7 @@ const DetailContent = ({ id, onEditEmployee }: DetailContentProps) => {
       </EntityPanelBody>
       <EntityPanelFooter>
         <EntityPanelActions
-          onEdit={() => onEditEmployee?.(employee)}
+          onEdit={() => onEditEmployee(employee)}
           onDelete={() => console.log("delete")}
         />
       </EntityPanelFooter>
