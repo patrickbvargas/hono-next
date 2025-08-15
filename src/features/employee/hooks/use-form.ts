@@ -10,19 +10,19 @@ import { useRouter } from "next/navigation";
 import { heroToast } from "~/shared/lib/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm as useRHFForm } from "react-hook-form";
-import type { Employee } from "~/shared/types/employee";
+import { useEmployeeModalActions } from "../store/use-modal";
 import type { FormModalMode } from "~/shared/types/form-modal";
 import { zEmployeeForm, type EmployeeForm } from "~/shared/schemas/employee";
 
 interface UseFormProps {
   mode: FormModalMode;
-  employee?: Partial<Employee>;
-  onOpenChange: (open: boolean) => void;
+  id?: string;
 }
 
-export function useForm({ mode, employee, onOpenChange }: UseFormProps) {
+export function useForm({ mode, id }: UseFormProps) {
   const router = useRouter();
   const utils = api.useUtils();
+  const { closeModal } = useEmployeeModalActions();
   const isEdition = mode === "edit";
 
   const methods = useRHFForm<EmployeeForm>({
@@ -30,13 +30,11 @@ export function useForm({ mode, employee, onOpenChange }: UseFormProps) {
     defaultValues: getDefaultFormCreateValues(),
   });
 
-  // Query logic
-  const [fullEmployee] =
-    isEdition && employee?.id
-      ? api.employees.getOne.useSuspenseQuery({ id: employee.id })
+  const [employee] =
+    isEdition && id
+      ? api.employees.getOne.useSuspenseQuery({ id })
       : [undefined];
 
-  // Mutation logic
   const createMutation = api.employees.create.useMutation({
     onSuccess: (resp) => {
       heroToast.success(resp.message);
@@ -55,9 +53,7 @@ export function useForm({ mode, employee, onOpenChange }: UseFormProps) {
     },
   });
 
-  const isSubmitting = createMutation.isPending || updateMutation.isPending;
-
-  const handleFormSubmit = async (data: EmployeeForm) => {
+  const handleSubmit = async (data: EmployeeForm) => {
     try {
       if (mode === "edit") {
         await updateMutation.mutateAsync(data);
@@ -65,26 +61,26 @@ export function useForm({ mode, employee, onOpenChange }: UseFormProps) {
         await createMutation.mutateAsync(data);
       }
 
+      closeModal();
       methods.reset();
-      onOpenChange(false);
       utils.employees.getMany.invalidate();
-      utils.employees.getOne.invalidate();
+      utils.employees.getOne.invalidate({ id });
       router.refresh();
     } catch (e) {
       console.error(e);
     }
   };
 
-  // Update form values when fullEmployee is loaded
+  // Update form values when employee is loaded
   React.useEffect(() => {
-    if (isEdition && fullEmployee) {
-      methods.reset(getDefaultFormEditValues(fullEmployee));
+    if (isEdition && employee) {
+      methods.reset(getDefaultFormEditValues(employee));
     }
-  }, [fullEmployee, isEdition, methods]);
+  }, [employee, isEdition, methods]);
 
   return {
     methods,
-    handleFormSubmit,
-    isSubmitting,
+    handleSubmit,
+    isSubmitting: createMutation.isPending || updateMutation.isPending,
   };
 }

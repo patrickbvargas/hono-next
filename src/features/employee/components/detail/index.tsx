@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import {
   AnchorLink,
@@ -8,38 +10,45 @@ import {
   EntityPanelBody,
   EntityPanelFooter,
   EntityPanelHeader,
-  type EntityPanelProps,
 } from "~/shared/components";
+import {
+  useEmployeeModalActions,
+  useEmployeeModalState,
+} from "../../store/use-modal";
 import { api } from "~/trpc/client";
-import { Spinner } from "@heroui/react";
+import { DetailSkeleton } from "./skeleton";
+import { useDisclosure } from "@heroui/react";
 import { ROUTES } from "~/shared/constants/route";
+import { useDelete } from "../../hooks/use-delete";
+import { ModalConfirm } from "~/shared/components";
 import { formatter } from "~/shared/lib/formatter";
 import { searchSerializer } from "~/shared/lib/nuqs";
-import type { Employee } from "~/shared/types/employee";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
-interface DetailProps extends EntityPanelProps {
-  id: string;
-  onEditEmployee: (employee: Employee) => void;
-}
+export const Detail = () => {
+  const { isOpen, mode, id } = useEmployeeModalState();
+  const { onOpenChange } = useEmployeeModalActions();
 
-export const Detail = ({ id, onEditEmployee, ...props }: DetailProps) => {
+  const shouldShow = isOpen && mode === "view" && id;
+
+  if (!shouldShow) return null;
+
   return (
-    <EntityPanel {...props}>
-      <React.Suspense fallback={<Spinner />}>
-        <DetailContent id={id} onEditEmployee={onEditEmployee} />
+    <EntityPanel isOpen={true} onOpenChange={onOpenChange}>
+      <React.Suspense fallback={<DetailSkeleton />}>
+        <DetailContent id={id} />
       </React.Suspense>
     </EntityPanel>
   );
 };
 
-interface DetailContentProps {
-  id: string;
-  onEditEmployee: (employee: Employee) => void;
-}
-
-const DetailContent = ({ id, onEditEmployee }: DetailContentProps) => {
+const DetailContent = ({ id }: { id: string }) => {
+  const { openEditModal } = useEmployeeModalActions();
   const [employee] = api.employees.getOne.useSuspenseQuery({ id });
+
+  const { handleDelete } = useDelete({ id });
+
+  const modalConfirm = useDisclosure();
 
   const employeeData: EntityPanelData[] = React.useMemo(() => {
     const generalSection: EntityPanelData = {
@@ -99,6 +108,11 @@ const DetailContent = ({ id, onEditEmployee }: DetailContentProps) => {
     return [generalSection, financialSection, registerSection];
   }, [employee]);
 
+  const onConfirmDelete = async () => {
+    modalConfirm.onClose();
+    await handleDelete();
+  };
+
   return (
     <React.Fragment>
       <EntityPanelHeader>{employee.fullName}</EntityPanelHeader>
@@ -107,10 +121,15 @@ const DetailContent = ({ id, onEditEmployee }: DetailContentProps) => {
       </EntityPanelBody>
       <EntityPanelFooter>
         <EntityPanelActions
-          onEdit={() => onEditEmployee(employee)}
-          onDelete={() => console.log("delete")}
+          onEdit={() => openEditModal(employee.id)}
+          onDelete={modalConfirm.onOpen}
         />
       </EntityPanelFooter>
+      <ModalConfirm
+        onConfirm={onConfirmDelete}
+        description={`Excluir ${employee.fullName}?`}
+        {...modalConfirm}
+      />
     </React.Fragment>
   );
 };

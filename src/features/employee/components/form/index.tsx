@@ -17,29 +17,31 @@ import {
   RHFAutocomplete,
   ModalConfirm,
 } from "~/shared/components";
+import {
+  useEmployeeModalState,
+  useEmployeeModalActions,
+} from "../../store/use-modal";
 import { FormSkeleton } from "./skeleton";
 import { useForm } from "../../hooks/use-form";
 import { formatter } from "~/shared/lib/formatter";
-import type { Employee } from "~/shared/types/employee";
 import { FORM_MODE_OPTIONS } from "../../constants/form";
 import { type EmployeeForm } from "~/shared/schemas/employee";
 import type { FormModalMode } from "~/shared/types/form-modal";
 import { EMPLOYEE_TYPES, EMPLOYEE_ROLES } from "~/shared/constants/employee";
 
-interface FormProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  mode: FormModalMode;
-  employee?: Partial<Employee>;
-}
+export const Form = () => {
+  const { isOpen, mode, id } = useEmployeeModalState();
+  const { closeModal } = useEmployeeModalActions();
 
-export const Form = ({ isOpen, onOpenChange, mode, employee }: FormProps) => {
+  const shouldShow = isOpen && (mode === "create" || mode === "edit");
+
+  if (!shouldShow) return null;
   const modeOptions = FORM_MODE_OPTIONS[mode];
 
   return (
     <Modal
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
+      isOpen={true}
+      onOpenChange={closeModal}
       size="xl"
       scrollBehavior="inside"
       classNames={{
@@ -51,46 +53,31 @@ export const Form = ({ isOpen, onOpenChange, mode, employee }: FormProps) => {
           <h2 className="text-lg font-semibold">{modeOptions.title}</h2>
         </ModalHeader>
         <ModalBody className="py-6">
-          {modeOptions.isEdition && employee?.id ? (
-            <React.Suspense fallback={<FormSkeleton />}>
-              <FormContent
-                mode={mode}
-                employee={employee}
-                onOpenChange={onOpenChange}
-              />
-            </React.Suspense>
-          ) : (
-            <FormContent
-              mode={mode}
-              employee={employee}
-              onOpenChange={onOpenChange}
-            />
-          )}
+          <React.Suspense fallback={<FormSkeleton />}>
+            <FormContent mode={mode} id={id} />
+          </React.Suspense>
         </ModalBody>
       </ModalContent>
     </Modal>
   );
 };
 
-const FormContent = ({
-  mode,
-  employee,
-  onOpenChange,
-}: Omit<FormProps, "isOpen">) => {
+const FormContent = ({ mode, id }: { mode: FormModalMode; id?: string }) => {
+  const { closeModal } = useEmployeeModalActions();
   const modeOptions = FORM_MODE_OPTIONS[mode];
 
-  const { methods, handleFormSubmit, isSubmitting } = useForm({
+  const { methods, handleSubmit, isSubmitting } = useForm({
     mode,
-    employee,
-    onOpenChange,
+    id,
   });
 
   const modalConfirm = useDisclosure();
+
   const type = methods.watch("type");
 
   const onConfirmSubmit = async (data: EmployeeForm) => {
     modalConfirm.onClose();
-    await handleFormSubmit(data);
+    await handleSubmit(data);
   };
 
   React.useEffect(() => {
@@ -102,7 +89,7 @@ const FormContent = ({
   }, [type]);
 
   return (
-    <>
+    <React.Fragment>
       <RHFForm submitCallback={modalConfirm.onOpen} {...methods} showDebug>
         <RHFFieldset title="Geral" className="grid grid-cols-6">
           <RHFInput<EmployeeForm>
@@ -199,7 +186,7 @@ const FormContent = ({
           </RHFFieldset>
         )}
         <div className="flex justify-end gap-2 border-t border-divider pt-4">
-          <Button variant="light" onPress={() => onOpenChange(false)}>
+          <Button variant="light" onPress={closeModal}>
             Cancelar
           </Button>
           <Button
@@ -218,6 +205,6 @@ const FormContent = ({
         description={modeOptions.modalDescription}
         {...modalConfirm}
       />
-    </>
+    </React.Fragment>
   );
 };

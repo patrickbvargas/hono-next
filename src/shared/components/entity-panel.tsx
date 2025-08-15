@@ -101,13 +101,13 @@ export const EntityPanelActions = ({
   return (
     <React.Fragment>
       <Tooltip content="Editar" placement="left">
-        <Button variant="flat" isIconOnly onPress={onEdit}>
-          <PenLineIcon size={16} className="opacity-60" />
+        <Button isIconOnly onPress={onEdit}>
+          <PenLineIcon size={16} />
         </Button>
       </Tooltip>
       <Tooltip content="Excluir" placement="left">
-        <Button variant="flat" isIconOnly color="danger" onPress={onDelete}>
-          <TrashIcon size={16} className="opacity-60" />
+        <Button isIconOnly color="danger" onPress={onDelete}>
+          <TrashIcon size={16} />
         </Button>
       </Tooltip>
     </React.Fragment>

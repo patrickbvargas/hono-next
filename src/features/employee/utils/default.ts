@@ -18,8 +18,8 @@ export const getDefaultFormCreateValues = (): EmployeeForm => {
     email: "",
     oabNumber: "",
     remunerationPercent: 0,
-    referrerPercent: 0,
-    type: "admin_assistant",
+    referrerPercent: 0.05,
+    type: "lawyer",
     role: "user",
     password: "",
   };

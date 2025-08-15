@@ -5,5 +5,6 @@ export * from "./use-sort";
 export * from "./use-filter";
 export * from "./use-mobile";
 export * from "./use-entity-panel";
+export * from "./use-entity-modal";
 export * from "./use-entity-details";
 export * from "./use-local-storage";

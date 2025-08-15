@@ -13,8 +13,8 @@ import { Form } from "./components/form";
 import { Table } from "./components/table";
 import { Filter } from "./components/filter";
 import { ROUTES } from "~/shared/constants/route";
-import { useFormModal } from "~/shared/hooks/use-form-modal";
-import type { Employee, EmployeeSummary } from "~/shared/types/employee";
+import { useEmployeeModalActions } from "./store/use-modal";
+import type { EmployeeSummary } from "~/shared/types/employee";
 
 interface EmployeeListProps {
   employees: EmployeeSummary[];
@@ -22,7 +22,7 @@ interface EmployeeListProps {
 }
 
 export const EmployeeList = ({ employees, count }: EmployeeListProps) => {
-  const employeeModal = useFormModal<Employee>();
+  const { openCreateModal } = useEmployeeModalActions();
 
   return (
     <Wrapper title={ROUTES.employee.label}>
@@ -32,24 +32,15 @@ export const EmployeeList = ({ employees, count }: EmployeeListProps) => {
         <Button
           color="primary"
           startContent={<Plus size={16} />}
-          onPress={employeeModal.openCreateModal}
+          onPress={openCreateModal}
         >
           Novo
         </Button>
       </WrapperHeader>
       <WrapperBody>
-        <Table
-          employees={employees}
-          totalCount={count}
-          onEditEmployee={employeeModal.openEditModal}
-        />
-        <Form
-          mode={employeeModal.mode}
-          isOpen={employeeModal.isOpen}
-          employee={employeeModal.data}
-          onOpenChange={employeeModal.closeModal}
-        />
+        <Table employees={employees} totalCount={count} />
       </WrapperBody>
+      <Form />
     </Wrapper>
   );
 };

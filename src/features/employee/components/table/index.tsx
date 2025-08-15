@@ -2,14 +2,13 @@
 
 import * as React from "react";
 import { Detail } from "../detail";
-import { Edit2 } from "lucide-react";
-import { Chip, Button } from "@heroui/react";
-import { useEntityPanel } from "~/shared/hooks";
+import { Chip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ChipStatus, DataTable } from "~/shared/components";
+import type { EmployeeSummary } from "~/shared/types/employee";
+import { useEmployeeModalActions } from "../../store/use-modal";
 import { EMPLOYEE_SORT_COLUMNS } from "~/shared/constants/employee";
-import type { EmployeeSummary, Employee } from "~/shared/types/employee";
 
 const isSortable = (column: keyof EmployeeSummary) =>
   EMPLOYEE_SORT_COLUMNS.includes(
@@ -19,16 +18,10 @@ const isSortable = (column: keyof EmployeeSummary) =>
 interface TableProps {
   employees: EmployeeSummary[];
   totalCount: number;
-  onEditEmployee: (employee: Employee) => void;
 }
 
-export const Table = ({
-  employees,
-  totalCount,
-  onEditEmployee,
-}: TableProps) => {
-  const { isOpen, onOpenChange, selectedItem, selectItem } =
-    useEntityPanel<EmployeeSummary>();
+export const Table = ({ employees, totalCount }: TableProps) => {
+  const { openViewModal } = useEmployeeModalActions();
 
   const columns = React.useMemo(() => {
     const c = createColumnHelper<EmployeeSummary>();
@@ -69,26 +62,25 @@ export const Table = ({
         cell: ({ row }) => <ChipStatus status={row.original.status} />,
         enableSorting: isSortable("status"),
       }),
-      c.display({
-        id: "actions",
-        header: "Ações",
-        cell: ({ row }) => (
-          <div className="flex gap-1">
-            <Button
-              size="sm"
-              variant="light"
-              color="primary"
-              isIconOnly
-              onPress={() => onEditEmployee?.(row.original as Employee)}
-              title="Editar funcionário"
-            >
-              <Edit2 size={16} />
-            </Button>
-          </div>
-        ),
-      }),
+      // c.display({
+      //   id: "actions",
+      //   header: "Ações",
+      //   cell: ({ row }) => (
+      //     <Button
+      //       size="sm"
+      //       variant="flat"
+      //       color="primary"
+      //       onPress={(e) => {
+      //         e.stopPropagation();
+      //         openEditModal(row.original.id);
+      //       }}
+      //     >
+      //       Editar
+      //     </Button>
+      //   ),
+      // }),
     ];
-  }, [onEditEmployee]);
+  }, []);
 
   return (
     <React.Fragment>
@@ -96,16 +88,12 @@ export const Table = ({
         totalCount={totalCount}
         columns={columns}
         data={employees}
-        onRowAction={(index) => selectItem(employees[Number(index)])}
+        onRowAction={(index) => {
+          const employee = employees[Number(index)];
+          if (employee) openViewModal(employee.id);
+        }}
       />
-      {selectedItem && (
-        <Detail
-          id={selectedItem.id}
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          onEditEmployee={onEditEmployee}
-        />
-      )}
+      <Detail />
     </React.Fragment>
   );
 };

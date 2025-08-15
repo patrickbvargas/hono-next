@@ -1,3 +1,5 @@
+export type EntityModalMode = "create" | "edit" | "view";
+
 export type FormModalMode = "create" | "edit";
 
 export type FormModalOptions = {

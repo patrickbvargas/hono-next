@@ -15,11 +15,11 @@ export const zEmployeeForm = z
     remunerationPercent: z.coerce
       .number<number>()
       .min(0.01, "Percentual deve ser maior que 0%")
-      .max(100, "Percentual não pode exceder 100%"),
+      .max(1, "Percentual não pode exceder 100%"),
     referrerPercent: z.coerce
       .number<number>()
       .min(0.01, "Percentual deve ser maior que 0%")
-      .max(100, "Percentual não pode exceder 100%"),
+      .max(1, "Percentual não pode exceder 100%"),
     type: z.enum(EMPLOYEE_TYPES, "Selecione uma função válida"),
     role: z.enum(EMPLOYEE_ROLES, "Selecione um perfil válido"),
     password: z.string().optional(),

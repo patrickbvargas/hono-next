@@ -20,6 +20,7 @@ export interface ModalConfirmProps extends Omit<ModalProps, "children"> {
   hideTitle?: boolean;
   hideIcons?: boolean;
   isCompact?: boolean;
+  isLoading?: boolean;
   confirmButtonLabel?: string;
   cancelButtonLabel?: string;
 }
@@ -32,6 +33,7 @@ export const ModalConfirm = ({
   hideTitle = false,
   hideIcons = false,
   isCompact = false,
+  isLoading = false,
   isOpen,
   onOpenChange,
 }: ModalConfirmProps) => {
@@ -53,6 +55,7 @@ export const ModalConfirm = ({
               <Button
                 color="success"
                 onPress={onConfirm}
+                isDisabled={isLoading}
                 startContent={!hideIcons && <CheckIcon size={20} />}
               >
                 {confirmButtonLabel}
@@ -60,6 +63,7 @@ export const ModalConfirm = ({
               <Button
                 color="danger"
                 onPress={onClose}
+                isLoading={isLoading}
                 startContent={!hideIcons && <XIcon size={20} />}
               >
                 {cancelButtonLabel}

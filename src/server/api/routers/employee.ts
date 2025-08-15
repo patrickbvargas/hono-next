@@ -18,10 +18,10 @@ import { employees } from "~/server/db/schemas";
 import { ENTITY_STATUS } from "~/shared/constants/entity";
 import { SORT_DIRECTIONS } from "~/shared/constants/sort";
 import { zEmployeeForm } from "~/shared/schemas/employee";
+import type { MutationReturnType } from "../types/mutation";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import type { Employee, EmployeeSummary } from "~/shared/types/employee";
-import { and, eq, inArray, count, ilike, or, desc, SQL, ne } from "drizzle-orm";
-import type { MutationReturnType } from "../types/mutation";
+import { and, eq, inArray, count, ilike, or, desc, SQL, ne, isNull } from "drizzle-orm";
 
 const zQueryOneParams = z.object({
   id: z.string(),
@@ -47,6 +47,9 @@ function getFilters({
   status,
 }: Pick<QueryManyParams, "query" | "type" | "role" | "status">) {
   const filters: (SQL | undefined)[] = [];
+
+  // Always exclude soft-deleted records
+  filters.push(isNull(employees.deletedAt));
 
   if (query)
     filters.push(
@@ -92,7 +95,7 @@ export const employeeRouter = createTRPCRouter({
         input: { id },
       }): Promise<QueryOneReturnType<Employee>> => {
         const data = await db.query.employees.findFirst({
-          where: eq(employees.id, id),
+          where: and(eq(employees.id, id), isNull(employees.deletedAt)),
         });
 
         if (!data) {
@@ -152,7 +155,7 @@ export const employeeRouter = createTRPCRouter({
         },
       }): Promise<MutationReturnType> => {
         const existingEmployee = await db.query.employees.findFirst({
-          where: eq(employees.email, email),
+          where: and(eq(employees.email, email), isNull(employees.deletedAt)),
         });
 
         if (existingEmployee) {
@@ -164,7 +167,7 @@ export const employeeRouter = createTRPCRouter({
 
         if (oabNumber) {
           const existingOAB = await db.query.employees.findFirst({
-            where: eq(employees.oabNumber, oabNumber),
+            where: and(eq(employees.oabNumber, oabNumber), isNull(employees.deletedAt)),
           });
 
           if (existingOAB) {
@@ -227,7 +230,7 @@ export const employeeRouter = createTRPCRouter({
         }
 
         const existingEmployee = await db.query.employees.findFirst({
-          where: eq(employees.id, id),
+          where: and(eq(employees.id, id), isNull(employees.deletedAt)),
         });
 
         if (!existingEmployee) {
@@ -239,7 +242,11 @@ export const employeeRouter = createTRPCRouter({
 
         if (email && email !== existingEmployee.email) {
           const emailExists = await db.query.employees.findFirst({
-            where: and(eq(employees.email, email), ne(employees.id, id)),
+            where: and(
+              eq(employees.email, email), 
+              ne(employees.id, id),
+              isNull(employees.deletedAt)
+            ),
           });
 
           if (emailExists) {
@@ -255,6 +262,7 @@ export const employeeRouter = createTRPCRouter({
             where: and(
               eq(employees.oabNumber, oabNumber),
               ne(employees.id, id),
+              isNull(employees.deletedAt)
             ),
           });
 
@@ -286,6 +294,45 @@ export const employeeRouter = createTRPCRouter({
         return {
           id,
           message: "Funcionário atualizado com sucesso",
+        };
+      },
+    ),
+
+  delete: publicProcedure
+    .input(zQueryOneParams)
+    .mutation(
+      async ({ ctx: { db }, input: { id } }): Promise<MutationReturnType> => {
+        if (!id) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "ID do funcionário é obrigatório para exclusão",
+          });
+        }
+
+        // Check if employee exists and is not already soft-deleted
+        const existingEmployee = await db.query.employees.findFirst({
+          where: and(eq(employees.id, id), isNull(employees.deletedAt)),
+        });
+
+        if (!existingEmployee) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Funcionário não encontrado",
+          });
+        }
+
+        // Soft delete: set deletedAt timestamp
+        await db
+          .update(employees)
+          .set({
+            deletedAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .where(eq(employees.id, id));
+
+        return {
+          id,
+          message: "Funcionário excluído com sucesso",
         };
       },
     ),
