@@ -14,6 +14,7 @@ The application appears to be a business management tool with features for manag
 4. Always use Context7 MCP server for updated library documentation and implementation patterns
 5. Always read TODO.xml for the current state of the project
 6. Always read PRD.xml for the planned state of the project
+7. Never uses "any" type anywhere in the codebase
 
 ## Building and Running
 
@@ -59,3 +60,41 @@ pnpm build
 - **Type Safety**: The project uses TypeScript and tRPC to ensure end-to-end type safety.
 - **Database**: The project uses Drizzle ORM for database access. Schema changes should be made by creating and applying migrations.
 - **Styling**: The project uses Tailwind CSS for styling.
+
+## Feature Architecture Patterns
+
+### Component Organization
+
+Each feature follows a consistent folder structure for components:
+
+```
+src/features/{entity}/
+├── components/
+│   ├── detail/
+│   │   └── index.tsx          # Main detail component
+│   ├── filter/
+│   │   └── index.tsx          # Filter component
+│   ├── form/
+│   │   ├── index.tsx          # Main form component  
+│   │   └── skeleton.tsx       # Form loading skeleton
+│   └── table/
+│       ├── index.tsx          # Main table component
+│       └── skeleton.tsx       # Table loading skeleton (when needed)
+├── hooks/
+│   ├── use-form-mutation.ts   # Form mutation logic
+│   └── use-form-query.ts      # Form query logic
+├── schemas/
+├── utils/
+└── index.tsx
+```
+
+**Component Naming Conventions:**
+- Component exports: Use generic names like `Form`, `Filter`, `Table` since context is provided by folder structure
+- Interface names: Use descriptive names like `EmployeeForm`, `ClientFilter` to avoid conflicts
+- Hook names: Use generic patterns like `useFormMutation`, `useFormQuery` for consistency across entities
+
+**Benefits:**
+- Clean imports: `import { Form } from "./components/form"`  
+- Related files co-located (component + skeleton)
+- Consistent pattern across all entity features
+- Easy to scale and maintain

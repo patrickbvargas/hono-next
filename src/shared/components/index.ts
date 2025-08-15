@@ -10,3 +10,4 @@ export * from "./chip-status";
 export * from "./entity-panel";
 export * from "./button-entity-row";
 export * from "./anchor-link";
+export * from "./modal-confirm";

@@ -15,27 +15,30 @@ import { Spinner } from "@heroui/react";
 import { ROUTES } from "~/shared/constants/route";
 import { formatter } from "~/shared/lib/formatter";
 import { searchSerializer } from "~/shared/lib/nuqs";
+import type { Employee } from "~/shared/types/employee";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
-interface EmployeeDetailsProps extends EntityPanelProps {
+interface DetailsProps extends EntityPanelProps {
   id: string;
+  onEditEmployee?: (employee: Employee) => void;
 }
 
-export const EmployeeDetails = ({ id, ...props }: EmployeeDetailsProps) => {
+export const Detail = ({ id, onEditEmployee, ...props }: DetailsProps) => {
   return (
     <EntityPanel {...props}>
       <React.Suspense fallback={<Spinner />}>
-        <EmployeeDetailsContent id={id} />
+        <DetailContent id={id} onEditEmployee={onEditEmployee} />
       </React.Suspense>
     </EntityPanel>
   );
 };
 
-interface EmployeeDetailsContentProps {
+interface DetailContentProps {
   id: string;
+  onEditEmployee?: (employee: Employee) => void;
 }
 
-const EmployeeDetailsContent = ({ id }: EmployeeDetailsContentProps) => {
+const DetailContent = ({ id, onEditEmployee }: DetailContentProps) => {
   const [employee] = api.employees.getOne.useSuspenseQuery({ id });
 
   const employeeData: EntityPanelData[] = React.useMemo(() => {
@@ -104,7 +107,7 @@ const EmployeeDetailsContent = ({ id }: EmployeeDetailsContentProps) => {
       </EntityPanelBody>
       <EntityPanelFooter>
         <EntityPanelActions
-          onEdit={() => console.log("edit")}
+          onEdit={() => onEditEmployee?.(employee)}
           onDelete={() => console.log("delete")}
         />
       </EntityPanelFooter>

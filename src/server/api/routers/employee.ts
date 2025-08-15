@@ -17,9 +17,11 @@ import { TRPCError } from "@trpc/server";
 import { employees } from "~/server/db/schemas";
 import { ENTITY_STATUS } from "~/shared/constants/entity";
 import { SORT_DIRECTIONS } from "~/shared/constants/sort";
+import { zEmployeeForm } from "~/shared/schemas/employee";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import type { Employee, EmployeeSummary } from "~/shared/types/employee";
-import { and, eq, inArray, count, ilike, or, desc, SQL } from "drizzle-orm";
+import { and, eq, inArray, count, ilike, or, desc, SQL, ne } from "drizzle-orm";
+import type { MutationReturnType } from "../types/mutation";
 
 const zQueryOneParams = z.object({
   id: z.string(),
@@ -55,9 +57,7 @@ function getFilters({
     );
 
   if (type.length > 0) filters.push(inArray(employees.type, type));
-
   if (role.length > 0) filters.push(inArray(employees.role, role));
-
   if (status.length > 0) filters.push(inArray(employees.status, status));
 
   return filters.length > 0 ? and(...filters) : undefined;
@@ -92,17 +92,6 @@ export const employeeRouter = createTRPCRouter({
         input: { id },
       }): Promise<QueryOneReturnType<Employee>> => {
         const data = await db.query.employees.findFirst({
-          columns: {
-            id: true,
-            fullName: true,
-            oabNumber: true,
-            remunerationPercent: true,
-            type: true,
-            role: true,
-            status: true,
-            createdAt: true,
-            contractCount: true,
-          },
           where: eq(employees.id, id),
         });
 
@@ -142,6 +131,161 @@ export const employeeRouter = createTRPCRouter({
         return {
           data: rawData,
           count: rawCount[0]?.count ?? 0,
+        };
+      },
+    ),
+
+  create: publicProcedure
+    .input(zEmployeeForm)
+    .mutation(
+      async ({
+        ctx: { db },
+        input: {
+          fullName,
+          email,
+          oabNumber,
+          remunerationPercent,
+          referrerPercent,
+          type,
+          role,
+          password,
+        },
+      }): Promise<MutationReturnType> => {
+        const existingEmployee = await db.query.employees.findFirst({
+          where: eq(employees.email, email),
+        });
+
+        if (existingEmployee) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Email já está em uso",
+          });
+        }
+
+        if (oabNumber) {
+          const existingOAB = await db.query.employees.findFirst({
+            where: eq(employees.oabNumber, oabNumber),
+          });
+
+          if (existingOAB) {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Número da OAB já está em uso",
+            });
+          }
+        }
+
+        const hashedPassword = `temp_hash_${password}`;
+
+        const newEmployee = {
+          id: JSON.stringify(new Date()), // TODO: implement hash
+          fullName,
+          email,
+          oabNumber: oabNumber || null,
+          remunerationPercent,
+          referrerPercent,
+          type,
+          role,
+          password: hashedPassword,
+          contractCount: 0,
+          status: "active" as const,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        await db.insert(employees).values(newEmployee);
+
+        return {
+          id: newEmployee.id,
+          message: "Funcionário criado com sucesso",
+        };
+      },
+    ),
+
+  update: publicProcedure
+    .input(zEmployeeForm)
+    .mutation(
+      async ({
+        ctx: { db },
+        input: {
+          id,
+          fullName,
+          email,
+          oabNumber,
+          remunerationPercent,
+          referrerPercent,
+          type,
+          role,
+          password,
+        },
+      }): Promise<MutationReturnType> => {
+        if (!id) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "ID do funcionário é obrigatório para atualização",
+          });
+        }
+
+        const existingEmployee = await db.query.employees.findFirst({
+          where: eq(employees.id, id),
+        });
+
+        if (!existingEmployee) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Funcionário não encontrado",
+          });
+        }
+
+        if (email && email !== existingEmployee.email) {
+          const emailExists = await db.query.employees.findFirst({
+            where: and(eq(employees.email, email), ne(employees.id, id)),
+          });
+
+          if (emailExists) {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Email já está em uso por outro funcionário",
+            });
+          }
+        }
+
+        if (oabNumber && oabNumber !== existingEmployee.oabNumber) {
+          const oabExists = await db.query.employees.findFirst({
+            where: and(
+              eq(employees.oabNumber, oabNumber),
+              ne(employees.id, id),
+            ),
+          });
+
+          if (oabExists) {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Número da OAB já está em uso por outro funcionário",
+            });
+          }
+        }
+
+        const updateData: Partial<typeof employees.$inferInsert> = {
+          fullName,
+          email,
+          oabNumber: oabNumber || null,
+          remunerationPercent,
+          referrerPercent,
+          type,
+          role,
+          updatedAt: new Date(),
+        };
+
+        if (password) {
+          updateData.password = `temp_hash_${password}`;
+        }
+
+        await db.update(employees).set(updateData).where(eq(employees.id, id));
+
+        return {
+          id,
+          message: "Funcionário atualizado com sucesso",
         };
       },
     ),

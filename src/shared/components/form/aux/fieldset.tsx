@@ -12,11 +12,11 @@ export const RHFFieldset = ({
 }: RHFFieldsetProps) => {
   return (
     <fieldset
-      className={cn("w-full flex flex-col gap-2", className)}
+      className={cn("w-full flex gap-x-2 gap-y-4", className)}
       {...props}
     >
       {title && (
-        <legend className="text-xs uppercase font-semibold tracking-wide truncate mb-2">
+        <legend className="text-xs font-semibold uppercase tracking-wider truncate mb-2">
           {title}
         </legend>
       )}

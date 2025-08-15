@@ -16,8 +16,10 @@ export type Employee = Pick<
   EmployeeRaw,
   | "id"
   | "fullName"
+  | "email"
   | "oabNumber"
   | "remunerationPercent"
+  | "referrerPercent"
   | "type"
   | "role"
   | "status"

@@ -35,7 +35,7 @@ export const RHFForm = <T extends FieldValues>({
         id="rhf-form"
         validationBehavior={validationBehavior}
         onSubmit={handleSubmit(submitCallback)}
-        className={cn("grid grid-cols-1 gap-2", className)}
+        className={cn("grid grid-cols-1 gap-4", className)}
       >
         {children}
       </Form>

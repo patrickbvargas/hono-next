@@ -4,8 +4,8 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { ThemeProvider } from "next-themes";
 import { TRPCProvider } from "~/trpc/client";
-import { HeroUIProvider } from "@heroui/react";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { HeroUIProvider, ToastProvider } from "@heroui/react";
 
 export function Providers({
   children,
@@ -21,7 +21,8 @@ export function Providers({
           labelPlacement="outside"
           validationBehavior="aria"
         >
-          <ThemeProvider attribute="class" defaultTheme="dark">
+          <ThemeProvider attribute="class" forcedTheme="dark">
+            <ToastProvider placement="top-center" />
             {children}
           </ThemeProvider>
         </HeroUIProvider>
