@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import { Chip } from "@heroui/react";
-import { useEntityPanel } from "~/shared/hooks";
+import { Detail } from "../detail";
 import { DataTable } from "~/shared/components";
-import { RemunerationDetails } from "./details";
 import { formatter } from "~/shared/lib/formatter";
+import { useModalActions } from "../../stores/use-modal";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { RemunerationSummary } from "~/shared/types/remuneration";
 import { REMUNERATION_SORT_COLUMNS } from "~/shared/constants/remuneration";
@@ -15,17 +15,13 @@ const isSortable = (column: keyof RemunerationSummary) =>
     column as (typeof REMUNERATION_SORT_COLUMNS)[number],
   );
 
-interface RemunerationTableProps {
+interface TableProps {
   remunerations: RemunerationSummary[];
   totalCount: number;
 }
 
-export const RemunerationTable = ({
-  remunerations,
-  totalCount,
-}: RemunerationTableProps) => {
-  const { isOpen, onOpenChange, selectedItem, selectItem } =
-    useEntityPanel<RemunerationSummary>();
+export const Table = ({ remunerations, totalCount }: TableProps) => {
+  const { openViewModal } = useModalActions();
 
   const columns = React.useMemo(() => {
     const c = createColumnHelper<RemunerationSummary>();
@@ -77,15 +73,12 @@ export const RemunerationTable = ({
         totalCount={totalCount}
         columns={columns}
         data={remunerations}
-        onRowAction={(index) => selectItem(remunerations[Number(index)])}
+        onRowAction={(index) => {
+          const remuneration = remunerations[Number(index)];
+          if (remuneration) openViewModal(remuneration.id);
+        }}
       />
-      {selectedItem && (
-        <RemunerationDetails
-          id={selectedItem.id}
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-        />
-      )}
+      <Detail />
     </React.Fragment>
   );
 };

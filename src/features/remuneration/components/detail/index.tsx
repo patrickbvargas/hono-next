@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import {
   AnchorLink,
@@ -7,44 +9,46 @@ import {
   EntityPanelBody,
   EntityPanelFooter,
   EntityPanelHeader,
-  type EntityPanelProps,
+  SuspenseBoundary,
 } from "~/shared/components";
+import {
+  useModal,
+  useModalCallbacks,
+} from "../../stores/use-modal";
 import { api } from "~/trpc/client";
-import { Spinner } from "@heroui/react";
+import { DetailSkeleton } from "./skeleton";
 import { ROUTES } from "~/shared/constants/route";
 import { formatter } from "~/shared/lib/formatter";
 import { searchSerializer } from "~/shared/lib/nuqs";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
-interface RemunerationDetailsProps extends EntityPanelProps {
-  id: string;
-}
+export const Detail = () => {
+  const { isOpen, mode, id } = useModal();
+  const { onOpenChange } = useModalCallbacks();
 
-export const RemunerationDetails = ({
-  id,
-  ...props
-}: RemunerationDetailsProps) => {
+  const shouldShow = isOpen && mode === "view" && id;
+
+  if (!shouldShow) return null;
+
   return (
-    <EntityPanel {...props}>
-      <React.Suspense fallback={<Spinner />}>
-        <RemunerationDetailsContent id={id} />
-      </React.Suspense>
+    <EntityPanel isOpen={true} onOpenChange={onOpenChange}>
+      <SuspenseBoundary fallback={<DetailSkeleton />}>
+        <DetailContent id={id} />
+      </SuspenseBoundary>
     </EntityPanel>
   );
 };
 
-interface RemunerationDetailsContentProps {
+interface DetailContentProps {
   id: string;
 }
 
-const RemunerationDetailsContent = ({
-  id,
-}: RemunerationDetailsContentProps) => {
+const DetailContent = ({ id }: DetailContentProps) => {
   const [remuneration] = api.remunerations.getOne.useSuspenseQuery({ id });
 
   const remunerationData: EntityPanelData[] = React.useMemo(() => {
     const generalSection: EntityPanelData = {
-      title: "Informações Gerais",
+      title: "Informações Gerais",
       data: [
         {
           term: "Processo",
@@ -59,7 +63,7 @@ const RemunerationDetailsContent = ({
           ),
         },
         {
-          term: "Área",
+          term: "Área",
           definition: formatter.contractLegalArea(
             remuneration.contract.legalArea,
           ),

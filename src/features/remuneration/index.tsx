@@ -6,8 +6,8 @@ import {
   Search,
 } from "~/shared/components";
 import { ROUTES } from "~/shared/constants/route";
-import { RemunerationTable } from "./components/table";
-import { RemunerationFilter } from "./components/filter";
+import { Table } from "./components/table";
+import { Filter } from "./components/filter";
 import type { RemunerationSummary } from "~/shared/types/remuneration";
 
 interface RemunerationListProps {
@@ -23,10 +23,10 @@ export const RemunerationList = ({
     <Wrapper title={ROUTES.remuneration.label}>
       <WrapperHeader>
         <Search placeholder="Filtrar por Processo ou Funcionário..." />
-        <RemunerationFilter />
+        <Filter />
       </WrapperHeader>
       <WrapperBody>
-        <RemunerationTable remunerations={remunerations} totalCount={count} />
+        <Table remunerations={remunerations} totalCount={count} />
       </WrapperBody>
     </Wrapper>
   );
