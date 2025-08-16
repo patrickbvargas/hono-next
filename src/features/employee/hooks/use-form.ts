@@ -8,7 +8,7 @@ import {
 import { api } from "~/trpc/client";
 import { useRouter } from "next/navigation";
 import { heroToast } from "~/shared/lib/toast";
-import { useModalActions } from "../store/use-modal";
+import { useModalActions } from "../stores/use-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm as useRHFForm } from "react-hook-form";
 import type { FormModalMode } from "~/shared/types/form-modal";

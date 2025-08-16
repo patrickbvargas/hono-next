@@ -3,7 +3,7 @@
 import { api } from "~/trpc/client";
 import { useRouter } from "next/navigation";
 import { heroToast } from "~/shared/lib/toast";
-import { useModalActions } from "../store/use-modal";
+import { useModalActions } from "../stores/use-modal";
 
 interface UseDeleteProps {
   id: string;

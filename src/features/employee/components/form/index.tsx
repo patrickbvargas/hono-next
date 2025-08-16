@@ -17,16 +17,13 @@ import {
   RHFAutocomplete,
   ModalConfirm,
 } from "~/shared/components";
-import {
-  useModal,
-  useModalActions,
-} from "../../store/use-modal";
 import { FormSkeleton } from "./skeleton";
 import { useForm } from "../../hooks/use-form";
 import { formatter } from "~/shared/lib/formatter";
 import { FORM_MODE_OPTIONS } from "../../constants/form";
 import { type EmployeeForm } from "~/shared/schemas/employee";
 import type { FormModalMode } from "~/shared/types/form-modal";
+import { useModal, useModalActions } from "../../stores/use-modal";
 import { EMPLOYEE_TYPES, EMPLOYEE_ROLES } from "~/shared/constants/employee";
 
 export const Form = () => {

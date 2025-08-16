@@ -4,7 +4,7 @@ import * as React from "react";
 import { Detail } from "../detail";
 import { Chip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
-import { useModalActions } from "../../store/use-modal";
+import { useModalActions } from "../../stores/use-modal";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ChipStatus, DataTable } from "~/shared/components";
 import type { EmployeeSummary } from "~/shared/types/employee";

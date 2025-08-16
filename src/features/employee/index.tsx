@@ -13,7 +13,7 @@ import { Form } from "./components/form";
 import { Table } from "./components/table";
 import { Filter } from "./components/filter";
 import { ROUTES } from "~/shared/constants/route";
-import { useModalActions } from "./store/use-modal";
+import { useModalActions } from "./stores/use-modal";
 import type { EmployeeSummary } from "~/shared/types/employee";
 
 interface EmployeeListProps {

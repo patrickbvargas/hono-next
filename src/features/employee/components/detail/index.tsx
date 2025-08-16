@@ -15,7 +15,7 @@ import {
   useModal,
   useModalActions,
   useModalCallbacks,
-} from "../../store/use-modal";
+} from "../../stores/use-modal";
 import { api } from "~/trpc/client";
 import { DetailSkeleton } from "./skeleton";
 import { useDisclosure } from "@heroui/react";
