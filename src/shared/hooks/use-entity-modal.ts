@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useDisclosure } from "@heroui/react";
-import type { EntityModalMode } from "~/shared/types/form-modal";
+import type { EntityModalMode } from "~/shared/types/entity-modal";
 
 export function useEntityModal() {
   const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
@@ -23,7 +23,6 @@ export function useEntityModal() {
     },
     [onOpen],
   );
-
 
   const openViewModal = React.useCallback(
     (entityId: string) => {
