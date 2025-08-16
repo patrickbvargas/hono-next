@@ -23,6 +23,7 @@ import type { EntityPanelData } from "~/shared/types/entity-data";
 export const EntityPanelHeader = DrawerHeader;
 export const EntityPanelBody = DrawerBody;
 
+// TODO: remove export after refactoring all entities
 export interface EntityPanelProps extends Omit<DrawerProps, "children"> {}
 
 export const EntityPanel = ({

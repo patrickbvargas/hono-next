@@ -1,6 +1,6 @@
 "use client";
 
-import { addToast, type ToastProps } from "@heroui/react";
+import { addToast, type ToastProps } from "@heroui/toast";
 
 type Context = "error" | "warning" | "success" | "info" | "dev";
 

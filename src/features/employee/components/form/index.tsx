@@ -2,22 +2,21 @@
 
 import * as React from "react";
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  Button,
-  useDisclosure,
-} from "@heroui/react";
-import {
   RHFForm,
   RHFInput,
   RHFNumber,
   RHFFieldset,
   RHFAutocomplete,
   ModalConfirm,
+  EntityForm,
+  EntityFormHeader,
+  EntityFormBody,
+  EntityFormFooter,
+  EntityFormActions,
+  SuspenseBoundary,
 } from "~/shared/components";
 import { FormSkeleton } from "./skeleton";
+import { useDisclosure } from "@heroui/react";
 import { useForm } from "../../hooks/use-form";
 import { formatter } from "~/shared/lib/formatter";
 import { FORM_MODE_OPTIONS } from "../../constants/form";
@@ -28,38 +27,26 @@ import { EMPLOYEE_TYPES, EMPLOYEE_ROLES } from "~/shared/constants/employee";
 
 export const Form = () => {
   const { isOpen, mode, id } = useModal();
-  const { closeModal } = useModalActions();
+  const { onOpenChange } = useModalActions();
 
   const shouldShow = isOpen && (mode === "create" || mode === "edit");
 
   if (!shouldShow) return null;
-  const modeOptions = FORM_MODE_OPTIONS[mode];
 
   return (
-    <Modal
-      isOpen={true}
-      onOpenChange={closeModal}
-      size="xl"
-      scrollBehavior="inside"
-      classNames={{
-        header: "border-b border-divider",
-      }}
-    >
-      <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold">{modeOptions.title}</h2>
-        </ModalHeader>
-        <ModalBody className="py-6">
-          <React.Suspense fallback={<FormSkeleton />}>
-            <FormContent mode={mode} id={id} />
-          </React.Suspense>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+    <EntityForm isOpen={true} onOpenChange={onOpenChange}>
+      <SuspenseBoundary fallback={<FormSkeleton />}>
+        <FormContent mode={mode} id={id} />
+      </SuspenseBoundary>
+    </EntityForm>
   );
 };
 
-const FormContent = ({ mode, id }: { mode: FormModalMode; id?: string }) => {
+interface FormContentProps {
+  mode: FormModalMode;
+  id?: string;
+}
+const FormContent = ({ mode, id }: FormContentProps) => {
   const { closeModal } = useModalActions();
   const modeOptions = FORM_MODE_OPTIONS[mode];
 
@@ -87,116 +74,113 @@ const FormContent = ({ mode, id }: { mode: FormModalMode; id?: string }) => {
 
   return (
     <React.Fragment>
-      <RHFForm submitCallback={modalConfirm.onOpen} {...methods} showDebug>
-        <RHFFieldset title="Geral" className="grid grid-cols-6">
-          <RHFInput<EmployeeForm>
-            name="fullName"
-            label="Nome"
-            placeholder="Digite o nome completo"
-            isRequired
-            className="col-span-3"
-          />
-          <RHFInput<EmployeeForm>
-            name="email"
-            label="Email"
-            type="email"
-            placeholder="email@exemplo.com"
-            isRequired
-            className="col-span-3"
-          />
-          <RHFAutocomplete.Root<EmployeeForm>
-            name="type"
-            label="Função"
-            placeholder="Selecione a função"
-            isRequired
-            className="col-span-2"
-          >
-            {EMPLOYEE_TYPES.map((type) => (
-              <RHFAutocomplete.Item key={type}>
-                {formatter.employeeType(type)}
-              </RHFAutocomplete.Item>
-            ))}
-          </RHFAutocomplete.Root>
-          <RHFInput<EmployeeForm>
-            name="oabNumber"
-            label="OAB"
-            placeholder="RS000000"
-            isRequired={type === "lawyer"}
-            isDisabled={type !== "lawyer"}
-            className="col-span-2"
-          />
-          <RHFAutocomplete.Root<EmployeeForm>
-            name="role"
-            label="Perfil"
-            placeholder="Selecione o perfil"
-            isRequired
-            className="col-span-2"
-          >
-            {EMPLOYEE_ROLES.map((role) => (
-              <RHFAutocomplete.Item key={role}>
-                {formatter.employeeRole(role)}
-              </RHFAutocomplete.Item>
-            ))}
-          </RHFAutocomplete.Root>
-        </RHFFieldset>
-        <RHFFieldset title="Financeiro" className="grid grid-cols-2">
-          <RHFNumber<EmployeeForm>
-            name="remunerationPercent"
-            label="% Remuneração"
-            placeholder="0"
-            formatOptions={{
-              style: "percent",
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 2,
-            }}
-            minValue={0}
-            maxValue={1}
-            step={0.05}
-            isRequired
-            labelPlacement="outside"
-          />
-          <RHFNumber<EmployeeForm>
-            name="referrerPercent"
-            label="% Indicação"
-            placeholder="0"
-            formatOptions={{
-              style: "percent",
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 2,
-            }}
-            minValue={0}
-            maxValue={1}
-            step={0.05}
-            isRequired
-            labelPlacement="outside"
-          />
-        </RHFFieldset>
-        {!modeOptions.isEdition && (
-          <RHFFieldset title="Acesso" className="grid grid-cols-2">
+      <EntityFormHeader>{modeOptions.title}</EntityFormHeader>
+      <EntityFormBody>
+        <RHFForm submitCallback={modalConfirm.onOpen} {...methods} showDebug>
+          <RHFFieldset title="Geral" className="grid grid-cols-6">
             <RHFInput<EmployeeForm>
-              name="password"
-              type="password"
-              label="Senha"
-              placeholder="Mínimo 6 caracteres"
-              isRequired={!modeOptions.isEdition}
+              name="fullName"
+              label="Nome"
+              placeholder="Digite o nome completo"
+              isRequired
+              className="col-span-3"
+            />
+            <RHFInput<EmployeeForm>
+              name="email"
+              label="Email"
+              type="email"
+              placeholder="email@exemplo.com"
+              isRequired
+              className="col-span-3"
+            />
+            <RHFAutocomplete.Root<EmployeeForm>
+              name="type"
+              label="Função"
+              placeholder="Selecione a função"
+              isRequired
+              className="col-span-2"
+            >
+              {EMPLOYEE_TYPES.map((type) => (
+                <RHFAutocomplete.Item key={type}>
+                  {formatter.employeeType(type)}
+                </RHFAutocomplete.Item>
+              ))}
+            </RHFAutocomplete.Root>
+            <RHFInput<EmployeeForm>
+              name="oabNumber"
+              label="OAB"
+              placeholder="RS000000"
+              isRequired={type === "lawyer"}
+              isDisabled={type !== "lawyer"}
+              className="col-span-2"
+            />
+            <RHFAutocomplete.Root<EmployeeForm>
+              name="role"
+              label="Perfil"
+              placeholder="Selecione o perfil"
+              isRequired
+              className="col-span-2"
+            >
+              {EMPLOYEE_ROLES.map((role) => (
+                <RHFAutocomplete.Item key={role}>
+                  {formatter.employeeRole(role)}
+                </RHFAutocomplete.Item>
+              ))}
+            </RHFAutocomplete.Root>
+          </RHFFieldset>
+          <RHFFieldset title="Financeiro" className="grid grid-cols-2">
+            <RHFNumber<EmployeeForm>
+              name="remunerationPercent"
+              label="% Remuneração"
+              placeholder="0"
+              formatOptions={{
+                style: "percent",
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2,
+              }}
+              minValue={0}
+              maxValue={1}
+              step={0.05}
+              isRequired
+              labelPlacement="outside"
+            />
+            <RHFNumber<EmployeeForm>
+              name="referrerPercent"
+              label="% Indicação"
+              placeholder="0"
+              formatOptions={{
+                style: "percent",
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2,
+              }}
+              minValue={0}
+              maxValue={1}
+              step={0.05}
+              isRequired
+              labelPlacement="outside"
             />
           </RHFFieldset>
-        )}
-        <div className="flex justify-end gap-2 border-t border-divider pt-4">
-          <Button variant="light" onPress={closeModal}>
-            Cancelar
-          </Button>
-          <Button
-            color="primary"
-            type="submit"
-            form="rhf-form"
-            isLoading={isSubmitting}
-            isDisabled={!methods.formState.isDirty}
-          >
-            {modeOptions.buttonLabel}
-          </Button>
-        </div>
-      </RHFForm>
+          {!modeOptions.isEdition && (
+            <RHFFieldset title="Acesso" className="grid grid-cols-2">
+              <RHFInput<EmployeeForm>
+                name="password"
+                type="password"
+                label="Senha"
+                placeholder="Mínimo 6 caracteres"
+                isRequired={!modeOptions.isEdition}
+              />
+            </RHFFieldset>
+          )}
+        </RHFForm>
+      </EntityFormBody>
+      <EntityFormFooter>
+        <EntityFormActions
+          onCancel={closeModal}
+          submitButtonLabel={modeOptions.buttonLabel}
+          isLoading={isSubmitting}
+          isDisabled={!methods.formState.isDirty}
+        />
+      </EntityFormFooter>
       <ModalConfirm
         onConfirm={methods.handleSubmit(onConfirmSubmit)}
         description={modeOptions.modalDescription}

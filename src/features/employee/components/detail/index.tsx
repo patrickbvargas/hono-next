@@ -10,6 +10,7 @@ import {
   EntityPanelBody,
   EntityPanelFooter,
   EntityPanelHeader,
+  SuspenseBoundary,
 } from "~/shared/components";
 import {
   useModal,
@@ -36,14 +37,17 @@ export const Detail = () => {
 
   return (
     <EntityPanel isOpen={true} onOpenChange={onOpenChange}>
-      <React.Suspense fallback={<DetailSkeleton />}>
+      <SuspenseBoundary fallback={<DetailSkeleton />}>
         <DetailContent id={id} />
-      </React.Suspense>
+      </SuspenseBoundary>
     </EntityPanel>
   );
 };
 
-const DetailContent = ({ id }: { id: string }) => {
+interface DetailContentProps {
+  id: string;
+}
+const DetailContent = ({ id }: DetailContentProps) => {
   const { openEditModal } = useModalActions();
   const [employee] = api.employees.getOne.useSuspenseQuery({ id });
 
@@ -82,6 +86,16 @@ const DetailContent = ({ id }: { id: string }) => {
       ],
     };
 
+    const contactSection: EntityPanelData = {
+      title: "Contato",
+      data: [
+        {
+          term: "Email",
+          definition: employee.email,
+        },
+      ],
+    };
+
     const financialSection: EntityPanelData = {
       title: "Financeiro",
       data: [
@@ -106,7 +120,7 @@ const DetailContent = ({ id }: { id: string }) => {
       ],
     };
 
-    return [generalSection, financialSection, registerSection];
+    return [generalSection, contactSection, financialSection, registerSection];
   }, [employee]);
 
   const onConfirmDelete = async () => {

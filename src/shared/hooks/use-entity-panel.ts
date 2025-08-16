@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useDisclosure } from "@heroui/react";
 
+// TODO: remove export after refactoring all entities
 export function useEntityPanel<T>() {
   const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
   const [selectedItem, setSelectedItem] = React.useState<T | null>(null);

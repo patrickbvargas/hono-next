@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import { Detail } from "../detail";
-import { Chip } from "@heroui/react";
+import { PenLineIcon } from "lucide-react";
 import { formatter } from "~/shared/lib/formatter";
+import { Button, Chip, Tooltip } from "@heroui/react";
 import { useModalActions } from "../../stores/use-modal";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ChipStatus, DataTable } from "~/shared/components";
@@ -21,7 +22,7 @@ interface TableProps {
 }
 
 export const Table = ({ employees, totalCount }: TableProps) => {
-  const { openViewModal } = useModalActions();
+  const { openViewModal, openEditModal } = useModalActions();
 
   const columns = React.useMemo(() => {
     const c = createColumnHelper<EmployeeSummary>();
@@ -62,23 +63,24 @@ export const Table = ({ employees, totalCount }: TableProps) => {
         cell: ({ row }) => <ChipStatus status={row.original.status} />,
         enableSorting: isSortable("status"),
       }),
-      // c.display({
-      //   id: "actions",
-      //   header: "Ações",
-      //   cell: ({ row }) => (
-      //     <Button
-      //       size="sm"
-      //       variant="flat"
-      //       color="primary"
-      //       onPress={(e) => {
-      //         e.stopPropagation();
-      //         openEditModal(row.original.id);
-      //       }}
-      //     >
-      //       Editar
-      //     </Button>
-      //   ),
-      // }),
+      c.display({
+        id: "actions",
+        header: "Ações",
+        cell: ({ row }) => (
+          <Tooltip content="Editar" placement="left">
+            <Button
+              size="sm"
+              isIconOnly
+              variant="light"
+              onPress={() => {
+                openEditModal(row.original.id);
+              }}
+            >
+              <PenLineIcon size={16} />
+            </Button>
+          </Tooltip>
+        ),
+      }),
     ];
   }, []);
 
