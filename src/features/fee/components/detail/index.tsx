@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import {
   AnchorLink,
@@ -7,39 +9,46 @@ import {
   EntityPanelBody,
   EntityPanelFooter,
   EntityPanelHeader,
-  type EntityPanelProps,
+  SuspenseBoundary,
 } from "~/shared/components";
+import {
+  useModal,
+  useModalCallbacks,
+} from "../../stores/use-modal";
 import { api } from "~/trpc/client";
-import { Spinner } from "@heroui/react";
+import { DetailSkeleton } from "./skeleton";
 import { ROUTES } from "~/shared/constants/route";
 import { formatter } from "~/shared/lib/formatter";
 import { searchSerializer } from "~/shared/lib/nuqs";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
-interface FeeDetailsProps extends EntityPanelProps {
-  id: string;
-}
+export const Detail = () => {
+  const { isOpen, mode, id } = useModal();
+  const { onOpenChange } = useModalCallbacks();
 
-export const FeeDetails = ({ id, ...props }: FeeDetailsProps) => {
+  const shouldShow = isOpen && mode === "view" && id;
+
+  if (!shouldShow) return null;
+
   return (
-    <EntityPanel {...props}>
-      <React.Suspense fallback={<Spinner />}>
-        <FeeDetailsContent id={id} />
-      </React.Suspense>
+    <EntityPanel isOpen={true} onOpenChange={onOpenChange}>
+      <SuspenseBoundary fallback={<DetailSkeleton />}>
+        <DetailContent id={id} />
+      </SuspenseBoundary>
     </EntityPanel>
   );
 };
 
-interface FeeDetailsContentProps {
+interface DetailContentProps {
   id: string;
 }
 
-const FeeDetailsContent = ({ id }: FeeDetailsContentProps) => {
+const DetailContent = ({ id }: DetailContentProps) => {
   const [fee] = api.fees.getOne.useSuspenseQuery({ id });
 
   const feeData: EntityPanelData[] = React.useMemo(() => {
     const generalSection: EntityPanelData = {
-      title: "Informações Gerais",
+      title: "Informações Gerais",
       data: [
         {
           term: "Processo",
@@ -54,7 +63,7 @@ const FeeDetailsContent = ({ id }: FeeDetailsContentProps) => {
           ),
         },
         {
-          term: "Área",
+          term: "Área",
           definition: formatter.contractLegalArea(fee.contract.legalArea),
         },
         {

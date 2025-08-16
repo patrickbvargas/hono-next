@@ -2,25 +2,24 @@
 
 import * as React from "react";
 import { Chip } from "@heroui/react";
-import { FeeDetails } from "./details";
+import { Detail } from "../detail";
 import { DataTable } from "~/shared/components";
-import { useEntityPanel } from "~/shared/hooks";
 import { formatter } from "~/shared/lib/formatter";
 import type { FeeSummary } from "~/shared/types/fee";
+import { useModalActions } from "../../stores/use-modal";
 import { FEE_SORT_COLUMNS } from "~/shared/constants/fee";
 import { createColumnHelper } from "@tanstack/react-table";
 
 const isSortable = (column: keyof FeeSummary) =>
   FEE_SORT_COLUMNS.includes(column as (typeof FEE_SORT_COLUMNS)[number]);
 
-interface FeeTableProps {
+interface TableProps {
   fees: FeeSummary[];
   totalCount: number;
 }
 
-export const FeeTable = ({ fees, totalCount }: FeeTableProps) => {
-  const { isOpen, onOpenChange, selectedItem, selectItem } =
-    useEntityPanel<FeeSummary>();
+export const Table = ({ fees, totalCount }: TableProps) => {
+  const { openViewModal } = useModalActions();
 
   const columns = React.useMemo(() => {
     const c = createColumnHelper<FeeSummary>();
@@ -67,15 +66,12 @@ export const FeeTable = ({ fees, totalCount }: FeeTableProps) => {
         totalCount={totalCount}
         columns={columns}
         data={fees}
-        onRowAction={(index) => selectItem(fees[Number(index)])}
+        onRowAction={(index) => {
+          const fee = fees[Number(index)];
+          if (fee) openViewModal(fee.id);
+        }}
       />
-      {selectedItem && (
-        <FeeDetails
-          id={selectedItem.id}
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-        />
-      )}
+      <Detail />
     </React.Fragment>
   );
 };

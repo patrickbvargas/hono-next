@@ -5,8 +5,8 @@ import {
   WrapperHeader,
   Search,
 } from "~/shared/components";
-import { FeeTable } from "./components/table";
-import { FeeFilter } from "./components/filter";
+import { Table } from "./components/table";
+import { Filter } from "./components/filter";
 import { ROUTES } from "~/shared/constants/route";
 import type { FeeSummary } from "~/shared/types/fee";
 
@@ -20,10 +20,10 @@ export const FeeList = ({ fees, count }: FeeListProps) => {
     <Wrapper title={ROUTES.fee.label}>
       <WrapperHeader>
         <Search placeholder="Filtrar por Processo ou Cliente..." />
-        <FeeFilter />
+        <Filter />
       </WrapperHeader>
       <WrapperBody>
-        <FeeTable fees={fees} totalCount={count} />
+        <Table fees={fees} totalCount={count} />
       </WrapperBody>
     </Wrapper>
   );
