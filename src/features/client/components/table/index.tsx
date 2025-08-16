@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import { Chip } from "@heroui/react";
-import { ClientDetails } from "./details";
-import { useEntityPanel } from "~/shared/hooks";
+import { Detail } from "../detail";
 import { formatter } from "~/shared/lib/formatter";
+import { useModalActions } from "../../stores/use-modal";
 import type { ClientSummary } from "~/shared/types/client";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ChipStatus, DataTable } from "~/shared/components";
@@ -13,14 +13,13 @@ import { CLIENT_SORT_COLUMNS } from "~/shared/constants/client";
 const isSortable = (column: keyof ClientSummary) =>
   CLIENT_SORT_COLUMNS.includes(column as (typeof CLIENT_SORT_COLUMNS)[number]);
 
-interface ClientTableProps {
+interface TableProps {
   clients: ClientSummary[];
   totalCount: number;
 }
 
-export const ClientTable = ({ clients, totalCount }: ClientTableProps) => {
-  const { isOpen, onOpenChange, selectedItem, selectItem } =
-    useEntityPanel<ClientSummary>();
+export const Table = ({ clients, totalCount }: TableProps) => {
+  const { openViewModal } = useModalActions();
 
   const columns = React.useMemo(() => {
     const c = createColumnHelper<ClientSummary>();
@@ -64,15 +63,12 @@ export const ClientTable = ({ clients, totalCount }: ClientTableProps) => {
         totalCount={totalCount}
         columns={columns}
         data={clients}
-        onRowAction={(index) => selectItem(clients[Number(index)])}
+        onRowAction={(index) => {
+          const client = clients[Number(index)];
+          if (client) openViewModal(client.id);
+        }}
       />
-      {selectedItem && (
-        <ClientDetails
-          id={selectedItem.id}
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-        />
-      )}
+      <Detail />
     </React.Fragment>
   );
 };
