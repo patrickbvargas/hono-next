@@ -1,39 +1,12 @@
-"use client";
-
-import { useForm } from "react-hook-form";
 import { filterParser } from "../parsers";
-import { useDisclosure } from "@heroui/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { zFilter, type Filter } from "../schemas/filter";
+import { zFilter } from "../schemas/filter";
+import { useEntityFilter } from "~/shared/hooks";
 import { getDefaultFilterValues } from "../utils/default";
-import { useFilter as useFilterShared } from "~/shared/hooks";
 
 export function useFilter() {
-  const { isOpen, onOpenChange, onClose } = useDisclosure();
-  const { filters, handleFilters } = useFilterShared(filterParser);
-
-  const methods = useForm<Filter>({
-    resolver: zodResolver(zFilter),
-    values: filters,
+  return useEntityFilter({
+    parser: filterParser,
+    schema: zFilter,
     defaultValues: getDefaultFilterValues(),
   });
-
-  const handleFormSubmit = (data: Filter) => {
-    handleFilters(data);
-    onClose();
-  };
-
-  const handleOpenChange = (open: boolean) => {
-    if (!open) methods.reset(filters);
-    onOpenChange();
-  };
-
-  return {
-    methods,
-    isOpen,
-    onClose,
-    handleOpenChange,
-    handleFormSubmit,
-    filters,
-  };
 }

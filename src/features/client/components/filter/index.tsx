@@ -3,33 +3,23 @@
 import * as React from "react";
 import {
   RHFCheckboxGroup,
-  RHFDivider,
   RHFFieldset,
   RHFForm,
-  ButtonFilter,
+  EntityFilter,
+  EntityFilterBody,
 } from "~/shared/components";
-import { useIsMobile } from "~/shared/hooks";
 import { useFilter } from "../../hooks/use-filter";
 import { formatter } from "~/shared/lib/formatter";
 import { CLIENT_TYPES } from "~/shared/constants/client";
 import { ENTITY_STATUS } from "~/shared/constants/entity";
 import type { Filter as ClientFilter } from "../../schemas/filter";
-import { Button, Popover, PopoverContent, PopoverTrigger } from "@heroui/react";
 
 export const Filter = () => {
-  const isMobile = useIsMobile();
   const { methods, isOpen, handleOpenChange, handleFormSubmit } = useFilter();
 
   return (
-    <Popover
-      isOpen={isOpen}
-      onOpenChange={handleOpenChange}
-      placement={isMobile ? "bottom-end" : "bottom-start"}
-    >
-      <PopoverTrigger>
-        <ButtonFilter className="place-self-start" />
-      </PopoverTrigger>
-      <PopoverContent>
+    <EntityFilter isOpen={isOpen} onOpenChange={handleOpenChange}>
+      <EntityFilterBody>
         <RHFForm
           submitCallback={handleFormSubmit}
           className="min-w-40"
@@ -53,14 +43,8 @@ export const Filter = () => {
               ))}
             </RHFCheckboxGroup.Root>
           </RHFFieldset>
-          <RHFDivider />
-          <RHFFieldset className="flex justify-end">
-            <Button size="sm" type="submit">
-              Aplicar
-            </Button>
-          </RHFFieldset>
         </RHFForm>
-      </PopoverContent>
-    </Popover>
+      </EntityFilterBody>
+    </EntityFilter>
   );
 };

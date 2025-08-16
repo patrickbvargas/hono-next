@@ -8,6 +8,7 @@ export * from "./definition-item";
 export * from "./chip-status";
 export * from "./entity-panel";
 export * from "./entity-form";
+export * from "./entity-filter";
 export * from "./anchor-link";
 export * from "./modal-confirm";
 export * from "./loading-fallback";
