@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import { Chip } from "@heroui/react";
-import { ContractDetails } from "./details";
-import { useEntityPanel } from "~/shared/hooks";
+import { Detail } from "../detail";
 import { formatter } from "~/shared/lib/formatter";
+import { useModalActions } from "../../stores/use-modal";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ChipStatus, DataTable } from "~/shared/components";
 import type { ContractSummary } from "~/shared/types/contract";
@@ -15,17 +15,13 @@ const isSortable = (column: keyof ContractSummary) =>
     column as (typeof CONTRACT_SORT_COLUMNS)[number],
   );
 
-interface ContractTableProps {
+interface TableProps {
   contracts: ContractSummary[];
   totalCount: number;
 }
 
-export const ContractTable = ({
-  contracts,
-  totalCount,
-}: ContractTableProps) => {
-  const { isOpen, onOpenChange, selectedItem, selectItem } =
-    useEntityPanel<ContractSummary>();
+export const Table = ({ contracts, totalCount }: TableProps) => {
+  const { openViewModal } = useModalActions();
 
   const columns = React.useMemo(() => {
     const c = createColumnHelper<ContractSummary>();
@@ -71,15 +67,12 @@ export const ContractTable = ({
         totalCount={totalCount}
         columns={columns}
         data={contracts}
-        onRowAction={(index) => selectItem(contracts[Number(index)])}
+        onRowAction={(index) => {
+          const contract = contracts[Number(index)];
+          if (contract) openViewModal(contract.id);
+        }}
       />
-      {selectedItem && (
-        <ContractDetails
-          id={selectedItem.id}
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-        />
-      )}
+      <Detail />
     </React.Fragment>
   );
 };

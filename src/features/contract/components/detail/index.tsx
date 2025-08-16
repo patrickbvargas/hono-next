@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import {
   AnchorLink,
@@ -8,39 +10,46 @@ import {
   EntityPanelBody,
   EntityPanelFooter,
   EntityPanelHeader,
-  type EntityPanelProps,
+  SuspenseBoundary,
 } from "~/shared/components";
+import {
+  useModal,
+  useModalCallbacks,
+} from "../../stores/use-modal";
 import { api } from "~/trpc/client";
-import { Spinner } from "@heroui/react";
+import { DetailSkeleton } from "./skeleton";
 import { ROUTES } from "~/shared/constants/route";
 import { formatter } from "~/shared/lib/formatter";
 import { searchSerializer } from "~/shared/lib/nuqs";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
-interface ContractDetailsProps extends EntityPanelProps {
-  id: string;
-}
+export const Detail = () => {
+  const { isOpen, mode, id } = useModal();
+  const { onOpenChange } = useModalCallbacks();
 
-export const ContractDetails = ({ id, ...props }: ContractDetailsProps) => {
+  const shouldShow = isOpen && mode === "view" && id;
+
+  if (!shouldShow) return null;
+
   return (
-    <EntityPanel {...props}>
-      <React.Suspense fallback={<Spinner />}>
-        <ContractDetailsContent id={id} />
-      </React.Suspense>
+    <EntityPanel isOpen={true} onOpenChange={onOpenChange}>
+      <SuspenseBoundary fallback={<DetailSkeleton />}>
+        <DetailContent id={id} />
+      </SuspenseBoundary>
     </EntityPanel>
   );
 };
 
-interface ContractDetailsContentProps {
+interface DetailContentProps {
   id: string;
 }
 
-const ContractDetailsContent = ({ id }: ContractDetailsContentProps) => {
+const DetailContent = ({ id }: DetailContentProps) => {
   const [contract] = api.contracts.getOne.useSuspenseQuery({ id });
 
   const contractData: EntityPanelData[] = React.useMemo(() => {
     const generalSection: EntityPanelData = {
-      title: "Informações Gerais",
+      title: "Informações Gerais",
       data: [
         {
           term: "Cliente",
@@ -55,7 +64,7 @@ const ContractDetailsContent = ({ id }: ContractDetailsContentProps) => {
           ),
         },
         {
-          term: "Área",
+          term: "Área",
           definition: formatter.contractLegalArea(contract.legalArea),
         },
         {
@@ -76,7 +85,7 @@ const ContractDetailsContent = ({ id }: ContractDetailsContentProps) => {
     };
 
     const employeesSection: EntityPanelData = {
-      title: "Designações",
+      title: "Designações",
       data: contract.employees.map((e) => ({
         term: formatter.employeeAssignment(e.assignment),
         definition: (
