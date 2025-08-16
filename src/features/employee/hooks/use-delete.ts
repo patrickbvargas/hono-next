@@ -3,7 +3,7 @@
 import { api } from "~/trpc/client";
 import { useRouter } from "next/navigation";
 import { heroToast } from "~/shared/lib/toast";
-import { useEmployeeModalActions } from "../store/use-modal";
+import { useModalActions } from "../store/use-modal";
 
 interface UseDeleteProps {
   id: string;
@@ -12,7 +12,7 @@ interface UseDeleteProps {
 export function useDelete({ id }: UseDeleteProps) {
   const router = useRouter();
   const utils = api.useUtils();
-  const { closeModal } = useEmployeeModalActions();
+  const { closeModal } = useModalActions();
 
   const deleteMutation = api.employees.delete.useMutation({
     onSuccess: (resp) => {

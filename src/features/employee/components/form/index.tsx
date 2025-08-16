@@ -18,8 +18,8 @@ import {
   ModalConfirm,
 } from "~/shared/components";
 import {
-  useEmployeeModalState,
-  useEmployeeModalActions,
+  useModal,
+  useModalActions,
 } from "../../store/use-modal";
 import { FormSkeleton } from "./skeleton";
 import { useForm } from "../../hooks/use-form";
@@ -30,8 +30,8 @@ import type { FormModalMode } from "~/shared/types/form-modal";
 import { EMPLOYEE_TYPES, EMPLOYEE_ROLES } from "~/shared/constants/employee";
 
 export const Form = () => {
-  const { isOpen, mode, id } = useEmployeeModalState();
-  const { closeModal } = useEmployeeModalActions();
+  const { isOpen, mode, id } = useModal();
+  const { closeModal } = useModalActions();
 
   const shouldShow = isOpen && (mode === "create" || mode === "edit");
 
@@ -63,7 +63,7 @@ export const Form = () => {
 };
 
 const FormContent = ({ mode, id }: { mode: FormModalMode; id?: string }) => {
-  const { closeModal } = useEmployeeModalActions();
+  const { closeModal } = useModalActions();
   const modeOptions = FORM_MODE_OPTIONS[mode];
 
   const { methods, handleSubmit, isSubmitting } = useForm({

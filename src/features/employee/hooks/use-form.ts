@@ -8,9 +8,9 @@ import {
 import { api } from "~/trpc/client";
 import { useRouter } from "next/navigation";
 import { heroToast } from "~/shared/lib/toast";
+import { useModalActions } from "../store/use-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm as useRHFForm } from "react-hook-form";
-import { useEmployeeModalActions } from "../store/use-modal";
 import type { FormModalMode } from "~/shared/types/form-modal";
 import { zEmployeeForm, type EmployeeForm } from "~/shared/schemas/employee";
 
@@ -22,7 +22,7 @@ interface UseFormProps {
 export function useForm({ mode, id }: UseFormProps) {
   const router = useRouter();
   const utils = api.useUtils();
-  const { closeModal } = useEmployeeModalActions();
+  const { closeModal } = useModalActions();
   const isEdition = mode === "edit";
 
   const methods = useRHFForm<EmployeeForm>({

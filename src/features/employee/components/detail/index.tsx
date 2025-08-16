@@ -12,8 +12,9 @@ import {
   EntityPanelHeader,
 } from "~/shared/components";
 import {
-  useEmployeeModalActions,
-  useEmployeeModalState,
+  useModal,
+  useModalActions,
+  useModalCallbacks,
 } from "../../store/use-modal";
 import { api } from "~/trpc/client";
 import { DetailSkeleton } from "./skeleton";
@@ -26,8 +27,8 @@ import { searchSerializer } from "~/shared/lib/nuqs";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
 export const Detail = () => {
-  const { isOpen, mode, id } = useEmployeeModalState();
-  const { onOpenChange } = useEmployeeModalActions();
+  const { isOpen, mode, id } = useModal();
+  const { onOpenChange } = useModalCallbacks();
 
   const shouldShow = isOpen && mode === "view" && id;
 
@@ -43,7 +44,7 @@ export const Detail = () => {
 };
 
 const DetailContent = ({ id }: { id: string }) => {
-  const { openEditModal } = useEmployeeModalActions();
+  const { openEditModal } = useModalActions();
   const [employee] = api.employees.getOne.useSuspenseQuery({ id });
 
   const { handleDelete } = useDelete({ id });

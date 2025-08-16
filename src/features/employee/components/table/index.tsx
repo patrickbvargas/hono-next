@@ -4,10 +4,10 @@ import * as React from "react";
 import { Detail } from "../detail";
 import { Chip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
+import { useModalActions } from "../../store/use-modal";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ChipStatus, DataTable } from "~/shared/components";
 import type { EmployeeSummary } from "~/shared/types/employee";
-import { useEmployeeModalActions } from "../../store/use-modal";
 import { EMPLOYEE_SORT_COLUMNS } from "~/shared/constants/employee";
 
 const isSortable = (column: keyof EmployeeSummary) =>
@@ -21,7 +21,7 @@ interface TableProps {
 }
 
 export const Table = ({ employees, totalCount }: TableProps) => {
-  const { openViewModal } = useEmployeeModalActions();
+  const { openViewModal } = useModalActions();
 
   const columns = React.useMemo(() => {
     const c = createColumnHelper<EmployeeSummary>();

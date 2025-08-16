@@ -13,7 +13,7 @@ import { Form } from "./components/form";
 import { Table } from "./components/table";
 import { Filter } from "./components/filter";
 import { ROUTES } from "~/shared/constants/route";
-import { useEmployeeModalActions } from "./store/use-modal";
+import { useModalActions } from "./store/use-modal";
 import type { EmployeeSummary } from "~/shared/types/employee";
 
 interface EmployeeListProps {
@@ -22,7 +22,7 @@ interface EmployeeListProps {
 }
 
 export const EmployeeList = ({ employees, count }: EmployeeListProps) => {
-  const { openCreateModal } = useEmployeeModalActions();
+  const { openCreateModal } = useModalActions();
 
   return (
     <Wrapper title={ROUTES.employee.label}>

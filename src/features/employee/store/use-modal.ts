@@ -4,25 +4,14 @@ import {
 } from "~/shared/stores/entity-modal";
 
 // Create employee-specific modal store using the generic factory
-const useEmployeeModalStore = createEntityModalStore();
+const useModalStore = createEntityModalStore();
 
 // Create typed hooks for employee modal
-const employeeModalHooks = createEntityModalHooks(useEmployeeModalStore);
+const modalHooks = createEntityModalHooks(useModalStore);
 
-// Export individual selectors for maximum stability
-export const useEmployeeModalIsOpen = employeeModalHooks.useIsOpen;
-export const useEmployeeModalMode = employeeModalHooks.useMode;
-export const useEmployeeModalId = employeeModalHooks.useId;
-
-export const useEmployeeModalOpenCreateModal =
-  employeeModalHooks.useOpenCreateModal;
-export const useEmployeeModalOpenEditModal =
-  employeeModalHooks.useOpenEditModal;
-export const useEmployeeModalOpenViewModal =
-  employeeModalHooks.useOpenViewModal;
-export const useEmployeeModalCloseModal = employeeModalHooks.useCloseModal;
-export const useEmployeeModalOnOpenChange = employeeModalHooks.useOnOpenChange;
-
-// Convenience hooks for backward compatibility
-export const useEmployeeModalState = employeeModalHooks.useState;
-export const useEmployeeModalActions = employeeModalHooks.useActions;
+// Simplified API - 3 focused hooks (generic names within feature context)
+export const useModal = modalHooks.useState;
+export const useModalActions = modalHooks.useActions;
+export const useModalCallbacks = () => ({
+  onOpenChange: modalHooks.useOnOpenChange(),
+});
