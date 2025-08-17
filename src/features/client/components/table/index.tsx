@@ -1,13 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { Chip } from "@heroui/react";
 import { Detail } from "../detail";
+import { PenLineIcon } from "lucide-react";
 import { formatter } from "~/shared/lib/formatter";
+import { Button, Chip, Tooltip } from "@heroui/react";
 import { useModalActions } from "../../stores/use-modal";
-import type { ClientSummary } from "~/shared/types/client";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ChipStatus, DataTable } from "~/shared/components";
+import type { ClientSummary } from "~/shared/types/client";
 import { CLIENT_SORT_COLUMNS } from "~/shared/constants/client";
 
 const isSortable = (column: keyof ClientSummary) =>
@@ -19,7 +20,7 @@ interface TableProps {
 }
 
 export const Table = ({ clients, totalCount }: TableProps) => {
-  const { openViewModal } = useModalActions();
+  const { openViewModal, openEditModal } = useModalActions();
 
   const columns = React.useMemo(() => {
     const c = createColumnHelper<ClientSummary>();
@@ -54,8 +55,26 @@ export const Table = ({ clients, totalCount }: TableProps) => {
         cell: ({ row }) => <ChipStatus status={row.original.status} />,
         enableSorting: isSortable("status"),
       }),
+      c.display({
+        id: "actions",
+        header: "Ações",
+        cell: ({ row }) => (
+          <Tooltip content="Editar" placement="left">
+            <Button
+              size="sm"
+              isIconOnly
+              variant="light"
+              onPress={() => {
+                openEditModal(row.original.id);
+              }}
+            >
+              <PenLineIcon size={16} />
+            </Button>
+          </Tooltip>
+        ),
+      }),
     ];
-  }, []);
+  }, [openEditModal]);
 
   return (
     <React.Fragment>

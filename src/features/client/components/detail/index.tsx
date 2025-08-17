@@ -12,7 +12,7 @@ import {
   EntityPanelHeader,
   SuspenseBoundary,
 } from "~/shared/components";
-import { useModal, useModalCallbacks } from "../../stores/use-modal";
+import { useModal, useModalCallbacks, useModalActions } from "../../stores/use-modal";
 import { api } from "~/trpc/client";
 import { DetailSkeleton } from "./skeleton";
 import { ROUTES } from "~/shared/constants/route";
@@ -42,6 +42,7 @@ interface DetailContentProps {
 }
 const DetailContent = ({ id }: DetailContentProps) => {
   const [client] = api.clients.getOne.useSuspenseQuery({ id });
+  const { openEditModal } = useModalActions();
 
   const clientData: EntityPanelData[] = React.useMemo(() => {
     const generalSection: EntityPanelData = {
@@ -109,7 +110,7 @@ const DetailContent = ({ id }: DetailContentProps) => {
       </EntityPanelBody>
       <EntityPanelFooter>
         <EntityPanelActions
-          onEdit={() => console.log("edit")}
+          onEdit={() => openEditModal(client.id)}
           onDelete={() => console.log("delete")}
         />
       </EntityPanelFooter>

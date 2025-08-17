@@ -7,14 +7,26 @@ import {
   zPaginationParser,
   zSearchParser,
 } from "~/shared/schemas/query-parser";
+import {
+  and,
+  eq,
+  inArray,
+  count,
+  ilike,
+  desc,
+  SQL,
+  ne,
+  isNull,
+} from "drizzle-orm";
 import { z } from "zod/v4";
 import { TRPCError } from "@trpc/server";
 import { clients } from "~/server/db/schemas";
+import { zClientForm } from "~/shared/schemas/client";
 import { SORT_DIRECTIONS } from "~/shared/constants/sort";
 import { ENTITY_STATUS } from "~/shared/constants/entity";
+import type { MutationReturnType } from "../types/mutation";
 import type { Client, ClientSummary } from "~/shared/types/client";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { and, eq, inArray, count, ilike, desc, SQL } from "drizzle-orm";
 import { CLIENT_TYPES, CLIENT_SORT_COLUMNS } from "~/shared/constants/client";
 
 const zQueryOneParams = z.object({
@@ -127,6 +139,136 @@ export const clientRouter = createTRPCRouter({
         return {
           data: rawData,
           count: rawCount[0]?.count ?? 0,
+        };
+      },
+    ),
+
+  create: publicProcedure
+    .input(zClientForm)
+    .mutation(
+      async ({
+        ctx: { db },
+        input: { fullName, cnpjf, email, mobilePhone, type },
+      }): Promise<MutationReturnType> => {
+        const existingClient = await db.query.clients.findFirst({
+          where: and(eq(clients.cnpjf, cnpjf), isNull(clients.deletedAt)),
+        });
+
+        if (existingClient) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "CNPJ/CPF já está em uso",
+          });
+        }
+
+        if (email) {
+          const existingEmail = await db.query.clients.findFirst({
+            where: and(eq(clients.email, email), isNull(clients.deletedAt)),
+          });
+
+          if (existingEmail) {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Email já está em uso",
+            });
+          }
+        }
+
+        const newClient = {
+          id: JSON.stringify(new Date()), // TODO: implement hash
+          fullName,
+          cnpjf,
+          email: email || null,
+          mobilePhone: mobilePhone || null,
+          type,
+          contractCount: 0,
+          status: "active" as const,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        await db.insert(clients).values(newClient);
+
+        return {
+          id: newClient.id,
+          message: "Cliente criado com sucesso",
+        };
+      },
+    ),
+
+  update: publicProcedure
+    .input(zClientForm)
+    .mutation(
+      async ({
+        ctx: { db },
+        input: { id, fullName, cnpjf, email, mobilePhone, type },
+      }): Promise<MutationReturnType> => {
+        if (!id) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "ID do cliente é obrigatório para atualização",
+          });
+        }
+
+        const existingClient = await db.query.clients.findFirst({
+          where: and(eq(clients.id, id), isNull(clients.deletedAt)),
+        });
+
+        if (!existingClient) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Cliente não encontrado",
+          });
+        }
+
+        if (cnpjf && cnpjf !== existingClient.cnpjf) {
+          const cnpjfExists = await db.query.clients.findFirst({
+            where: and(
+              eq(clients.cnpjf, cnpjf),
+              ne(clients.id, id),
+              isNull(clients.deletedAt),
+            ),
+          });
+
+          if (cnpjfExists) {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "CNPJ/CPF já está em uso por outro cliente",
+            });
+          }
+        }
+
+        if (email && email !== existingClient.email) {
+          const emailExists = await db.query.clients.findFirst({
+            where: and(
+              eq(clients.email, email),
+              ne(clients.id, id),
+              isNull(clients.deletedAt),
+            ),
+          });
+
+          if (emailExists) {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "Email já está em uso por outro cliente",
+            });
+          }
+        }
+
+        const updateData: Partial<typeof clients.$inferInsert> = {
+          fullName,
+          cnpjf,
+          email: email || null,
+          mobilePhone: mobilePhone || null,
+          type,
+          updatedAt: new Date(),
+        };
+
+        await db.update(clients).set(updateData).where(eq(clients.id, id));
+
+        return {
+          id,
+          message: "Cliente atualizado com sucesso",
         };
       },
     ),
