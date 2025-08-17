@@ -1,4 +1,4 @@
-import type { SortDescriptor } from "@heroui/table";
+import type { SortDescriptor } from "~/shared/types/sort";
 
 export const SORT_DIRECTIONS = [
   "ascending",
