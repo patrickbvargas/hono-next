@@ -1,6 +1,14 @@
+import {
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "~/shared/components/ui/sidebar";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { RouteSection } from "~/shared/types/route";
-import { cn, Listbox, ListboxItem, ListboxSection } from "@heroui/react";
 
 interface NavigationProps {
   sections: RouteSection[];
@@ -12,32 +20,30 @@ export function NavSection({ sections }: NavigationProps) {
   const isActive = (url: string) => pathname.startsWith(url);
 
   return (
-    <nav className="flex-1">
-      <Listbox
-        items={sections}
-        classNames={{ list: "h-full px-2", base: "h-full" }}
-      >
-        {({ name, routes }) => (
-          <ListboxSection
-            key={name}
-            title={name}
-            items={routes}
-            className="last:mt-auto"
-            classNames={{ group: "space-y-1" }}
-          >
-            {({ label, url, icon: Icon }) => (
-              <ListboxItem
-                key={label}
-                href={url}
-                startContent={<Icon size={16} />}
-                className={cn(isActive(url) && "border-l-4 border-primary")}
-              >
-                {label}
-              </ListboxItem>
-            )}
-          </ListboxSection>
-        )}
-      </Listbox>
-    </nav>
+    <>
+      {sections.map(({ name, routes }) => (
+        <SidebarGroup key={name}>
+          <SidebarGroupLabel>{name}</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {routes.map(({ label, url, icon: Icon }) => (
+                <SidebarMenuItem key={label}>
+                  <SidebarMenuButton
+                    asChild
+                    tooltip={label}
+                    isActive={isActive(url)}
+                  >
+                    <Link href={url}>
+                      <Icon size={16} />
+                      <span>{label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      ))}
+    </>
   );
 }

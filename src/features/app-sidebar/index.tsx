@@ -6,11 +6,10 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-} from "~/shared/components";
-import Link from "next/link";
-import { BoxIcon } from "lucide-react";
+} from "~/shared/components/ui/sidebar";
 import { NavUser } from "./components/nav-user";
 import { ROUTES } from "~/shared/constants/route";
+import { NavHeader } from "./components/nav-header";
 import { NavSection } from "./components/nav-section";
 import type { RouteSection } from "~/shared/types/route";
 
@@ -35,15 +34,9 @@ const sections: RouteSection[] = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar {...props}>
+    <Sidebar variant="inset" collapsible="icon" {...props}>
       <SidebarHeader>
-        <Link
-          href="/"
-          className="flex items-center gap-2 p-2 pl-4 hover:text-primary transition-colors duration-200 ease-in-out"
-        >
-          <BoxIcon size={24} />
-          <span className="font-semibold tracking-wider">Hono</span>
-        </Link>
+        <NavHeader />
       </SidebarHeader>
       <SidebarContent>
         <NavSection sections={sections} />

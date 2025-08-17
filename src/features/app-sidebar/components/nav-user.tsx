@@ -1,51 +1,86 @@
 "use client";
 
 import {
-  Dropdown,
-  DropdownItem,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "~/shared/components/ui/avatar";
+import {
   DropdownMenu,
-  DropdownTrigger,
-  User,
-} from "@heroui/react";
-import { SidebarGroup } from "~/shared/components";
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/shared/components/ui/dropdown-menu";
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "~/shared/components/ui/sidebar";
+import { EllipsisVerticalIcon } from "lucide-react";
 
 export function NavUser() {
+  const { isMobile } = useSidebar();
+
   const user = {
-    avatar: "https://github.com/patrickbvargas.png",
     name: "Patrick Vargas",
     email: "fj8oT@example.com",
+    avatar: "https://github.com/patrickbvargas.png",
   };
 
   return (
-    <SidebarGroup>
-      <Dropdown placement="right-end">
-        <DropdownTrigger>
-          <User
-            name={user.name}
-            description={user.email}
-            avatarProps={{
-              src: user.avatar,
-              radius: "lg",
-            }}
-            className="w-full justify-start transition-transform cursor-pointer"
-          />
-        </DropdownTrigger>
-        <DropdownMenu aria-label="User Actions" variant="flat">
-          <DropdownItem key="profile" className="h-14 gap-2">
-            <p className="font-bold">Signed in as</p>
-            <p className="font-bold">@tonyreichert</p>
-          </DropdownItem>
-          <DropdownItem key="settings">My Settings</DropdownItem>
-          <DropdownItem key="team_settings">Team Settings</DropdownItem>
-          <DropdownItem key="analytics">Analytics</DropdownItem>
-          <DropdownItem key="system">System</DropdownItem>
-          <DropdownItem key="configurations">Configurations</DropdownItem>
-          <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
-          <DropdownItem key="logout" color="danger">
-            Log Out
-          </DropdownItem>
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton size="lg">
+              <Avatar>
+                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarFallback>PV</AvatarFallback>
+              </Avatar>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-medium">{user.name}</span>
+                <span className="text-muted-foreground truncate text-xs">
+                  {user.email}
+                </span>
+              </div>
+              <EllipsisVerticalIcon size={16} />
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="min-w-56 rounded-lg"
+            side={isMobile ? "bottom" : "right"}
+            align="end"
+            sideOffset={4}
+          >
+            <DropdownMenuLabel className="p-0 font-normal">
+              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="text-muted-foreground truncate text-xs">
+                    {user.email}
+                  </span>
+                </div>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>Account</DropdownMenuItem>
+              <DropdownMenuItem>Billing</DropdownMenuItem>
+              <DropdownMenuItem>Notifications</DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Log out</DropdownMenuItem>
+          </DropdownMenuContent>
         </DropdownMenu>
-      </Dropdown>
-    </SidebarGroup>
+      </SidebarMenuItem>
+    </SidebarMenu>
   );
 }

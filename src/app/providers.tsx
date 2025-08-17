@@ -21,7 +21,7 @@ export function Providers({
           labelPlacement="outside"
           validationBehavior="aria"
         >
-          <ThemeProvider attribute="class" forcedTheme="dark">
+          <ThemeProvider attribute="class" forcedTheme="light">
             <ToastProvider placement="top-center" />
             {children}
           </ThemeProvider>

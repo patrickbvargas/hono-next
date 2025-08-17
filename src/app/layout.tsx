@@ -2,8 +2,8 @@ import "~/styles/globals.css";
 import type { Metadata } from "next";
 import { Providers } from "./providers";
 import { Geist } from "next/font/google";
-import { SidebarInset, SidebarProvider } from "~/shared/components";
 import { AppSidebar } from "~/features/app-sidebar";
+import { SidebarInset, SidebarProvider } from "~/shared/components/ui/sidebar";
 
 export const metadata: Metadata = {
   title: "Hono T3",
@@ -21,9 +21,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR" className={`${geist.variable}`} suppressHydrationWarning>
-      <body className="antialiased dark:!bg-black">
+      <body className="antialiased">
         <Providers>
-          <SidebarProvider>
+          <SidebarProvider className="container max-w-7xl mx-auto min-h-screen">
             <AppSidebar />
             <SidebarInset>{children}</SidebarInset>
           </SidebarProvider>
