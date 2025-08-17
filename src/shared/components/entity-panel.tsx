@@ -1,97 +1,86 @@
 import * as React from "react";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerBody,
-  DrawerFooter,
-  type DrawerProps,
-  type DrawerFooterProps,
-} from "@heroui/drawer";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetFooter,
+  SheetTitle,
+  SheetDescription,
+} from "~/shared/components/ui/sheet";
 import {
   Accordion,
   AccordionItem,
-  type AccordionProps,
-} from "@heroui/accordion";
-import { cn } from "@heroui/react";
-import { Button } from "@heroui/button";
-import { Tooltip } from "@heroui/tooltip";
+  AccordionTrigger,
+  AccordionContent,
+} from "~/shared/components/ui/accordion";
+import { cn } from "~/shared/lib/utils";
 import { DefinitionList } from "./definition-item";
-import { PenLineIcon, TrashIcon } from "lucide-react";
+import { Button } from "~/shared/components/ui/button";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
-export const EntityPanelHeader = DrawerHeader;
-export const EntityPanelBody = DrawerBody;
+export const EntityPanelHeader = SheetHeader;
+export const EntityPanelTitle = SheetTitle;
+export const EntityPanelDescription = SheetDescription;
 
-// TODO: remove export after refactoring all entities
-export interface EntityPanelProps extends Omit<DrawerProps, "children"> {}
-
+interface EntityPanelProps {
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
 export const EntityPanel = ({
   children,
+  onOpenChange,
+  isOpen,
   ...props
 }: EntityPanelProps & { children: React.ReactNode }) => {
   return (
-    <Drawer
-      size="sm"
-      motionProps={{
-        initial: { x: 100, opacity: 0 },
-        animate: { x: 0, opacity: 1, transition: { duration: 0.1 } },
-        exit: { x: 100, opacity: 0, transition: { duration: 0.1 } },
-      }}
-      classNames={{
-        base: "overflow-y-visible",
-        wrapper: "app-container",
-      }}
-      {...props}
-    >
-      <DrawerContent>{children}</DrawerContent>
-    </Drawer>
+    <Sheet open={isOpen} onOpenChange={onOpenChange} {...props}>
+      <SheetContent side="right" className="gap-0">
+        {children}
+      </SheetContent>
+    </Sheet>
   );
 };
 
-export const EntityPanelFooter = ({
+export const EntityPanelBody = ({
   className,
   ...props
-}: DrawerFooterProps) => {
+}: React.ComponentProps<"div">) => {
   return (
-    <DrawerFooter
-      className={cn(
-        "md:flex-col md:absolute md:top-6 md:-left-12 md:p-0",
-        className,
-      )}
-      {...props}
-    />
+    <div className={cn("flex-1 overflow-auto px-4", className)} {...props} />
   );
 };
 
-interface EntityPanelAccordionProps extends Omit<AccordionProps, "children"> {
+interface EntityPanelAccordionProps {
   data: EntityPanelData[];
 }
 export const EntityPanelAccordion = ({
   data,
   ...props
 }: EntityPanelAccordionProps) => {
+  const defaultValue = data.map(({ title }) => title);
+
   return (
-    <Accordion
-      selectionMode="multiple"
-      defaultExpandedKeys={data.map(({ title }) => title)}
-      className="p-0"
-      itemClasses={{
-        title: "text-xs font-semibold uppercase tracking-wider",
-        content: "mb-3",
-      }}
-      {...props}
-    >
-      {data.map(({ title, data }) => (
-        <AccordionItem key={title} title={title}>
-          <DefinitionList data={data} />
+    <Accordion type="multiple" defaultValue={defaultValue} {...props}>
+      {data.map(({ title, data: itemData }) => (
+        <AccordionItem key={title} value={title}>
+          <AccordionTrigger>{title}</AccordionTrigger>
+          <AccordionContent>
+            <DefinitionList data={itemData} />
+          </AccordionContent>
         </AccordionItem>
       ))}
     </Accordion>
   );
 };
 
-interface EntityPanelActionsProps extends DrawerFooterProps {
+export const EntityPanelFooter = ({
+  className,
+  ...props
+}: React.ComponentProps<typeof SheetFooter>) => {
+  return <SheetFooter className={cn(className)} {...props} />;
+};
+
+interface EntityPanelActionsProps {
   onEdit: () => void;
   onDelete: () => void;
 }
@@ -100,17 +89,13 @@ export const EntityPanelActions = ({
   onDelete,
 }: EntityPanelActionsProps) => {
   return (
-    <React.Fragment>
-      <Tooltip content="Editar" placement="left">
-        <Button isIconOnly onPress={onEdit}>
-          <PenLineIcon size={16} />
-        </Button>
-      </Tooltip>
-      <Tooltip content="Excluir" placement="left">
-        <Button isIconOnly color="danger" onPress={onDelete}>
-          <TrashIcon size={16} />
-        </Button>
-      </Tooltip>
-    </React.Fragment>
+    <>
+      <Button variant="outline" onClick={onEdit}>
+        Editar
+      </Button>
+      <Button variant="destructive" onClick={onDelete}>
+        Excluir
+      </Button>
+    </>
   );
 };

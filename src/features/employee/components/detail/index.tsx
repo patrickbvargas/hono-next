@@ -3,13 +3,15 @@
 import * as React from "react";
 import {
   AnchorLink,
-  ChipStatus,
+  EntityStatus,
   EntityPanel,
   EntityPanelAccordion,
   EntityPanelActions,
   EntityPanelBody,
+  EntityPanelDescription,
   EntityPanelFooter,
   EntityPanelHeader,
+  EntityPanelTitle,
   SuspenseBoundary,
 } from "~/shared/components";
 import {
@@ -111,7 +113,7 @@ const DetailContent = ({ id }: DetailContentProps) => {
       data: [
         {
           term: "Status",
-          definition: <ChipStatus status={employee.status} />,
+          definition: <EntityStatus status={employee.status} />,
         },
         {
           term: "Criado em",
@@ -130,7 +132,10 @@ const DetailContent = ({ id }: DetailContentProps) => {
 
   return (
     <React.Fragment>
-      <EntityPanelHeader>{employee.fullName}</EntityPanelHeader>
+      <EntityPanelHeader>
+        <EntityPanelTitle>{employee.fullName}</EntityPanelTitle>
+        <EntityPanelDescription>{employee.oabNumber}</EntityPanelDescription>
+      </EntityPanelHeader>
       <EntityPanelBody>
         <EntityPanelAccordion data={employeeData} />
       </EntityPanelBody>

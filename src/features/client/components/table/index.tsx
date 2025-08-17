@@ -3,12 +3,13 @@
 import * as React from "react";
 import { Detail } from "../detail";
 import { PenLineIcon } from "lucide-react";
+import { Button, Tooltip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
-import { Button, Chip, Tooltip } from "@heroui/react";
+import { Badge } from "~/shared/components/ui/badge";
 import { useModalActions } from "../../stores/use-modal";
 import { createColumnHelper } from "@tanstack/react-table";
-import { ChipStatus, DataTable } from "~/shared/components";
 import type { ClientSummary } from "~/shared/types/client";
+import { EntityStatus, DataTable } from "~/shared/components";
 import { CLIENT_SORT_COLUMNS } from "~/shared/constants/client";
 
 const isSortable = (column: keyof ClientSummary) =>
@@ -46,13 +47,13 @@ export const Table = ({ clients, totalCount }: TableProps) => {
       c.accessor("type", {
         header: "Tipo",
         cell: ({ row }) => (
-          <Chip size="sm">{formatter.clientType(row.original.type)}</Chip>
+          <Badge>{formatter.clientType(row.original.type)}</Badge>
         ),
         enableSorting: isSortable("type"),
       }),
       c.accessor("status", {
         header: "Status",
-        cell: ({ row }) => <ChipStatus status={row.original.status} />,
+        cell: ({ row }) => <EntityStatus status={row.original.status} />,
         enableSorting: isSortable("status"),
       }),
       c.display({

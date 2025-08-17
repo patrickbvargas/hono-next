@@ -3,11 +3,12 @@
 import * as React from "react";
 import { Detail } from "../detail";
 import { PenLineIcon } from "lucide-react";
+import { Button, Tooltip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
-import { Button, Chip, Tooltip } from "@heroui/react";
+import { Badge } from "~/shared/components/ui/badge";
 import { useModalActions } from "../../stores/use-modal";
 import { createColumnHelper } from "@tanstack/react-table";
-import { ChipStatus, DataTable } from "~/shared/components";
+import { EntityStatus, DataTable } from "~/shared/components";
 import type { EmployeeSummary } from "~/shared/types/employee";
 import { EMPLOYEE_SORT_COLUMNS } from "~/shared/constants/employee";
 
@@ -54,13 +55,13 @@ export const Table = ({ employees, totalCount }: TableProps) => {
       c.accessor("role", {
         header: "Perfil",
         cell: ({ row }) => (
-          <Chip size="sm">{formatter.employeeRole(row.original.role)}</Chip>
+          <Badge>{formatter.employeeRole(row.original.role)}</Badge>
         ),
         enableSorting: isSortable("role"),
       }),
       c.accessor("status", {
         header: "Status",
-        cell: ({ row }) => <ChipStatus status={row.original.status} />,
+        cell: ({ row }) => <EntityStatus status={row.original.status} />,
         enableSorting: isSortable("status"),
       }),
       c.display({

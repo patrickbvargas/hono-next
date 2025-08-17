@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Chip } from "@heroui/react";
 import { Detail } from "../detail";
 import { DataTable } from "~/shared/components";
 import { formatter } from "~/shared/lib/formatter";
+import { Badge } from "~/shared/components/ui/badge";
 import { useModalActions } from "../../stores/use-modal";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { RemunerationSummary } from "~/shared/types/remuneration";
@@ -48,9 +48,7 @@ export const Table = ({ remunerations, totalCount }: TableProps) => {
       c.accessor("legalArea", {
         header: "Área",
         cell: ({ row }) => (
-          <Chip size="sm">
-            {formatter.contractLegalArea(row.original.legalArea)}
-          </Chip>
+          <Badge>{formatter.contractLegalArea(row.original.legalArea)}</Badge>
         ),
         enableSorting: isSortable("legalArea"),
       }),

@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Chip } from "@heroui/react";
 import { Detail } from "../detail";
 import { DataTable } from "~/shared/components";
 import { formatter } from "~/shared/lib/formatter";
+import { Badge } from "~/shared/components/ui/badge";
 import type { FeeSummary } from "~/shared/types/fee";
 import { useModalActions } from "../../stores/use-modal";
 import { FEE_SORT_COLUMNS } from "~/shared/constants/fee";
@@ -41,9 +41,7 @@ export const Table = ({ fees, totalCount }: TableProps) => {
       c.accessor("legalArea", {
         header: "Área",
         cell: ({ row }) => (
-          <Chip size="sm">
-            {formatter.contractLegalArea(row.original.legalArea)}
-          </Chip>
+          <Badge>{formatter.contractLegalArea(row.original.legalArea)}</Badge>
         ),
         enableSorting: isSortable("legalArea"),
       }),

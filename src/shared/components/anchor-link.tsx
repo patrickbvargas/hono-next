@@ -1,18 +1,45 @@
+import * as React from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/shared/components/ui/tooltip";
+import Link from "next/link";
+import { cn } from "~/shared/lib/utils";
 import { LinkIcon } from "lucide-react";
-import { Tooltip } from "@heroui/tooltip";
-import { Link, type LinkProps } from "@heroui/link";
 
-export const AnchorLink = ({ ...props }: LinkProps) => {
+interface AnchorLinkProps extends React.ComponentProps<typeof Link> {
+  tooltipText?: string;
+  children: React.ReactNode;
+  className?: string;
+}
+
+export const AnchorLink = ({
+  tooltipText = "Ver detalhes",
+  children,
+  className,
+  ...props
+}: AnchorLinkProps) => {
   return (
-    <Tooltip content="Ver detalhes">
-      <Link
-        size="sm"
-        underline="hover"
-        showAnchorIcon
-        color="foreground"
-        anchorIcon={<LinkIcon size={14} className="ml-2" />}
-        {...props}
-      />
-    </Tooltip>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link
+            className={cn(
+              "inline-flex items-center text-foreground hover:underline transition-colors",
+              className,
+            )}
+            {...props}
+          >
+            {children}
+            <LinkIcon size={14} className="ml-2" />
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{tooltipText}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };

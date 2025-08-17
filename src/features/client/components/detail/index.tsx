@@ -3,16 +3,21 @@
 import * as React from "react";
 import {
   AnchorLink,
-  ChipStatus,
+  EntityStatus,
   EntityPanel,
   EntityPanelAccordion,
   EntityPanelActions,
   EntityPanelBody,
   EntityPanelFooter,
   EntityPanelHeader,
+  EntityPanelTitle,
   SuspenseBoundary,
 } from "~/shared/components";
-import { useModal, useModalCallbacks, useModalActions } from "../../stores/use-modal";
+import {
+  useModal,
+  useModalCallbacks,
+  useModalActions,
+} from "../../stores/use-modal";
 import { api } from "~/trpc/client";
 import { DetailSkeleton } from "./skeleton";
 import { ROUTES } from "~/shared/constants/route";
@@ -90,7 +95,7 @@ const DetailContent = ({ id }: DetailContentProps) => {
       data: [
         {
           term: "Status",
-          definition: <ChipStatus status={client.status} />,
+          definition: <EntityStatus status={client.status} />,
         },
         {
           term: "Criado em",
@@ -104,7 +109,9 @@ const DetailContent = ({ id }: DetailContentProps) => {
 
   return (
     <React.Fragment>
-      <EntityPanelHeader>{client.fullName}</EntityPanelHeader>
+      <EntityPanelHeader>
+        <EntityPanelTitle>{client.fullName}</EntityPanelTitle>
+      </EntityPanelHeader>
       <EntityPanelBody>
         <EntityPanelAccordion data={clientData} />
       </EntityPanelBody>

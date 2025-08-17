@@ -1,12 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { Chip } from "@heroui/react";
 import { Detail } from "../detail";
 import { formatter } from "~/shared/lib/formatter";
+import { Badge } from "~/shared/components/ui/badge";
 import { useModalActions } from "../../stores/use-modal";
 import { createColumnHelper } from "@tanstack/react-table";
-import { ChipStatus, DataTable } from "~/shared/components";
+import { EntityStatus, DataTable } from "~/shared/components";
 import type { ContractSummary } from "~/shared/types/contract";
 import { CONTRACT_SORT_COLUMNS } from "~/shared/constants/contract";
 
@@ -47,15 +47,13 @@ export const Table = ({ contracts, totalCount }: TableProps) => {
       c.accessor("legalArea", {
         header: "Área",
         cell: ({ row }) => (
-          <Chip size="sm">
-            {formatter.contractLegalArea(row.original.legalArea)}
-          </Chip>
+          <Badge>{formatter.contractLegalArea(row.original.legalArea)}</Badge>
         ),
         enableSorting: isSortable("legalArea"),
       }),
       c.accessor("status", {
         header: "Status",
-        cell: ({ row }) => <ChipStatus status={row.original.status} />,
+        cell: ({ row }) => <EntityStatus status={row.original.status} />,
         enableSorting: isSortable("status"),
       }),
     ];

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn } from "@heroui/react";
+import { cn } from "~/shared/lib/utils";
 import type { DefinitionItemData } from "~/shared/types/definition-data";
 
 interface DefinitionListProps extends React.HTMLAttributes<HTMLDListElement> {
@@ -13,7 +13,7 @@ export const DefinitionList = ({
   return (
     <dl
       className={cn(
-        "grid grid-cols-[100px_1fr] items-center gap-y-4 text-small font-normal",
+        "grid grid-cols-[110px_1fr] items-center gap-y-4",
         className,
       )}
       {...props}

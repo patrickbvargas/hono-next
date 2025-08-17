@@ -3,25 +3,23 @@
 import * as React from "react";
 import {
   AnchorLink,
-  ChipStatus,
+  EntityStatus,
   EntityPanel,
   EntityPanelAccordion,
   EntityPanelActions,
   EntityPanelBody,
   EntityPanelFooter,
   EntityPanelHeader,
+  EntityPanelTitle,
   SuspenseBoundary,
 } from "~/shared/components";
-import {
-  useModal,
-  useModalCallbacks,
-} from "../../stores/use-modal";
 import { api } from "~/trpc/client";
 import { DetailSkeleton } from "./skeleton";
 import { ROUTES } from "~/shared/constants/route";
 import { formatter } from "~/shared/lib/formatter";
 import { searchSerializer } from "~/shared/lib/nuqs";
 import type { EntityPanelData } from "~/shared/types/entity-data";
+import { useModal, useModalCallbacks } from "../../stores/use-modal";
 
 export const Detail = () => {
   const { isOpen, mode, id } = useModal();
@@ -127,7 +125,7 @@ const DetailContent = ({ id }: DetailContentProps) => {
       data: [
         {
           term: "Status",
-          definition: <ChipStatus status={contract.status} />,
+          definition: <EntityStatus status={contract.status} />,
         },
         {
           term: "Criado em",
@@ -147,7 +145,9 @@ const DetailContent = ({ id }: DetailContentProps) => {
 
   return (
     <React.Fragment>
-      <EntityPanelHeader>{contract.identification}</EntityPanelHeader>
+      <EntityPanelHeader>
+        <EntityPanelTitle>{contract.identification}</EntityPanelTitle>
+      </EntityPanelHeader>
       <EntityPanelBody>
         <EntityPanelAccordion data={contractData} />
       </EntityPanelBody>

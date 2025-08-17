@@ -9,18 +9,16 @@ import {
   EntityPanelBody,
   EntityPanelFooter,
   EntityPanelHeader,
+  EntityPanelTitle,
   SuspenseBoundary,
 } from "~/shared/components";
-import {
-  useModal,
-  useModalCallbacks,
-} from "../../stores/use-modal";
 import { api } from "~/trpc/client";
 import { DetailSkeleton } from "./skeleton";
 import { ROUTES } from "~/shared/constants/route";
 import { formatter } from "~/shared/lib/formatter";
 import { searchSerializer } from "~/shared/lib/nuqs";
 import type { EntityPanelData } from "~/shared/types/entity-data";
+import { useModal, useModalCallbacks } from "../../stores/use-modal";
 
 export const Detail = () => {
   const { isOpen, mode, id } = useModal();
@@ -141,7 +139,9 @@ const DetailContent = ({ id }: DetailContentProps) => {
 
   return (
     <React.Fragment>
-      <EntityPanelHeader>{fee.contract.identification}</EntityPanelHeader>
+      <EntityPanelHeader>
+        <EntityPanelTitle>{fee.contract.identification}</EntityPanelTitle>
+      </EntityPanelHeader>
       <EntityPanelBody>
         <EntityPanelAccordion data={feeData} />
       </EntityPanelBody>

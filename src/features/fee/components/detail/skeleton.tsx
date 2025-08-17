@@ -1,4 +1,5 @@
-import { Skeleton } from "@heroui/skeleton";
+import { EntityPanelTitle } from "~/shared/components/entity-panel";
+import { Skeleton } from "~/shared/components/ui/skeleton";
 
 export const DetailSkeleton = () => {
   return (
@@ -6,6 +7,7 @@ export const DetailSkeleton = () => {
       {/* Header */}
       <div className="border-b border-divider p-6">
         <Skeleton className="h-6 w-52 rounded-lg" />
+        <EntityPanelTitle>Remover futuramente</EntityPanelTitle>
       </div>
 
       {/* Body */}

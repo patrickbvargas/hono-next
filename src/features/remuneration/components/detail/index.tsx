@@ -9,12 +9,10 @@ import {
   EntityPanelBody,
   EntityPanelFooter,
   EntityPanelHeader,
+  EntityPanelTitle,
   SuspenseBoundary,
 } from "~/shared/components";
-import {
-  useModal,
-  useModalCallbacks,
-} from "../../stores/use-modal";
+import { useModal, useModalCallbacks } from "../../stores/use-modal";
 import { api } from "~/trpc/client";
 import { DetailSkeleton } from "./skeleton";
 import { ROUTES } from "~/shared/constants/route";
@@ -127,7 +125,9 @@ const DetailContent = ({ id }: DetailContentProps) => {
   return (
     <React.Fragment>
       <EntityPanelHeader>
-        {remuneration.contractEmployee.employee.fullName}
+        <EntityPanelTitle>
+          {remuneration.contractEmployee.employee.fullName}
+        </EntityPanelTitle>
       </EntityPanelHeader>
       <EntityPanelBody>
         <EntityPanelAccordion data={remunerationData} />

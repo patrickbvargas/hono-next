@@ -1,24 +1,29 @@
-import { cn } from "@heroui/react";
+import * as React from "react";
+import { cn } from "~/shared/lib/utils";
+import { AlertTriangleIcon } from "lucide-react";
 
 interface ErrorFallbackProps extends React.HTMLAttributes<HTMLDivElement> {
   message?: string;
+  showIcon?: boolean;
 }
+
 export const ErrorFallback = ({
   message = "Ocorreu um erro",
+  showIcon = true,
   className,
   ...props
 }: ErrorFallbackProps) => {
   return (
     <div
       className={cn(
-        "p-4 flex items-center justify-center gap-2 border-1 rounded-md",
-        "bg-red-100 text-red-600 border-red-200",
-        "dark:bg-danger-100 dark:text-red-50 dark:border-danger-200",
+        "rounded-lg border border-destructive/50 bg-destructive/10 p-4",
+        "flex items-center gap-2 text-destructive",
         className,
       )}
       {...props}
     >
-      <p className="text-xs uppercase font-medium tracking-wider">{message}</p>
+      {showIcon && <AlertTriangleIcon className="h-4 w-4 shrink-0" />}
+      <p className="text-sm font-medium">{message}</p>
     </div>
   );
 };
