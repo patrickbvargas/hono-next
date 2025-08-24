@@ -28,3 +28,4 @@ export * from "./input-number";
 export * from "./datefield";
 export * from "./alert";
 export * from "./pagination";
+export * from "./sonner";

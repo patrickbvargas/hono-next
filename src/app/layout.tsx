@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Providers } from "./providers";
 import { Geist } from "next/font/google";
 import { AppSidebar } from "~/features/app-sidebar";
-import { SidebarInset, SidebarProvider } from "~/shared/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, Toaster } from "~/shared/components";
 
 export const metadata: Metadata = {
   title: "Hono T3",
@@ -27,6 +27,7 @@ export default function RootLayout({
             <AppSidebar />
             <SidebarInset>{children}</SidebarInset>
           </SidebarProvider>
+          <Toaster />
         </Providers>
       </body>
     </html>

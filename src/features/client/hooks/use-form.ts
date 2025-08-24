@@ -6,8 +6,8 @@ import {
   getDefaultFormCreateValues,
 } from "../utils/default";
 import { api } from "~/trpc/client";
+import { toast } from "~/shared/lib/toast";
 import { useRouter } from "next/navigation";
-import { heroToast } from "~/shared/lib/toast";
 import { useModalActions } from "../stores/use-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm as useRHFForm } from "react-hook-form";
@@ -31,25 +31,23 @@ export function useForm({ mode, id }: UseFormProps) {
   });
 
   const [client] =
-    isEdition && id
-      ? api.clients.getOne.useSuspenseQuery({ id })
-      : [undefined];
+    isEdition && id ? api.clients.getOne.useSuspenseQuery({ id }) : [undefined];
 
   const createMutation = api.clients.create.useMutation({
     onSuccess: (resp) => {
-      heroToast.success(resp.message);
+      toast.success(resp.message);
     },
     onError: (error) => {
-      heroToast.error(error.message);
+      toast.error(error.message);
     },
   });
 
   const updateMutation = api.clients.update.useMutation({
     onSuccess: (resp) => {
-      heroToast.success(resp.message);
+      toast.success(resp.message);
     },
     onError: (error) => {
-      heroToast.error(error.message);
+      toast.error(error.message);
     },
   });
 

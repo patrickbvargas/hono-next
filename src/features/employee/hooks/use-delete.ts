@@ -1,8 +1,8 @@
 "use client";
 
 import { api } from "~/trpc/client";
+import { toast } from "~/shared/lib/toast";
 import { useRouter } from "next/navigation";
-import { heroToast } from "~/shared/lib/toast";
 import { useModalActions } from "../stores/use-modal";
 
 interface UseDeleteProps {
@@ -16,10 +16,10 @@ export function useDelete({ id }: UseDeleteProps) {
 
   const deleteMutation = api.employees.delete.useMutation({
     onSuccess: (resp) => {
-      heroToast.success(resp.message);
+      toast.success(resp.message);
     },
     onError: (error) => {
-      heroToast.error(error.message);
+      toast.error(error.message);
     },
   });
 

@@ -1,68 +1,44 @@
 "use client";
 
-import { addToast, type ToastProps } from "@heroui/toast";
+import { toast as sonnerToast, type ExternalToast } from "sonner";
 
-type Context = "error" | "warning" | "success" | "info" | "dev";
-
-type ToastOptions = Pick<ToastProps, "title" | "color">;
-
-const defaultTitle: Record<Context, string> = {
-  error: "Erro!",
-  warning: "Atenção!",
-  success: "Sucesso!",
-  info: "Informação!",
-  dev: "Em desenvolvimento!",
-};
-
-const defaultColor: Record<Context, ToastProps["color"]> = {
-  error: "danger",
-  warning: "warning",
-  success: "success",
-  info: "default",
-  dev: "warning",
-};
-
-function showToast(description: string, options: ToastOptions) {
-  return addToast({
-    description: description,
-    ...options,
-  });
+function getTimestamp(): string {
+  const now = new Date();
+  return new Intl.DateTimeFormat("pt-BR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(now);
 }
 
-export const heroToast = {
-  error: (
-    description: string,
-    options: ToastOptions = {
-      title: defaultTitle.error,
-      color: defaultColor.error,
-    },
-  ) => showToast(description, options),
-  warning: (
-    description: string,
-    options: ToastOptions = {
-      title: defaultTitle.warning,
-      color: defaultColor.warning,
-    },
-  ) => showToast(description, options),
-  success: (
-    description: string,
-    options: ToastOptions = {
-      title: defaultTitle.success,
-      color: defaultColor.success,
-    },
-  ) => showToast(description, options),
-  info: (
-    description: string,
-    options: ToastOptions = {
-      title: defaultTitle.info,
-      color: defaultColor.info,
-    },
-  ) => showToast(description, options),
-  dev: (
-    description: string,
-    options: ToastOptions = {
-      title: defaultTitle.dev,
-      color: defaultColor.dev,
-    },
-  ) => showToast(description, options),
+type ToastConfig = ExternalToast;
+
+export const toast = {
+  success: (message: string, config?: ToastConfig) =>
+    sonnerToast.success(message, {
+      description: getTimestamp(),
+      ...config,
+    }),
+
+  error: (message: string, config?: ToastConfig) =>
+    sonnerToast.error(message, {
+      description: getTimestamp(),
+      ...config,
+    }),
+
+  warning: (message: string, config?: ToastConfig) =>
+    sonnerToast.warning(message, {
+      description: getTimestamp(),
+      ...config,
+    }),
+
+  info: (message: string, config?: ToastConfig) =>
+    sonnerToast.info(message, {
+      description: getTimestamp(),
+      ...config,
+    }),
 };
