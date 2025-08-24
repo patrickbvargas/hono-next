@@ -116,12 +116,6 @@ export function RHFExample() {
             description="Input description"
             placeholder="Input placeholder..."
             isRequired
-            classNames={{
-              wrapper: "border border-rose-500",
-              label: "text-emerald-500",
-              description: "text-orange-500",
-              error: "text-purple-500",
-            }}
           />
           <RHFNumber
             name="number"
@@ -135,12 +129,6 @@ export function RHFExample() {
               currencyDisplay: "symbol",
               currencySign: "standard",
             }}
-            classNames={{
-              wrapper: "border border-rose-500",
-              label: "text-emerald-500",
-              description: "text-orange-500",
-              error: "text-purple-500",
-            }}
           />
           <RHFTextArea
             name="textarea"
@@ -149,12 +137,6 @@ export function RHFExample() {
             placeholder="Text area placeholder..."
             rows={4}
             isRequired
-            classNames={{
-              wrapper: "border border-rose-500",
-              label: "text-emerald-500",
-              description: "text-orange-500",
-              error: "text-purple-500",
-            }}
           />
         </div>
 
@@ -170,13 +152,6 @@ export function RHFExample() {
             placeholder="Select placeholder..."
             items={sampleOptions}
             isRequired
-            classNames={{
-              wrapper: "border border-rose-500",
-              label: "text-emerald-500",
-              description: "text-orange-500",
-              error: "text-purple-500",
-              item: "text-pink-500",
-            }}
           />
           <RHFCombobox
             name="combobox"
@@ -187,13 +162,6 @@ export function RHFExample() {
             emptyMessage="Nenhum item encontrado"
             items={categoryOptions}
             isRequired
-            classNames={{
-              wrapper: "border border-rose-500",
-              label: "text-emerald-500",
-              description: "text-orange-500",
-              error: "text-purple-500",
-              item: "text-pink-500",
-            }}
           />
           <RHFRadioGroup
             name="radioGroup"
@@ -201,13 +169,6 @@ export function RHFExample() {
             description="Radio group description"
             items={roleOptions}
             isRequired
-            classNames={{
-              wrapper: "border border-rose-500",
-              label: "text-emerald-500",
-              description: "text-orange-500",
-              error: "text-purple-500",
-              item: "text-pink-500",
-            }}
           />
         </div>
 
@@ -221,12 +182,6 @@ export function RHFExample() {
             label="Checkbox single"
             description="Checkbox single description"
             isRequired
-            classNames={{
-              wrapper: "border border-rose-500",
-              label: "text-emerald-500",
-              description: "text-orange-500",
-              error: "text-purple-500",
-            }}
           />
           <RHFCheckbox
             name="checkboxGroup"
@@ -234,25 +189,12 @@ export function RHFExample() {
             description="Checkbox multiple description"
             isRequired
             items={sampleOptions}
-            classNames={{
-              wrapper: "border border-rose-500",
-              label: "text-emerald-500",
-              description: "text-orange-500",
-              error: "text-purple-500",
-              item: "text-pink-500",
-            }}
           />
           <RHFSwitch
             name="switch"
             label="Switch"
             description="Switch description"
             isRequired
-            classNames={{
-              wrapper: "border border-rose-500",
-              label: "text-emerald-500",
-              description: "text-orange-500",
-              error: "text-purple-500",
-            }}
           />
         </div>
 
@@ -267,24 +209,12 @@ export function RHFExample() {
             description="DatePicker description"
             placeholder="DatePicker placeholder..."
             isRequired
-            classNames={{
-              wrapper: "border border-rose-500",
-              label: "text-emerald-500",
-              description: "text-orange-500",
-              error: "text-purple-500",
-            }}
           />
           <RHFTime
             name="time"
             label="Time"
             description="Time description"
             isRequired
-            classNames={{
-              wrapper: "border border-rose-500",
-              label: "text-emerald-500",
-              description: "text-orange-500",
-              error: "text-purple-500",
-            }}
           />
           <RHFInputOTP
             name="inputOtp"
@@ -292,12 +222,6 @@ export function RHFExample() {
             description="OTP description"
             maxLength={6}
             isRequired
-            classNames={{
-              wrapper: "border border-rose-500",
-              label: "text-emerald-500",
-              description: "text-orange-500",
-              error: "text-purple-500",
-            }}
           />
         </div>
       </div>
