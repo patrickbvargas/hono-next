@@ -96,7 +96,7 @@ export function NavUser() {
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <BadgeCheckIcon size={16} />
-                Account
+                Conta
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <BellIcon size={16} />

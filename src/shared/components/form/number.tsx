@@ -36,7 +36,7 @@ export const RHFNumber = <T extends FieldValues>({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem className={classNames?.wrapper}>
           <RHFLabel
             label={label}
@@ -44,7 +44,7 @@ export const RHFNumber = <T extends FieldValues>({
             className={classNames?.label}
           />
           <FormControl>
-            <InputNumber {...field} {...props} />
+            <InputNumber isInvalid={fieldState.invalid} {...field} {...props} />
           </FormControl>
           <RHFDescription
             description={description}
