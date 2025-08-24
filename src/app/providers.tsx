@@ -11,7 +11,7 @@ export function Providers({
   return (
     <NuqsAdapter>
       <TRPCProvider>
-        <ThemeProvider attribute="class" forcedTheme="light">
+        <ThemeProvider attribute="class">
           {children}
         </ThemeProvider>
       </TRPCProvider>

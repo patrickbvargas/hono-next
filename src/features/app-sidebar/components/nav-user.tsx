@@ -1,6 +1,15 @@
 "use client";
 
 import {
+  BadgeCheckIcon,
+  BellIcon,
+  EllipsisVerticalIcon,
+  LogOutIcon,
+  MonitorIcon,
+  MoonIcon,
+  SunIcon,
+} from "lucide-react";
+import {
   Avatar,
   AvatarFallback,
   AvatarImage,
@@ -10,21 +19,38 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from "~/shared/components";
-import { EllipsisVerticalIcon } from "lucide-react";
+import { useTheme } from "next-themes";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
+  const { theme, setTheme } = useTheme();
 
   const user = {
     name: "Patrick Vargas",
     email: "fj8oT@example.com",
     avatar: "https://github.com/patrickbvargas.png",
+  };
+
+  const getThemeIcon = (themeName: string) => {
+    switch (themeName) {
+      case "light":
+        return <SunIcon size={16} />;
+      case "dark":
+        return <MoonIcon size={16} />;
+      case "system":
+        return <MonitorIcon size={16} />;
+      default:
+        return <MonitorIcon size={16} />;
+    }
   };
 
   return (
@@ -68,12 +94,41 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>Account</DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-              <DropdownMenuItem>Notifications</DropdownMenuItem>
+              <DropdownMenuItem>
+                <BadgeCheckIcon size={16} />
+                Account
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <BellIcon size={16} />
+                Notificações
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Log out</DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="flex gap-2">
+                {getThemeIcon(theme || "system")}
+                Tema
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  <SunIcon size={16} />
+                  Claro
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  <MoonIcon size={16} />
+                  Escuro
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
+                  <MonitorIcon size={16} />
+                  Sistema
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <LogOutIcon size={16} />
+              Sair
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
