@@ -7,8 +7,8 @@ import { formatter } from "~/shared/lib/formatter";
 import { Badge } from "~/shared/components/ui/badge";
 import { useModalActions } from "../../stores/use-modal";
 import { createColumnHelper } from "@tanstack/react-table";
+import { REMUNERATION_SORT_COLUMNS } from "~/shared/constants";
 import type { RemunerationSummary } from "~/shared/types/remuneration";
-import { REMUNERATION_SORT_COLUMNS } from "~/shared/constants/remuneration";
 
 const isSortable = (column: keyof RemunerationSummary) =>
   REMUNERATION_SORT_COLUMNS.includes(
@@ -17,10 +17,9 @@ const isSortable = (column: keyof RemunerationSummary) =>
 
 interface TableProps {
   remunerations: RemunerationSummary[];
-  totalCount: number;
 }
 
-export const Table = ({ remunerations, totalCount }: TableProps) => {
+export const Table = ({ remunerations }: TableProps) => {
   const { openViewModal } = useModalActions();
 
   const columns = React.useMemo(() => {
@@ -68,7 +67,6 @@ export const Table = ({ remunerations, totalCount }: TableProps) => {
   return (
     <React.Fragment>
       <DataTable
-        totalCount={totalCount}
         columns={columns}
         data={remunerations}
         onRowAction={(index) => {

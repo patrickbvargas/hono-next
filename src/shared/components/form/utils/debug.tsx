@@ -3,15 +3,16 @@
 import * as React from "react";
 import {
   Accordion,
+  AccordionContent,
   AccordionItem,
-  Button,
-  Card,
-  CardBody,
-  cn,
-  ScrollShadow,
-} from "@heroui/react";
+  AccordionTrigger,
+} from "../../ui/accordion";
+import { cn } from "~/shared/lib/utils";
+import { createPortal } from "react-dom";
+import { Button } from "../../ui/button";
 import { ChevronLeft } from "lucide-react";
 import { useLocalStorage } from "~/shared/hooks";
+import { ScrollArea } from "../../ui/scroll-area";
 import { type FieldValues, type UseFormReturn } from "react-hook-form";
 
 export const RHFDebug = <T extends FieldValues>({
@@ -34,55 +35,53 @@ export const RHFDebug = <T extends FieldValues>({
     { title: "Dirty Fields", data: formState.dirtyFields },
   ];
 
-  return (
+  return createPortal(
     <React.Fragment>
       <Button
-        isIconOnly
-        size={isOpen ? "sm" : "lg"}
-        radius={isOpen ? "none" : "full"}
-        onPress={() => setIsOpen(!isOpen)}
+        variant="default"
+        size={isOpen ? "sm" : "icon"}
+        onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "fixed z-[10000] bottom-4",
           isOpen
-            ? "left-96 min-w-4 w-4 h-6 rounded-tr-sm rounded-br-sm bg-content2"
+            ? "left-96 w-4 h-6 rounded-tr-sm rounded-br-sm"
             : "bottom-3 left-3 font-semibold text-xs tracking-wide uppercase",
         )}
       >
         {isOpen ? <ChevronLeft size={12} /> : "RHF"}
       </Button>
-      <Card
-        radius="none"
+      <div
         className={cn(
-          "fixed top-0 left-0 z-[9999] h-screen w-0 overflow-hidden transition-[width] duration-300",
+          "fixed top-0 left-0 z-[9999] h-full w-0 overflow-hidden transition-[width] bg-background duration-300 border-r border-r-muted",
           isOpen && "w-96",
         )}
       >
-        <CardBody className="space-y-2">
-          <ScrollShadow hideScrollBar className="h-full">
+        <ScrollArea className="size-full">
+          <div className="p-4">
             <Accordion
-              selectionMode="multiple"
-              defaultExpandedKeys={expandedKeys}
-              onExpandedChange={(v) =>
-                setExpandedKeys(Array.from(v).map(String))
-              }
-              itemClasses={{
-                content: "mb-2",
-                title: "text-xs font-semibold uppercase",
-              }}
+              type="multiple"
+              value={expandedKeys}
+              onValueChange={setExpandedKeys}
             >
               {info.map(({ title, data }) => (
                 <AccordionItem
                   key={title}
-                  title={title}
+                  value={title}
                   className="first:text-rose-400"
                 >
-                  <pre>{JSON.stringify(data, null, 2)}</pre>
+                  <AccordionTrigger>{title}</AccordionTrigger>
+                  <AccordionContent>
+                    <pre className="text-xs whitespace-pre-wrap break-words">
+                      <code>{JSON.stringify(data, null, 2)}</code>
+                    </pre>
+                  </AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>
-          </ScrollShadow>
-        </CardBody>
-      </Card>
-    </React.Fragment>
+          </div>
+        </ScrollArea>
+      </div>
+    </React.Fragment>,
+    document.body,
   );
 };

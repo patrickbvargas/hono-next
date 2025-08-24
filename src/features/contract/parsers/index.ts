@@ -1,9 +1,9 @@
 import {
   CONTRACT_LEGAL_AREAS,
   CONTRACT_SORT_COLUMNS,
-} from "~/shared/constants/contract";
-import { SORT_DIRECTIONS } from "~/shared/constants/sort";
-import { ENTITY_STATUS } from "~/shared/constants/entity";
+} from "~/shared/constants";
+import { SORT_DIRECTIONS } from "~/shared/constants";
+import { ENTITY_STATUS } from "~/shared/constants";
 import type { SearchParamsParser } from "~/shared/types/nuqs";
 import { paginationParser, searchParser } from "~/shared/lib/nuqs";
 import { parseAsArrayOf, parseAsStringLiteral } from "nuqs/server";

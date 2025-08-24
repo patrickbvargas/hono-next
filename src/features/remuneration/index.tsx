@@ -1,12 +1,16 @@
+"use client";
+
 import * as React from "react";
 import {
   Wrapper,
   WrapperBody,
   WrapperHeader,
+  WrapperFooter,
   Search,
+  PaginationControl,
 } from "~/shared/components";
-import { ROUTES } from "~/shared/constants/route";
 import { Table } from "./components/table";
+import { ROUTES } from "~/shared/constants";
 import { Filter } from "./components/filter";
 import type { RemunerationSummary } from "~/shared/types/remuneration";
 
@@ -26,8 +30,11 @@ export const RemunerationList = ({
         <Filter />
       </WrapperHeader>
       <WrapperBody>
-        <Table remunerations={remunerations} totalCount={count} />
+        <Table remunerations={remunerations} />
       </WrapperBody>
+      <WrapperFooter>
+        <PaginationControl totalRecords={count} />
+      </WrapperFooter>
     </Wrapper>
   );
 };

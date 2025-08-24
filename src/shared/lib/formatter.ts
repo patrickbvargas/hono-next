@@ -3,6 +3,7 @@ import type {
   EmployeeRole,
   EmployeeType,
 } from "~/shared/types/employee";
+import type { Temporal } from "@js-temporal/polyfill";
 import type { ClientType } from "~/shared/types/client";
 import type { RevenueType } from "~/shared/types/revenue";
 import type { EntityStatus } from "~/shared/types/drizzle";
@@ -121,6 +122,17 @@ function formatTimestamp(date: Date) {
   });
 }
 
+const formatTemporalDate = (
+  date: Temporal.PlainDate,
+  shortYear: boolean = false,
+) => {
+  return date.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: shortYear ? "2-digit" : "numeric",
+  });
+};
+
 function formatCurrency(value: number, decimals = 2) {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -143,5 +155,6 @@ export const formatter = {
   cnpjf: formatCnpjf,
   date: formatDate,
   timestamp: formatTimestamp,
+  temporalDate: formatTemporalDate,
   currency: formatCurrency,
 };

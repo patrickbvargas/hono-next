@@ -1,48 +1,39 @@
 "use client";
 
 import {
+  WrapperBody,
+  WrapperFooter,
+  WrapperHeader,
   Popover,
   PopoverContent,
   PopoverTrigger,
-  type PopoverProps,
-} from "@heroui/popover";
-import { Button } from "@heroui/button";
-import { FunnelIcon } from "lucide-react";
+  Button,
+  ButtonFilter,
+} from "./";
 import { useIsMobile } from "~/shared/hooks";
-import { WrapperBody, WrapperFooter, WrapperHeader } from "./wrapper";
 
 export const EntityFilterHeader = WrapperHeader;
 export const EntityFilterBody = WrapperBody;
 export const EntityFilterFooter = WrapperFooter;
 
-interface EntityFilterProps extends Omit<PopoverProps, "children"> {
-  children: React.ReactNode;
-}
-
-export const EntityFilter = ({ children, ...props }: EntityFilterProps) => {
+export const EntityFilter = ({
+  children,
+  ...props
+}: React.ComponentProps<typeof Popover>) => {
   const isMobile = useIsMobile();
 
   return (
-    <Popover placement={isMobile ? "bottom-end" : "bottom-start"} {...props}>
-      <PopoverTrigger>
-        <Button
-          variant="flat"
-          isIconOnly={isMobile}
-          aria-label="Filtros"
-          className="bg-content2"
-        >
-          <FunnelIcon size={16} className="opacity-60" />
-          <span className="hidden md:inline">Filtros</span>
-        </Button>
+    <Popover {...props}>
+      <PopoverTrigger asChild>
+        <ButtonFilter />
       </PopoverTrigger>
-      <PopoverContent className="p-4 gap-4">
-        <p className="place-self-start text-xs font-semibold uppercase tracking-wider">
-          Filtros
-        </p>
+      <PopoverContent
+        align={isMobile ? "end" : "start"}
+        className="flex flex-col gap-2"
+      >
         {children}
         <Button
           size="sm"
-          color="primary"
           type="submit"
           form="rhf-form"
           className="place-self-end"

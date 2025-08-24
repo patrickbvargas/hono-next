@@ -1,6 +1,6 @@
 import * as React from "react";
+import { ErrorFallback, LoadingFallback } from "./";
 import { ErrorBoundary } from "react-error-boundary";
-import { ErrorFallback, LoadingFallback } from "~/shared/components";
 
 interface SuspenseBoundaryProps extends React.SuspenseProps {
   fallback?: React.ReactNode;

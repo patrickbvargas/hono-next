@@ -10,8 +10,8 @@ import {
   DEFAULT_LIMIT,
   DEFAULT_PAGE,
   DEFAULT_QUERY,
-} from "~/shared/constants/query-defaults";
-import { SORT_DIRECTIONS } from "../constants/sort";
+  SORT_DIRECTIONS,
+} from "~/shared/constants";
 
 export const paginationParser = {
   page: parseAsInteger.withDefault(DEFAULT_PAGE),

@@ -22,12 +22,12 @@ import { z } from "zod/v4";
 import { TRPCError } from "@trpc/server";
 import { clients } from "~/server/db/schemas";
 import { zClientForm } from "~/shared/schemas/client";
-import { SORT_DIRECTIONS } from "~/shared/constants/sort";
-import { ENTITY_STATUS } from "~/shared/constants/entity";
+import { SORT_DIRECTIONS } from "~/shared/constants";
+import { ENTITY_STATUS } from "~/shared/constants";
 import type { MutationReturnType } from "../types/mutation";
 import type { Client, ClientSummary } from "~/shared/types/client";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { CLIENT_TYPES, CLIENT_SORT_COLUMNS } from "~/shared/constants/client";
+import { CLIENT_TYPES, CLIENT_SORT_COLUMNS } from "~/shared/constants";
 
 const zQueryOneParams = z.object({
   id: z.string(),

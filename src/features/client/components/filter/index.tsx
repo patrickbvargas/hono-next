@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import {
-  RHFCheckboxGroup,
+  RHFCheckbox,
   RHFFieldset,
   RHFForm,
   EntityFilter,
@@ -10,38 +10,35 @@ import {
 } from "~/shared/components";
 import { useFilter } from "../../hooks/use-filter";
 import { formatter } from "~/shared/lib/formatter";
-import { CLIENT_TYPES } from "~/shared/constants/client";
-import { ENTITY_STATUS } from "~/shared/constants/entity";
+import { CLIENT_TYPES, ENTITY_STATUS } from "~/shared/constants";
 import type { Filter as ClientFilter } from "../../schemas/filter";
 
 export const Filter = () => {
   const { methods, isOpen, handleOpenChange, handleFormSubmit } = useFilter();
 
   return (
-    <EntityFilter isOpen={isOpen} onOpenChange={handleOpenChange}>
+    <EntityFilter open={isOpen} onOpenChange={handleOpenChange}>
       <EntityFilterBody>
-        <RHFForm
-          submitCallback={handleFormSubmit}
-          className="min-w-40"
-          {...methods}
-        >
+        <RHFForm submitCallback={handleFormSubmit} {...methods}>
           <RHFFieldset>
-            <RHFCheckboxGroup.Root<ClientFilter> name="type" label="Tipo">
-              {CLIENT_TYPES.map((type) => (
-                <RHFCheckboxGroup.Checkbox key={type} value={type}>
-                  {formatter.clientType(type)}
-                </RHFCheckboxGroup.Checkbox>
-              ))}
-            </RHFCheckboxGroup.Root>
+            <RHFCheckbox<ClientFilter>
+              name="type"
+              label="Tipo"
+              items={CLIENT_TYPES.map((type) => ({
+                value: type,
+                label: formatter.clientType(type),
+              }))}
+            />
           </RHFFieldset>
           <RHFFieldset>
-            <RHFCheckboxGroup.Root<ClientFilter> name="status" label="Status">
-              {ENTITY_STATUS.map((status) => (
-                <RHFCheckboxGroup.Checkbox key={status} value={status}>
-                  {formatter.entityStatus(status)}
-                </RHFCheckboxGroup.Checkbox>
-              ))}
-            </RHFCheckboxGroup.Root>
+            <RHFCheckbox<ClientFilter>
+              name="status"
+              label="Status"
+              items={ENTITY_STATUS.map((status) => ({
+                value: status,
+                label: formatter.entityStatus(status),
+              }))}
+            />
           </RHFFieldset>
         </RHFForm>
       </EntityFilterBody>

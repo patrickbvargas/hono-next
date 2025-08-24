@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import {
-  RHFCheckboxGroup,
-  RHFDivider,
+  RHFCheckbox,
   RHFFieldset,
   RHFForm,
   EntityFilter,
@@ -11,42 +10,35 @@ import {
 } from "~/shared/components";
 import { useFilter } from "../../hooks/use-filter";
 import { formatter } from "~/shared/lib/formatter";
-import { ENTITY_STATUS } from "~/shared/constants/entity";
-import { CONTRACT_LEGAL_AREAS } from "~/shared/constants/contract";
 import type { Filter as ContractFilter } from "../../schemas/filter";
+import { CONTRACT_LEGAL_AREAS, ENTITY_STATUS } from "~/shared/constants";
 
 export const Filter = () => {
   const { methods, isOpen, handleOpenChange, handleFormSubmit } = useFilter();
 
   return (
-    <EntityFilter isOpen={isOpen} onOpenChange={handleOpenChange}>
+    <EntityFilter open={isOpen} onOpenChange={handleOpenChange}>
       <EntityFilterBody>
-        <RHFForm
-          submitCallback={handleFormSubmit}
-          className="min-w-40"
-          {...methods}
-        >
+        <RHFForm submitCallback={handleFormSubmit} {...methods}>
           <RHFFieldset>
-            <RHFCheckboxGroup.Root<ContractFilter>
+            <RHFCheckbox<ContractFilter>
               name="legalArea"
               label="Área"
-            >
-              {CONTRACT_LEGAL_AREAS.map((area) => (
-                <RHFCheckboxGroup.Checkbox key={area} value={area}>
-                  {formatter.contractLegalArea(area)}
-                </RHFCheckboxGroup.Checkbox>
-              ))}
-            </RHFCheckboxGroup.Root>
+              items={CONTRACT_LEGAL_AREAS.map((area) => ({
+                value: area,
+                label: formatter.contractLegalArea(area),
+              }))}
+            />
           </RHFFieldset>
-          <RHFDivider />
           <RHFFieldset>
-            <RHFCheckboxGroup.Root<ContractFilter> name="status" label="Status">
-              {ENTITY_STATUS.map((status) => (
-                <RHFCheckboxGroup.Checkbox key={status} value={status}>
-                  {formatter.entityStatus(status)}
-                </RHFCheckboxGroup.Checkbox>
-              ))}
-            </RHFCheckboxGroup.Root>
+            <RHFCheckbox<ContractFilter>
+              name="status"
+              label="Status"
+              items={ENTITY_STATUS.map((status) => ({
+                value: status,
+                label: formatter.entityStatus(status),
+              }))}
+            />
           </RHFFieldset>
         </RHFForm>
       </EntityFilterBody>

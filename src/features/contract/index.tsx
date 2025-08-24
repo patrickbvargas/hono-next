@@ -1,13 +1,17 @@
+"use client";
+
 import * as React from "react";
 import {
   Wrapper,
   WrapperBody,
   WrapperHeader,
+  WrapperFooter,
   Search,
+  PaginationControl,
 } from "~/shared/components";
 import { Table } from "./components/table";
+import { ROUTES } from "~/shared/constants";
 import { Filter } from "./components/filter";
-import { ROUTES } from "~/shared/constants/route";
 import type { ContractSummary } from "~/shared/types/contract";
 
 interface ContractListProps {
@@ -23,8 +27,11 @@ export const ContractList = ({ contracts, count }: ContractListProps) => {
         <Filter />
       </WrapperHeader>
       <WrapperBody>
-        <Table contracts={contracts} totalCount={count} />
+        <Table contracts={contracts} />
       </WrapperBody>
+      <WrapperFooter>
+        <PaginationControl totalRecords={count} />
+      </WrapperFooter>
     </Wrapper>
   );
 };

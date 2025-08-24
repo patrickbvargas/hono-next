@@ -12,13 +12,13 @@ import {
   EntityPanelTitle,
   SuspenseBoundary,
 } from "~/shared/components";
-import { useModal, useModalCallbacks } from "../../stores/use-modal";
 import { api } from "~/trpc/client";
+import { ROUTES } from "~/shared/constants";
 import { DetailSkeleton } from "./skeleton";
-import { ROUTES } from "~/shared/constants/route";
 import { formatter } from "~/shared/lib/formatter";
 import { searchSerializer } from "~/shared/lib/nuqs";
 import type { EntityPanelData } from "~/shared/types/entity-data";
+import { useModal, useModalCallbacks } from "../../stores/use-modal";
 
 export const Detail = () => {
   const { isOpen, mode, id } = useModal();
@@ -29,7 +29,7 @@ export const Detail = () => {
   if (!shouldShow) return null;
 
   return (
-    <EntityPanel isOpen={true} onOpenChange={onOpenChange}>
+    <EntityPanel open={true} onOpenChange={onOpenChange}>
       <SuspenseBoundary fallback={<DetailSkeleton />}>
         <DetailContent id={id} />
       </SuspenseBoundary>

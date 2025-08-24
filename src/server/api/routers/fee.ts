@@ -10,10 +10,10 @@ import {
 import { z } from "zod/v4";
 import { TRPCError } from "@trpc/server";
 import type { Fee, FeeSummary } from "~/shared/types/fee";
-import { SORT_DIRECTIONS } from "~/shared/constants/sort";
-import { FEE_SORT_COLUMNS } from "~/shared/constants/fee";
-import { REVENUE_TYPES } from "~/shared/constants/revenue";
-import { CONTRACT_LEGAL_AREAS } from "~/shared/constants/contract";
+import { SORT_DIRECTIONS } from "~/shared/constants";
+import { FEE_SORT_COLUMNS } from "~/shared/constants";
+import { REVENUE_TYPES } from "~/shared/constants";
+import { CONTRACT_LEGAL_AREAS } from "~/shared/constants";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { clients, contracts, fees, revenues } from "~/server/db/schemas";
 import { and, eq, inArray, count, ilike, or, desc, SQL } from "drizzle-orm";

@@ -1,6 +1,6 @@
 import * as React from "react";
+import { Skeleton } from "./";
 import { cn } from "~/shared/lib/utils";
-import { Skeleton } from "~/shared/components/ui/skeleton";
 
 interface LoadingFallbackProps extends React.ComponentProps<typeof Skeleton> {
   className?: string;

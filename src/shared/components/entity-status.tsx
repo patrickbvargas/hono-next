@@ -1,4 +1,4 @@
-import { Badge } from "./ui/badge";
+import { Badge } from "./";
 import { formatter } from "~/shared/lib/formatter";
 import type { EntityStatus as DrizzleEntityStatus } from "~/shared/types/drizzle";
 

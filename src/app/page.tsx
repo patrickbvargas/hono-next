@@ -1,3 +1,12 @@
+import { Wrapper, WrapperBody } from "~/shared/components";
+import { RHFExample } from "~/shared/components/form/example";
+
 export default async function Home() {
-  return <h1>Home</h1>;
+  return (
+    <Wrapper>
+      <WrapperBody>
+        <RHFExample />
+      </WrapperBody>
+    </Wrapper>
+  );
 }

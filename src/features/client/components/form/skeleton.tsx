@@ -1,4 +1,4 @@
-import { Skeleton } from "@heroui/skeleton";
+import { Skeleton } from "~/shared/components";
 
 export const FormSkeleton = () => {
   return (

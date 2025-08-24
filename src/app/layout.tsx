@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="pt-BR" className={`${geist.variable}`} suppressHydrationWarning>
       <body className="antialiased">
         <Providers>
-          <SidebarProvider className="container max-w-7xl mx-auto min-h-screen">
+          <SidebarProvider className="container max-w-7xl mx-auto h-screen">
             <AppSidebar />
             <SidebarInset>{children}</SidebarInset>
           </SidebarProvider>

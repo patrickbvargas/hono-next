@@ -13,32 +13,28 @@ import {
   EntityPanelHeader,
   EntityPanelTitle,
   SuspenseBoundary,
+  ModalConfirm,
 } from "~/shared/components";
-import {
-  useModal,
-  useModalActions,
-  useModalCallbacks,
-} from "../../stores/use-modal";
 import { api } from "~/trpc/client";
+import { ROUTES } from "~/shared/constants";
 import { DetailSkeleton } from "./skeleton";
-import { useDisclosure } from "@heroui/react";
-import { ROUTES } from "~/shared/constants/route";
+import { useDisclosure } from "~/shared/hooks";
 import { useDelete } from "../../hooks/use-delete";
-import { ModalConfirm } from "~/shared/components";
 import { formatter } from "~/shared/lib/formatter";
 import { searchSerializer } from "~/shared/lib/nuqs";
 import type { EntityPanelData } from "~/shared/types/entity-data";
+import { useModal, useModalActions } from "../../stores/use-modal";
 
 export const Detail = () => {
   const { isOpen, mode, id } = useModal();
-  const { onOpenChange } = useModalCallbacks();
+  const { onOpenChange } = useModalActions();
 
   const shouldShow = isOpen && mode === "view" && id;
 
   if (!shouldShow) return null;
 
   return (
-    <EntityPanel isOpen={true} onOpenChange={onOpenChange}>
+    <EntityPanel open={true} onOpenChange={onOpenChange}>
       <SuspenseBoundary fallback={<DetailSkeleton />}>
         <DetailContent id={id} />
       </SuspenseBoundary>

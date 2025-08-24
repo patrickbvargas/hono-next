@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
-import { CLIENT_TYPES } from "~/shared/constants/client";
-import { ENTITY_STATUS } from "~/shared/constants/entity";
+import { CLIENT_TYPES } from "~/shared/constants";
+import { ENTITY_STATUS } from "~/shared/constants";
 
 export const zFilter = z.object({
   type: z.enum(CLIENT_TYPES).array(),

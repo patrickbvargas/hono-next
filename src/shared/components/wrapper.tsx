@@ -1,7 +1,6 @@
 import * as React from "react";
-import { cn } from "@heroui/react";
-import { SidebarTrigger } from "./ui";
-import { Separator } from "./ui/separator";
+import { cn } from "~/shared/lib/utils";
+import { Separator, ScrollArea, SidebarTrigger } from "./";
 
 export const Wrapper = ({
   title,
@@ -12,10 +11,10 @@ export const Wrapper = ({
   return (
     <div
       data-slot="wrapper"
-      className={cn("flex flex-col gap-3 px-4", className)}
+      className={cn("flex flex-col gap-3 p-4 pt-1.5 h-full", className)}
       {...props}
     >
-      <div className="flex items-center gap-1 h-12">
+      <div className="flex items-center gap-1 h-12 border-b border-border">
         <SidebarTrigger />
         <Separator
           orientation="vertical"
@@ -36,7 +35,10 @@ export const WrapperHeader = ({
   return (
     <div
       data-slot="wrapper-header"
-      className={cn("flex items-center gap-3", className)}
+      className={cn(
+        "flex items-center gap-2 md:grid md:grid-cols-[380px_auto_1fr] md:gap-3",
+        className,
+      )}
       {...props}
     >
       {children}
@@ -47,11 +49,11 @@ export const WrapperHeader = ({
 export const WrapperBody = ({
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) => {
+}: React.ComponentProps<typeof ScrollArea>) => {
   return (
-    <div
+    <ScrollArea
       data-slot="wrapper-content"
-      className={cn("flex flex-col gap-3", className)}
+      className={cn("flex flex-col gap-3 h-full overflow-auto", className)}
       {...props}
     />
   );

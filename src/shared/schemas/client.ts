@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { CLIENT_TYPES } from "~/shared/constants/client";
+import { CLIENT_TYPES } from "~/shared/constants";
 
 export const zClientForm = z.object({
   mode: z.enum(["create", "edit"]),

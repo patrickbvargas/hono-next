@@ -5,8 +5,8 @@ import {
   DEFAULT_LIMIT,
   DEFAULT_PAGE,
   DEFAULT_QUERY,
-} from "~/shared/constants/query-defaults";
-import { SORT_DIRECTIONS } from "../constants/sort";
+  SORT_DIRECTIONS,
+} from "~/shared/constants";
 
 export const zPaginationParser = z.object({
   page: z.number().int().min(1).default(DEFAULT_PAGE),

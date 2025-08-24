@@ -1,13 +1,17 @@
+"use client";
+
 import * as React from "react";
 import {
   Wrapper,
   WrapperBody,
   WrapperHeader,
+  WrapperFooter,
   Search,
+  PaginationControl,
 } from "~/shared/components";
 import { Table } from "./components/table";
+import { ROUTES } from "~/shared/constants";
 import { Filter } from "./components/filter";
-import { ROUTES } from "~/shared/constants/route";
 import type { FeeSummary } from "~/shared/types/fee";
 
 interface FeeListProps {
@@ -23,8 +27,11 @@ export const FeeList = ({ fees, count }: FeeListProps) => {
         <Filter />
       </WrapperHeader>
       <WrapperBody>
-        <Table fees={fees} totalCount={count} />
+        <Table fees={fees} />
       </WrapperBody>
+      <WrapperFooter>
+        <PaginationControl totalRecords={count} />
+      </WrapperFooter>
     </Wrapper>
   );
 };

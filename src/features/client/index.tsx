@@ -5,14 +5,15 @@ import {
   Wrapper,
   WrapperBody,
   WrapperHeader,
+  WrapperFooter,
   Search,
+  ButtonNew,
+  PaginationControl,
 } from "~/shared/components";
-import { Plus } from "lucide-react";
-import { Button } from "@heroui/react";
 import { Form } from "./components/form";
 import { Table } from "./components/table";
+import { ROUTES } from "~/shared/constants";
 import { Filter } from "./components/filter";
-import { ROUTES } from "~/shared/constants/route";
 import { useModalActions } from "./stores/use-modal";
 import type { ClientSummary } from "~/shared/types/client";
 
@@ -29,18 +30,15 @@ export const ClientList = ({ clients, count }: ClientListProps) => {
       <WrapperHeader>
         <Search placeholder="Filtrar por Nome..." />
         <Filter />
-        <Button
-          color="primary"
-          startContent={<Plus size={16} />}
-          onPress={openCreateModal}
-        >
-          Novo
-        </Button>
+        <ButtonNew onClick={openCreateModal} />
       </WrapperHeader>
       <WrapperBody>
-        <Table clients={clients} totalCount={count} />
+        <Table clients={clients} />
+        <Form />
       </WrapperBody>
-      <Form />
+      <WrapperFooter>
+        <PaginationControl totalRecords={count} />
+      </WrapperFooter>
     </Wrapper>
   );
 };

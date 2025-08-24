@@ -1,5 +1,5 @@
 import { z } from "zod/v4";
-import { EMPLOYEE_ROLES, EMPLOYEE_TYPES } from "~/shared/constants/employee";
+import { EMPLOYEE_ROLES, EMPLOYEE_TYPES } from "~/shared/constants";
 
 export const zEmployeeForm = z
   .object({

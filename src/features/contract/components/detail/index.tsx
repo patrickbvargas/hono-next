@@ -15,7 +15,7 @@ import {
 } from "~/shared/components";
 import { api } from "~/trpc/client";
 import { DetailSkeleton } from "./skeleton";
-import { ROUTES } from "~/shared/constants/route";
+import { ROUTES } from "~/shared/constants";
 import { formatter } from "~/shared/lib/formatter";
 import { searchSerializer } from "~/shared/lib/nuqs";
 import type { EntityPanelData } from "~/shared/types/entity-data";
@@ -30,7 +30,7 @@ export const Detail = () => {
   if (!shouldShow) return null;
 
   return (
-    <EntityPanel isOpen={true} onOpenChange={onOpenChange}>
+    <EntityPanel open={true} onOpenChange={onOpenChange}>
       <SuspenseBoundary fallback={<DetailSkeleton />}>
         <DetailContent id={id} />
       </SuspenseBoundary>

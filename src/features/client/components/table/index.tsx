@@ -1,26 +1,27 @@
 "use client";
 
 import * as React from "react";
+import {
+  EntityStatus,
+  DataTable,
+  ButtonEdit,
+  Badge,
+} from "~/shared/components";
 import { Detail } from "../detail";
-import { PenLineIcon } from "lucide-react";
-import { Button, Tooltip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
-import { Badge } from "~/shared/components/ui/badge";
 import { useModalActions } from "../../stores/use-modal";
+import { CLIENT_SORT_COLUMNS } from "~/shared/constants";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { ClientSummary } from "~/shared/types/client";
-import { EntityStatus, DataTable } from "~/shared/components";
-import { CLIENT_SORT_COLUMNS } from "~/shared/constants/client";
 
 const isSortable = (column: keyof ClientSummary) =>
   CLIENT_SORT_COLUMNS.includes(column as (typeof CLIENT_SORT_COLUMNS)[number]);
 
 interface TableProps {
   clients: ClientSummary[];
-  totalCount: number;
 }
 
-export const Table = ({ clients, totalCount }: TableProps) => {
+export const Table = ({ clients }: TableProps) => {
   const { openViewModal, openEditModal } = useModalActions();
 
   const columns = React.useMemo(() => {
@@ -60,18 +61,7 @@ export const Table = ({ clients, totalCount }: TableProps) => {
         id: "actions",
         header: "Ações",
         cell: ({ row }) => (
-          <Tooltip content="Editar" placement="left">
-            <Button
-              size="sm"
-              isIconOnly
-              variant="light"
-              onPress={() => {
-                openEditModal(row.original.id);
-              }}
-            >
-              <PenLineIcon size={16} />
-            </Button>
-          </Tooltip>
+          <ButtonEdit onClick={() => openEditModal(row.original.id)} />
         ),
       }),
     ];
@@ -80,7 +70,6 @@ export const Table = ({ clients, totalCount }: TableProps) => {
   return (
     <React.Fragment>
       <DataTable
-        totalCount={totalCount}
         columns={columns}
         data={clients}
         onRowAction={(index) => {

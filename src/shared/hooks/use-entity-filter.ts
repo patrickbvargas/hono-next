@@ -2,7 +2,7 @@
 
 import z from "zod/v4";
 import { useQueryStates } from "nuqs";
-import { useDisclosure } from "@heroui/react";
+import { useDisclosure } from "./use-disclosure";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { SearchParamsParser } from "../types/nuqs";
 import { useForm, type FieldValues } from "react-hook-form";

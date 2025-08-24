@@ -1,6 +1,6 @@
 import { z } from "zod/v4";
-import { ENTITY_STATUS } from "~/shared/constants/entity";
-import { CONTRACT_LEGAL_AREAS } from "~/shared/constants/contract";
+import { ENTITY_STATUS } from "~/shared/constants";
+import { CONTRACT_LEGAL_AREAS } from "~/shared/constants";
 
 export const zFilter = z.object({
   legalArea: z.enum(CONTRACT_LEGAL_AREAS).array(),

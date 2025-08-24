@@ -1,5 +1,5 @@
 import { useQueryStates } from "nuqs";
-import type { SortDescriptor } from "@heroui/table";
+import type { SortDescriptor } from "~/shared/types/sort";
 import { zSortParser } from "~/shared/schemas/query-parser";
 import { paginationParser, sortParser } from "~/shared/lib/nuqs";
 

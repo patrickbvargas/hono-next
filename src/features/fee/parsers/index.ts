@@ -1,7 +1,7 @@
-import { FEE_SORT_COLUMNS } from "~/shared/constants/fee";
-import { SORT_DIRECTIONS } from "~/shared/constants/sort";
-import { REVENUE_TYPES } from "~/shared/constants/revenue";
-import { CONTRACT_LEGAL_AREAS } from "~/shared/constants/contract";
+import { FEE_SORT_COLUMNS } from "~/shared/constants";
+import { SORT_DIRECTIONS } from "~/shared/constants";
+import { REVENUE_TYPES } from "~/shared/constants";
+import { CONTRACT_LEGAL_AREAS } from "~/shared/constants";
 import type { SearchParamsParser } from "~/shared/types/nuqs";
 import { paginationParser, searchParser } from "~/shared/lib/nuqs";
 import { parseAsArrayOf, parseAsStringLiteral } from "nuqs/server";

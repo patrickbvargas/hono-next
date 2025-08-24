@@ -6,9 +6,9 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-} from "~/shared/components/ui/sidebar";
+} from "~/shared/components";
+import { ROUTES } from "~/shared/constants";
 import { NavUser } from "./components/nav-user";
-import { ROUTES } from "~/shared/constants/route";
 import { NavHeader } from "./components/nav-header";
 import { NavSection } from "./components/nav-section";
 import type { RouteSection } from "~/shared/types/route";

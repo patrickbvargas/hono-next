@@ -2,24 +2,22 @@
 
 import * as React from "react";
 import {
-  cn,
   Button,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  type ModalProps,
-} from "@heroui/react";
-import { CheckIcon, XIcon } from "lucide-react";
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "./";
+import { cn } from "~/shared/lib/utils";
 
-export interface ModalConfirmProps extends Omit<ModalProps, "children"> {
+export interface ModalConfirmProps {
   onConfirm: () => void;
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
   title?: string;
   description: string;
   hideTitle?: boolean;
-  hideIcons?: boolean;
-  isCompact?: boolean;
   isLoading?: boolean;
   confirmButtonLabel?: string;
   cancelButtonLabel?: string;
@@ -29,49 +27,40 @@ export const ModalConfirm = ({
   description,
   title = "Confirmação",
   confirmButtonLabel = "Sim",
-  cancelButtonLabel = "Não",
+  cancelButtonLabel = "Cancelar",
   hideTitle = false,
-  hideIcons = false,
-  isCompact = false,
   isLoading = false,
   isOpen,
   onOpenChange,
 }: ModalConfirmProps) => {
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-      <ModalContent>
-        {(onClose) => (
-          <React.Fragment>
-            {!hideTitle && <ModalHeader>{title}</ModalHeader>}
-            <ModalBody className={cn(hideTitle && "pt-4")}>
-              <p>{description}</p>
-            </ModalBody>
-            <ModalFooter
-              className={cn(
-                "flex",
-                isCompact ? "justify-end gap-4" : "justify-between",
-              )}
-            >
-              <Button
-                color="success"
-                onPress={onConfirm}
-                isDisabled={isLoading}
-                startContent={!hideIcons && <CheckIcon size={20} />}
-              >
-                {confirmButtonLabel}
-              </Button>
-              <Button
-                color="danger"
-                onPress={onClose}
-                isLoading={isLoading}
-                startContent={!hideIcons && <XIcon size={20} />}
-              >
-                {cancelButtonLabel}
-              </Button>
-            </ModalFooter>
-          </React.Fragment>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent>
+        {!hideTitle && (
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+          </DialogHeader>
         )}
-      </ModalContent>
-    </Modal>
+        <div className={cn(hideTitle && "pt-4")}>
+          <p>{description}</p>
+        </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange?.(false)}
+            isDisabled={isLoading}
+          >
+            {cancelButtonLabel}
+          </Button>
+          <Button
+            onClick={() => onConfirm()}
+            isLoading={isLoading}
+            isDisabled={isLoading}
+          >
+            {confirmButtonLabel}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

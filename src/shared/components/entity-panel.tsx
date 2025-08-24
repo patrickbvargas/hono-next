@@ -6,34 +6,26 @@ import {
   SheetFooter,
   SheetTitle,
   SheetDescription,
-} from "~/shared/components/ui/sheet";
-import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "~/shared/components/ui/accordion";
+  DefinitionList,
+  Button,
+} from "./";
 import { cn } from "~/shared/lib/utils";
-import { DefinitionList } from "./definition-item";
-import { Button } from "~/shared/components/ui/button";
 import type { EntityPanelData } from "~/shared/types/entity-data";
 
 export const EntityPanelHeader = SheetHeader;
 export const EntityPanelTitle = SheetTitle;
 export const EntityPanelDescription = SheetDescription;
 
-interface EntityPanelProps {
-  isOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
-}
 export const EntityPanel = ({
   children,
-  onOpenChange,
-  isOpen,
   ...props
-}: EntityPanelProps & { children: React.ReactNode }) => {
+}: React.ComponentPropsWithoutRef<typeof Sheet>) => {
   return (
-    <Sheet open={isOpen} onOpenChange={onOpenChange} {...props}>
+    <Sheet {...props}>
       <SheetContent side="right" className="gap-0">
         {children}
       </SheetContent>

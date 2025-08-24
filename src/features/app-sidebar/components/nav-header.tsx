@@ -4,7 +4,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "~/shared/components/ui/sidebar";
+} from "~/shared/components";
 import { BoxIcon } from "lucide-react";
 
 export function NavHeader() {

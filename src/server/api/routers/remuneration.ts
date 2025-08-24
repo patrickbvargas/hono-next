@@ -21,11 +21,11 @@ import type {
 } from "~/shared/types/remuneration";
 import { z } from "zod/v4";
 import { TRPCError } from "@trpc/server";
-import { SORT_DIRECTIONS } from "~/shared/constants/sort";
-import { REVENUE_TYPES } from "~/shared/constants/revenue";
-import { CONTRACT_LEGAL_AREAS } from "~/shared/constants/contract";
+import { SORT_DIRECTIONS } from "~/shared/constants";
+import { REVENUE_TYPES } from "~/shared/constants";
+import { CONTRACT_LEGAL_AREAS } from "~/shared/constants";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { REMUNERATION_SORT_COLUMNS } from "~/shared/constants/remuneration";
+import { REMUNERATION_SORT_COLUMNS } from "~/shared/constants";
 import { and, eq, inArray, count, ilike, or, desc, SQL } from "drizzle-orm";
 
 const zQueryOneParams = z.object({

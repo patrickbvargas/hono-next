@@ -7,7 +7,7 @@ import {
   EMPLOYEE_ROLES,
   EMPLOYEE_SORT_COLUMNS,
   EMPLOYEE_TYPES,
-} from "~/shared/constants/employee";
+} from "~/shared/constants";
 import {
   zPaginationParser,
   zSearchParser,
@@ -15,8 +15,8 @@ import {
 import { z } from "zod/v4";
 import { TRPCError } from "@trpc/server";
 import { employees } from "~/server/db/schemas";
-import { ENTITY_STATUS } from "~/shared/constants/entity";
-import { SORT_DIRECTIONS } from "~/shared/constants/sort";
+import { ENTITY_STATUS } from "~/shared/constants";
+import { SORT_DIRECTIONS } from "~/shared/constants";
 import { zEmployeeForm } from "~/shared/schemas/employee";
 import type { MutationReturnType } from "../types/mutation";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";

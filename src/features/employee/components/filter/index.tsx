@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import {
-  RHFCheckboxGroup,
-  RHFDivider,
+  RHFCheckbox,
   RHFFieldset,
   RHFForm,
   EntityFilter,
@@ -11,49 +10,46 @@ import {
 } from "~/shared/components";
 import { useFilter } from "../../hooks/use-filter";
 import { formatter } from "~/shared/lib/formatter";
-import { ENTITY_STATUS } from "~/shared/constants/entity";
+import { ENTITY_STATUS } from "~/shared/constants";
 import type { EmployeeFilter } from "../../schemas/filter";
-import { EMPLOYEE_ROLES, EMPLOYEE_TYPES } from "~/shared/constants/employee";
+import { EMPLOYEE_ROLES, EMPLOYEE_TYPES } from "~/shared/constants";
 
 export const Filter = () => {
   const { methods, isOpen, handleOpenChange, handleFormSubmit } = useFilter();
 
   return (
-    <EntityFilter isOpen={isOpen} onOpenChange={handleOpenChange}>
+    <EntityFilter open={isOpen} onOpenChange={handleOpenChange}>
       <EntityFilterBody>
-        <RHFForm
-          submitCallback={handleFormSubmit}
-          className="min-w-40"
-          {...methods}
-        >
+        <RHFForm submitCallback={handleFormSubmit} {...methods}>
           <RHFFieldset>
-            <RHFCheckboxGroup.Root<EmployeeFilter> name="role" label="Perfil">
-              {EMPLOYEE_ROLES.map((role) => (
-                <RHFCheckboxGroup.Checkbox key={role} value={role}>
-                  {formatter.employeeRole(role)}
-                </RHFCheckboxGroup.Checkbox>
-              ))}
-            </RHFCheckboxGroup.Root>
+            <RHFCheckbox<EmployeeFilter>
+              name="role"
+              label="Perfil"
+              items={EMPLOYEE_ROLES.map((role) => ({
+                value: role,
+                label: formatter.employeeRole(role),
+              }))}
+            />
           </RHFFieldset>
-          <RHFDivider />
           <RHFFieldset>
-            <RHFCheckboxGroup.Root<EmployeeFilter> name="type" label="Função">
-              {EMPLOYEE_TYPES.map((type) => (
-                <RHFCheckboxGroup.Checkbox key={type} value={type}>
-                  {formatter.employeeType(type)}
-                </RHFCheckboxGroup.Checkbox>
-              ))}
-            </RHFCheckboxGroup.Root>
+            <RHFCheckbox<EmployeeFilter>
+              name="type"
+              label="Função"
+              items={EMPLOYEE_TYPES.map((type) => ({
+                value: type,
+                label: formatter.employeeType(type),
+              }))}
+            />
           </RHFFieldset>
-          <RHFDivider />
           <RHFFieldset>
-            <RHFCheckboxGroup.Root<EmployeeFilter> name="status" label="Status">
-              {ENTITY_STATUS.map((status) => (
-                <RHFCheckboxGroup.Checkbox key={status} value={status}>
-                  {formatter.entityStatus(status)}
-                </RHFCheckboxGroup.Checkbox>
-              ))}
-            </RHFCheckboxGroup.Root>
+            <RHFCheckbox<EmployeeFilter>
+              name="status"
+              label="Status"
+              items={ENTITY_STATUS.map((status) => ({
+                value: status,
+                label: formatter.entityStatus(status),
+              }))}
+            />
           </RHFFieldset>
         </RHFForm>
       </EntityFilterBody>

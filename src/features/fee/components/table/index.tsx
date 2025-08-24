@@ -2,12 +2,11 @@
 
 import * as React from "react";
 import { Detail } from "../detail";
-import { DataTable } from "~/shared/components";
 import { formatter } from "~/shared/lib/formatter";
-import { Badge } from "~/shared/components/ui/badge";
 import type { FeeSummary } from "~/shared/types/fee";
+import { FEE_SORT_COLUMNS } from "~/shared/constants";
+import { DataTable, Badge } from "~/shared/components";
 import { useModalActions } from "../../stores/use-modal";
-import { FEE_SORT_COLUMNS } from "~/shared/constants/fee";
 import { createColumnHelper } from "@tanstack/react-table";
 
 const isSortable = (column: keyof FeeSummary) =>
@@ -15,10 +14,9 @@ const isSortable = (column: keyof FeeSummary) =>
 
 interface TableProps {
   fees: FeeSummary[];
-  totalCount: number;
 }
 
-export const Table = ({ fees, totalCount }: TableProps) => {
+export const Table = ({ fees }: TableProps) => {
   const { openViewModal } = useModalActions();
 
   const columns = React.useMemo(() => {
@@ -61,7 +59,6 @@ export const Table = ({ fees, totalCount }: TableProps) => {
   return (
     <React.Fragment>
       <DataTable
-        totalCount={totalCount}
         columns={columns}
         data={fees}
         onRowAction={(index) => {

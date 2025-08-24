@@ -1,5 +1,4 @@
-import { EntityPanelTitle } from "~/shared/components";
-import { Skeleton } from "~/shared/components/ui/skeleton";
+import { Skeleton, EntityPanelTitle } from "~/shared/components";
 
 export const DetailSkeleton = () => {
   return (

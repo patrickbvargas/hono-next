@@ -2,18 +2,17 @@
 
 import * as React from "react";
 import {
-  FormProvider,
   type FieldValues,
   type SubmitHandler,
   type UseFormReturn,
 } from "react-hook-form";
-import { cn } from "@heroui/react";
-import { RHFDebug } from "./aux/debug";
-import { Form, type FormProps } from "@heroui/form";
+import { Form } from "../ui/form";
+import { RHFDebug } from "./utils";
+import { cn } from "~/shared/lib/utils";
 
 interface RHFFormProps<T extends FieldValues>
   extends UseFormReturn<T>,
-    FormProps {
+    React.FormHTMLAttributes<HTMLFormElement> {
   submitCallback: SubmitHandler<T>;
   showDebug?: boolean;
   disableFormContext?: boolean;
@@ -26,19 +25,17 @@ export const RHFForm = <T extends FieldValues>({
   handleSubmit,
   showDebug = false,
   disableFormContext = false,
-  validationBehavior = "aria",
   ...props
 }: RHFFormProps<T>) => {
   const formContent = (
     <React.Fragment>
-      <Form
+      <form
         id="rhf-form"
-        validationBehavior={validationBehavior}
         onSubmit={handleSubmit(submitCallback)}
-        className={cn("grid grid-cols-1 gap-4", className)}
+        className={cn("h-full grid grid-cols-1 gap-4 my-0.5", className)}
       >
         {children}
-      </Form>
+      </form>
       {showDebug && <RHFDebug {...props} />}
     </React.Fragment>
   );
@@ -46,8 +43,8 @@ export const RHFForm = <T extends FieldValues>({
   return disableFormContext ? (
     formContent
   ) : (
-    <FormProvider handleSubmit={handleSubmit} {...props}>
+    <Form handleSubmit={handleSubmit} {...props}>
       {formContent}
-    </FormProvider>
+    </Form>
   );
 };

@@ -3,12 +3,11 @@
 import * as React from "react";
 import { Detail } from "../detail";
 import { formatter } from "~/shared/lib/formatter";
-import { Badge } from "~/shared/components/ui/badge";
 import { useModalActions } from "../../stores/use-modal";
 import { createColumnHelper } from "@tanstack/react-table";
-import { EntityStatus, DataTable } from "~/shared/components";
+import { CONTRACT_SORT_COLUMNS } from "~/shared/constants";
 import type { ContractSummary } from "~/shared/types/contract";
-import { CONTRACT_SORT_COLUMNS } from "~/shared/constants/contract";
+import { EntityStatus, DataTable, Badge } from "~/shared/components";
 
 const isSortable = (column: keyof ContractSummary) =>
   CONTRACT_SORT_COLUMNS.includes(
@@ -17,10 +16,9 @@ const isSortable = (column: keyof ContractSummary) =>
 
 interface TableProps {
   contracts: ContractSummary[];
-  totalCount: number;
 }
 
-export const Table = ({ contracts, totalCount }: TableProps) => {
+export const Table = ({ contracts }: TableProps) => {
   const { openViewModal } = useModalActions();
 
   const columns = React.useMemo(() => {
@@ -62,7 +60,6 @@ export const Table = ({ contracts, totalCount }: TableProps) => {
   return (
     <React.Fragment>
       <DataTable
-        totalCount={totalCount}
         columns={columns}
         data={contracts}
         onRowAction={(index) => {

@@ -1,9 +1,9 @@
 import {
   CLIENT_TYPES,
   CLIENT_SORT_COLUMNS,
-} from "~/shared/constants/client";
-import { SORT_DIRECTIONS } from "~/shared/constants/sort";
-import { ENTITY_STATUS } from "~/shared/constants/entity";
+} from "~/shared/constants";
+import { SORT_DIRECTIONS } from "~/shared/constants";
+import { ENTITY_STATUS } from "~/shared/constants";
 import type { SearchParamsParser } from "~/shared/types/nuqs";
 import { paginationParser, searchParser } from "~/shared/lib/nuqs";
 import { parseAsArrayOf, parseAsStringLiteral } from "nuqs/server";

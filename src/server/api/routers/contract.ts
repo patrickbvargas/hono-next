@@ -12,15 +12,15 @@ import {
 import {
   CONTRACT_LEGAL_AREAS,
   CONTRACT_SORT_COLUMNS,
-} from "~/shared/constants/contract";
+} from "~/shared/constants";
 import {
   zPaginationParser,
   zSearchParser,
 } from "~/shared/schemas/query-parser";
 import { z } from "zod/v4";
 import { TRPCError } from "@trpc/server";
-import { ENTITY_STATUS } from "~/shared/constants/entity";
-import { SORT_DIRECTIONS } from "~/shared/constants/sort";
+import { ENTITY_STATUS } from "~/shared/constants";
+import { SORT_DIRECTIONS } from "~/shared/constants";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import type { Contract, ContractSummary } from "~/shared/types/contract";
 import { and, eq, inArray, count, ilike, or, desc, SQL } from "drizzle-orm";

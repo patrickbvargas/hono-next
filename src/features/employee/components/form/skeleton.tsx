@@ -1,4 +1,4 @@
-import { Skeleton } from "@heroui/skeleton";
+import { Skeleton } from "~/shared/components";
 
 // TODO: update the style to sync UI
 export const FormSkeleton = () => {

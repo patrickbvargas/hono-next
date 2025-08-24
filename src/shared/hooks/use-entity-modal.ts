@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useDisclosure } from "@heroui/react";
+import { useDisclosure } from "./use-disclosure";
 import type { EntityModalMode } from "~/shared/types/entity-modal";
 
 export function useEntityModal() {

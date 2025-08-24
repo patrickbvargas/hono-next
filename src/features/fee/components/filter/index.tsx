@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import {
-  RHFCheckboxGroup,
-  RHFDivider,
+  RHFCheckbox,
   RHFFieldset,
   RHFForm,
   EntityFilter,
@@ -11,42 +10,36 @@ import {
 } from "~/shared/components";
 import { useFilter } from "../../hooks/use-filter";
 import { formatter } from "~/shared/lib/formatter";
-import { REVENUE_TYPES } from "~/shared/constants/revenue";
+import { REVENUE_TYPES } from "~/shared/constants";
+import { CONTRACT_LEGAL_AREAS } from "~/shared/constants";
 import type { Filter as FeeFilter } from "../../schemas/filter";
-import { CONTRACT_LEGAL_AREAS } from "~/shared/constants/contract";
 
 export const Filter = () => {
   const { methods, isOpen, handleOpenChange, handleFormSubmit } = useFilter();
 
   return (
-    <EntityFilter isOpen={isOpen} onOpenChange={handleOpenChange}>
+    <EntityFilter open={isOpen} onOpenChange={handleOpenChange}>
       <EntityFilterBody>
-        <RHFForm
-          submitCallback={handleFormSubmit}
-          className="min-w-40"
-          {...methods}
-        >
+        <RHFForm submitCallback={handleFormSubmit} {...methods}>
           <RHFFieldset>
-            <RHFCheckboxGroup.Root<FeeFilter> name="legalArea" label="Área">
-              {CONTRACT_LEGAL_AREAS.map((area) => (
-                <RHFCheckboxGroup.Checkbox key={area} value={area}>
-                  {formatter.contractLegalArea(area)}
-                </RHFCheckboxGroup.Checkbox>
-              ))}
-            </RHFCheckboxGroup.Root>
+            <RHFCheckbox<FeeFilter>
+              name="legalArea"
+              label="Área"
+              items={CONTRACT_LEGAL_AREAS.map((area) => ({
+                value: area,
+                label: formatter.contractLegalArea(area),
+              }))}
+            />
           </RHFFieldset>
-          <RHFDivider />
           <RHFFieldset>
-            <RHFCheckboxGroup.Root<FeeFilter>
+            <RHFCheckbox<FeeFilter>
               name="revenueType"
               label="Tipo Receita"
-            >
-              {REVENUE_TYPES.map((type) => (
-                <RHFCheckboxGroup.Checkbox key={type} value={type}>
-                  {formatter.revenueType(type)}
-                </RHFCheckboxGroup.Checkbox>
-              ))}
-            </RHFCheckboxGroup.Root>
+              items={REVENUE_TYPES.map((type) => ({
+                value: type,
+                label: formatter.revenueType(type),
+              }))}
+            />
           </RHFFieldset>
         </RHFForm>
       </EntityFilterBody>

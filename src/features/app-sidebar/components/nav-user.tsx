@@ -4,8 +4,6 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "~/shared/components/ui/avatar";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -13,13 +11,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "~/shared/components/ui/dropdown-menu";
-import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "~/shared/components/ui/sidebar";
+} from "~/shared/components";
 import { EllipsisVerticalIcon } from "lucide-react";
 
 export function NavUser() {

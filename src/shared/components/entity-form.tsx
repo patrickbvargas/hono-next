@@ -1,49 +1,40 @@
 import * as React from "react";
 import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  type ModalProps,
-  type ModalFooterProps,
-} from "@heroui/modal";
-import { cn } from "@heroui/react";
-import { Button } from "@heroui/button";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Button,
+} from "./";
 
-export const EntityFormHeader = ModalHeader;
-export const EntityFormBody = ModalBody;
+export const EntityFormHeader = DialogHeader;
+export const EntityFormTitle = DialogTitle;
+export const EntityFormDescription = DialogDescription;
 
-interface EntityFormProps extends ModalProps {}
-
-export const EntityForm = ({ children, ...props }: EntityFormProps) => {
+export const EntityForm = ({
+  children,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof Dialog>) => {
   return (
-    <Modal
-      size="xl"
-      scrollBehavior="inside"
-      classNames={{
-        header: "border-b border-divider",
-      }}
-      {...props}
-    >
-      <ModalContent>{children}</ModalContent>
-    </Modal>
+    <Dialog {...props}>
+      <DialogContent>{children}</DialogContent>
+    </Dialog>
   );
 };
 
-export const EntityFormFooter = ({ className, ...props }: ModalFooterProps) => {
-  return (
-    <ModalFooter
-      className={cn(
-        "flex justify-end gap-2 border-t border-divider pt-4",
-        className,
-      )}
-      {...props}
-    />
-  );
+export const EntityFormBody = ({ ...props }: React.ComponentProps<"div">) => {
+  return <div {...props} />;
 };
 
-interface EntityFormActionsProps extends ModalFooterProps {
+export const EntityFormFooter = ({
+  ...props
+}: React.ComponentPropsWithoutRef<typeof DialogFooter>) => {
+  return <DialogFooter {...props} />;
+};
+
+interface EntityFormActionsProps {
   onSubmit?: () => void;
   onCancel: () => void;
   submitButtonLabel?: string;
@@ -59,14 +50,14 @@ export const EntityFormActions = ({
 }: EntityFormActionsProps) => {
   return (
     <React.Fragment>
-      <Button variant="light" onPress={onCancel}>
+      <Button variant="outline" onClick={onCancel}>
         Cancelar
       </Button>
       <Button
         color="primary"
         type="submit"
         form="rhf-form"
-        onPress={onSubmit}
+        onClick={onSubmit}
         isLoading={isLoading}
         isDisabled={isDisabled}
       >

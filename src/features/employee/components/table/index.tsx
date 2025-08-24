@@ -1,16 +1,18 @@
 "use client";
 
 import * as React from "react";
+import {
+  EntityStatus,
+  DataTable,
+  Badge,
+  ButtonEdit,
+} from "~/shared/components";
 import { Detail } from "../detail";
-import { PenLineIcon } from "lucide-react";
-import { Button, Tooltip } from "@heroui/react";
 import { formatter } from "~/shared/lib/formatter";
-import { Badge } from "~/shared/components/ui/badge";
 import { useModalActions } from "../../stores/use-modal";
+import { EMPLOYEE_SORT_COLUMNS } from "~/shared/constants";
 import { createColumnHelper } from "@tanstack/react-table";
-import { EntityStatus, DataTable } from "~/shared/components";
 import type { EmployeeSummary } from "~/shared/types/employee";
-import { EMPLOYEE_SORT_COLUMNS } from "~/shared/constants/employee";
 
 const isSortable = (column: keyof EmployeeSummary) =>
   EMPLOYEE_SORT_COLUMNS.includes(
@@ -19,10 +21,9 @@ const isSortable = (column: keyof EmployeeSummary) =>
 
 interface TableProps {
   employees: EmployeeSummary[];
-  totalCount: number;
 }
 
-export const Table = ({ employees, totalCount }: TableProps) => {
+export const Table = ({ employees }: TableProps) => {
   const { openViewModal, openEditModal } = useModalActions();
 
   const columns = React.useMemo(() => {
@@ -68,18 +69,7 @@ export const Table = ({ employees, totalCount }: TableProps) => {
         id: "actions",
         header: "Ações",
         cell: ({ row }) => (
-          <Tooltip content="Editar" placement="left">
-            <Button
-              size="sm"
-              isIconOnly
-              variant="light"
-              onPress={() => {
-                openEditModal(row.original.id);
-              }}
-            >
-              <PenLineIcon size={16} />
-            </Button>
-          </Tooltip>
+          <ButtonEdit onClick={() => openEditModal(row.original.id)} />
         ),
       }),
     ];
@@ -88,7 +78,6 @@ export const Table = ({ employees, totalCount }: TableProps) => {
   return (
     <React.Fragment>
       <DataTable
-        totalCount={totalCount}
         columns={columns}
         data={employees}
         onRowAction={(index) => {

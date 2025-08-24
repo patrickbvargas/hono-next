@@ -5,7 +5,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "~/shared/components/ui/sidebar";
+} from "~/shared/components";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { RouteSection } from "~/shared/types/route";
